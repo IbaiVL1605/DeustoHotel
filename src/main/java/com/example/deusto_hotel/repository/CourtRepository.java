@@ -11,9 +11,12 @@ import java.util.List;
 @Repository
 public interface CourtRepository extends JpaRepository<Court, Long> {
 
+
     List<Court> findByEstado(CourtStatus estado);
 
     List<Court> findByTipo(CourtType tipo);
+
+    List<Court> findByTipoAndEstado(CourtType tipo, CourtStatus estado);
 
     boolean existsByNombre(String nombre);
 }

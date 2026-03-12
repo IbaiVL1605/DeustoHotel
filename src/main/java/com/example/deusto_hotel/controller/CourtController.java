@@ -17,10 +17,15 @@ public class CourtController {
 
     private final CourtService courtService;
 
-    @GetMapping
-    public ResponseEntity<List<CourtResponse>> getAll() {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+    @GetMapping("/available")
+    public ResponseEntity<List<CourtResponse>> getAvailableCourts(
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String fecha,
+            @RequestParam(required = false) String horaInicio,
+            @RequestParam(required = false) String horaFin
+    ) {
+        List<CourtResponse> courts = courtService.findAvailableCourts(tipo, fecha, horaInicio, horaFin);
+        return ResponseEntity.ok(courts);
     }
 
     @GetMapping("/{id}")
