@@ -1,9 +1,8 @@
 package com.example.deusto_hotel.service.impl;
 
-import com.example.deusto_hotel.dto.RoomRequest;
-import com.example.deusto_hotel.dto.RoomResponse;
-import com.example.deusto_hotel.repository.RoomRepository;
-import com.example.deusto_hotel.service.RoomService;
+import com.example.deusto_hotel.dto.UserRequest;
+import com.example.deusto_hotel.dto.UserResponse;
+import com.example.deusto_hotel.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,37 +12,37 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RoomServiceImpl implements RoomService {
+public class UserService {
 
-    private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
 
-    @Override
+    
     @Transactional(readOnly = true)
-    public List<RoomResponse> findAll() {
+    public List<UserResponse> findAll() {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    
     @Transactional(readOnly = true)
-    public RoomResponse findById(Long id) {
+    public UserResponse findById(Long id) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public RoomResponse create(RoomRequest request) {
+    
+    public UserResponse create(UserRequest request) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public RoomResponse update(Long id, RoomRequest request) {
+    
+    public UserResponse update(Long id, UserRequest request) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    
     public void delete(Long id) {
         // TODO: Implementar
         throw new UnsupportedOperationException();

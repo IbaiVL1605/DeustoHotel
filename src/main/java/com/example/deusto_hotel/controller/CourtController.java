@@ -2,9 +2,8 @@ package com.example.deusto_hotel.controller;
 
 import com.example.deusto_hotel.dto.CourtRequest;
 import com.example.deusto_hotel.dto.CourtResponse;
-import com.example.deusto_hotel.service.CourtService;
+import com.example.deusto_hotel.service.impl.CourtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

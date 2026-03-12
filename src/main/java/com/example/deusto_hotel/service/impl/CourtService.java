@@ -1,9 +1,8 @@
 package com.example.deusto_hotel.service.impl;
 
-import com.example.deusto_hotel.dto.UserRequest;
-import com.example.deusto_hotel.dto.UserResponse;
-import com.example.deusto_hotel.repository.UserRepository;
-import com.example.deusto_hotel.service.UserService;
+import com.example.deusto_hotel.dto.CourtRequest;
+import com.example.deusto_hotel.dto.CourtResponse;
+import com.example.deusto_hotel.repository.CourtRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,37 +12,37 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserServiceImpl implements UserService {
+public class CourtService {
 
-    private final UserRepository userRepository;
+    private final CourtRepository courtRepository;
 
-    @Override
+    
     @Transactional(readOnly = true)
-    public List<UserResponse> findAll() {
+    public List<CourtResponse> findAll() {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    
     @Transactional(readOnly = true)
-    public UserResponse findById(Long id) {
+    public CourtResponse findById(Long id) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public UserResponse create(UserRequest request) {
+    
+    public CourtResponse create(CourtRequest request) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public UserResponse update(Long id, UserRequest request) {
+    
+    public CourtResponse update(Long id, CourtRequest request) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    
     public void delete(Long id) {
         // TODO: Implementar
         throw new UnsupportedOperationException();

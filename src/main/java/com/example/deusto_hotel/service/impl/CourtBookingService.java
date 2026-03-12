@@ -1,9 +1,8 @@
 package com.example.deusto_hotel.service.impl;
 
-import com.example.deusto_hotel.dto.RoomBookingRequest;
-import com.example.deusto_hotel.dto.RoomBookingResponse;
-import com.example.deusto_hotel.repository.RoomBookingRepository;
-import com.example.deusto_hotel.service.RoomBookingService;
+import com.example.deusto_hotel.dto.CourtBookingRequest;
+import com.example.deusto_hotel.dto.CourtBookingResponse;
+import com.example.deusto_hotel.repository.CourtBookingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,52 +12,52 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RoomBookingServiceImpl implements RoomBookingService {
+public class CourtBookingService {
 
-    private final RoomBookingRepository roomBookingRepository;
+    private final CourtBookingRepository courtBookingRepository;
 
-    @Override
+    
     @Transactional(readOnly = true)
-    public List<RoomBookingResponse> findAll() {
+    public List<CourtBookingResponse> findAll() {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    
     @Transactional(readOnly = true)
-    public RoomBookingResponse findById(Long id) {
+    public CourtBookingResponse findById(Long id) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public RoomBookingResponse create(RoomBookingRequest request) {
+    
+    public CourtBookingResponse create(CourtBookingRequest request) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public RoomBookingResponse update(Long id, RoomBookingRequest request) {
+    
+    public CourtBookingResponse update(Long id, CourtBookingRequest request) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    
     public void delete(Long id) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    
     @Transactional(readOnly = true)
-    public List<RoomBookingResponse> findByClienteId(Long clienteId) {
+    public List<CourtBookingResponse> findByClienteId(Long clienteId) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    
     @Transactional(readOnly = true)
-    public List<RoomBookingResponse> findByHabitacionId(Long habitacionId) {
+    public List<CourtBookingResponse> findByPistaId(Long pistaId) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
     }
