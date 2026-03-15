@@ -17,6 +17,7 @@ public class UserController {
 
     private final UserService userService;
 
+
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAll() {
         // TODO: Implementar
@@ -30,9 +31,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> create(@RequestBody @Valid UserRequest request) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+    public ResponseEntity<UserResponse> create(
+        @RequestParam(required = true) String email,
+        @RequestParam(required = true) String password,
+        @RequestParam(required = true) String nombre
+    ) {
+        userService.create(new UserRequest(nombre, email, password));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
