@@ -1,7 +1,9 @@
 package com.example.deusto_hotel.controller;
 
+import com.example.deusto_hotel.dto.CourtDayAvailability;
 import com.example.deusto_hotel.dto.CourtRequest;
 import com.example.deusto_hotel.dto.CourtResponse;
+import com.example.deusto_hotel.dto.WeekAvailability;
 import com.example.deusto_hotel.service.impl.CourtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +20,31 @@ public class CourtController {
     private final CourtService courtService;
 
     @GetMapping("/available")
-    public ResponseEntity<List<CourtResponse>> getAvailableCourts(
+    public ResponseEntity<?> getAvailableCourts(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String fecha,
             @RequestParam(required = false) String horaInicio,
             @RequestParam(required = false) String horaFin
     ) {
-        List<CourtResponse> courts = courtService.findAvailableCourts(tipo, fecha, horaInicio, horaFin);
-        return ResponseEntity.ok(courts);
+        if (tipo != null && fecha != null && horaInicio == null && horaFin == null) {
+            List<CourtDayAvailability> courts = courtService.findCourtDayAvailability(tipo, fecha);
+            return ResponseEntity.ok(courts);
+        } else if (tipo != null && fecha != null && horaInicio != null && horaFin != null) {
+            List<CourtDayAvailability> courts = courtService.findCourtDayAvailabilityWithRange(tipo, fecha, horaInicio, horaFin);
+            return ResponseEntity.ok(courts);
+        } else {
+            List<CourtResponse> courts = courtService.findAvailableCourts(tipo, fecha, horaInicio, horaFin);
+            return ResponseEntity.ok(courts);
+        }
+    }
+
+    @GetMapping("/weekly-availability")
+    public ResponseEntity<List<WeekAvailability>> getWeeklyAvailability(
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        List<WeekAvailability> availability = courtService.findWeeklyAvailability(year, month, null);
+        return ResponseEntity.ok(availability);
     }
 
     @GetMapping("/{id}")
