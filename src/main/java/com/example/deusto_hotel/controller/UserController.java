@@ -40,6 +40,15 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> login(
+        @RequestParam String correo,
+        @RequestParam String contrasena
+    ) {
+        UserResponse response = userService.login(correo, contrasena);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> update(
             @PathVariable Long id,
