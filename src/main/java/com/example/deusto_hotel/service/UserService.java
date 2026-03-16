@@ -1,14 +1,14 @@
-package com.example.deusto_hotel.service.impl;
+package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.UserRequest;
 import com.example.deusto_hotel.dto.UserResponse;
+import com.example.deusto_hotel.mapper.UserMapper;
 import com.example.deusto_hotel.model.Role;
+import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.deusto_hotel.mapper.UserMapper;
-import com.example.deusto_hotel.model.User;
 
 import java.util.List;
 

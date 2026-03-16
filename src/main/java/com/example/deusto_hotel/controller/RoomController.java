@@ -1,13 +1,16 @@
 package com.example.deusto_hotel.controller;
 
+import com.example.deusto_hotel.dto.RoomDisponiblesResponse;
 import com.example.deusto_hotel.dto.RoomRequest;
 import com.example.deusto_hotel.dto.RoomResponse;
-import com.example.deusto_hotel.service.impl.RoomService;
+import com.example.deusto_hotel.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -47,5 +50,13 @@ public class RoomController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         // TODO: Implementar
         throw new UnsupportedOperationException();
+    }
+
+    @GetMapping("/disponibles")
+    public ResponseEntity<List<RoomDisponiblesResponse>> getByDisponibles(
+            @RequestParam LocalDate fechaEntrada,
+            @RequestParam LocalDate fechaSalida) {
+        List<RoomDisponiblesResponse> response = roomService.getDisponibles(fechaEntrada, fechaSalida);
+        return ResponseEntity.ok(response);
     }
 }

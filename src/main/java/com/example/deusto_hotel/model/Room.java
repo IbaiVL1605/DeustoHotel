@@ -29,9 +29,6 @@ public class Room {
     @Column(nullable = false)
     private int capacidad;
 
-    @Column(nullable = false)
-    private Double precioPorNoche;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RoomStatus estado = RoomStatus.DISPONIBLE;

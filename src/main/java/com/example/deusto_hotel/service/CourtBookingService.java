@@ -1,4 +1,4 @@
-package com.example.deusto_hotel.service.impl;
+package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.CourtBookingRequest;
 import com.example.deusto_hotel.dto.CourtBookingResponse;

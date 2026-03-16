@@ -19,12 +19,15 @@ public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> 
 
     List<RoomBooking> findByEstado(RoomBookingStatus estado);
 
+
     @Query("SELECT r FROM RoomBooking r WHERE r.habitacion.id = :habitacionId " +
            "AND r.estado != 'CANCELADA' " +
            "AND r.checkIn < :checkOut AND r.checkOut > :checkIn")
     List<RoomBooking> findSolapamientos(@Param("habitacionId") Long habitacionId,
                                         @Param("checkIn") LocalDate checkIn,
                                         @Param("checkOut") LocalDate checkOut);
+
+
 
     List<RoomBooking> findByClienteIdAndEstado(Long clienteId,
                                                RoomBookingStatus estado);

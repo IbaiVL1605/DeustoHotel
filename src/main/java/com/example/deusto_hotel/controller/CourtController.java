@@ -4,7 +4,7 @@ import com.example.deusto_hotel.dto.CourtDayAvailability;
 import com.example.deusto_hotel.dto.CourtRequest;
 import com.example.deusto_hotel.dto.CourtResponse;
 import com.example.deusto_hotel.dto.WeekAvailability;
-import com.example.deusto_hotel.service.impl.CourtService;
+import com.example.deusto_hotel.service.CourtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

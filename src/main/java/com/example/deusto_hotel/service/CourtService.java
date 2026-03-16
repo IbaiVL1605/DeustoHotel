@@ -1,8 +1,12 @@
-package com.example.deusto_hotel.service.impl;
+package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.*;
-import com.example.deusto_hotel.repository.CourtRepository;
+import com.example.deusto_hotel.model.Court;
+import com.example.deusto_hotel.model.CourtBookingStatus;
+import com.example.deusto_hotel.model.CourtStatus;
+import com.example.deusto_hotel.model.CourtType;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
+import com.example.deusto_hotel.repository.CourtRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +18,6 @@ import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import com.example.deusto_hotel.model.Court;
-import com.example.deusto_hotel.model.CourtBookingStatus;
-import com.example.deusto_hotel.model.CourtStatus;
-import com.example.deusto_hotel.model.CourtType;
 
 @Service
 @RequiredArgsConstructor

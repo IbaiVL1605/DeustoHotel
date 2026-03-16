@@ -2,7 +2,7 @@ package com.example.deusto_hotel.controller;
 
 import com.example.deusto_hotel.dto.CourtBookingRequest;
 import com.example.deusto_hotel.dto.CourtBookingResponse;
-import com.example.deusto_hotel.service.impl.CourtBookingService;
+import com.example.deusto_hotel.service.CourtBookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
