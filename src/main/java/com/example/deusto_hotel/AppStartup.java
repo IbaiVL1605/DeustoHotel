@@ -87,14 +87,12 @@ public class AppStartup implements CommandLineRunner {
         Room room1 = new Room();
         room1.setNumero("101");
         room1.setTipo(RoomType.INDIVIDUAL);
-        room1.setCapacidad(1);
         room1.setEstado(RoomStatus.DISPONIBLE);
         roomRepository.save(room1);
 
         Room room2 = new Room();
         room2.setNumero("102");
         room2.setTipo(RoomType.DOBLE);
-        room2.setCapacidad(2);
         room2.setEstado(RoomStatus.DISPONIBLE);
         roomRepository.save(room2);
 
@@ -102,13 +100,13 @@ public class AppStartup implements CommandLineRunner {
         room3.setNumero("201");
         room3.setTipo(RoomType.SUITE);
         room3.setCapacidad(4);
+        room3.setPrecioPorNoche(200);
         room3.setEstado(RoomStatus.DISPONIBLE);
         roomRepository.save(room3);
 
         Room room4 = new Room();
         room4.setNumero("202");
         room4.setTipo(RoomType.DOBLE);
-        room4.setCapacidad(2);
         room4.setEstado(RoomStatus.BLOQUEADA);
         roomRepository.save(room4);
 
