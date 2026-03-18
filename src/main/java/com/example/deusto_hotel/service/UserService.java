@@ -2,6 +2,9 @@ package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.UserRequest;
 import com.example.deusto_hotel.dto.UserResponse;
+import com.example.deusto_hotel.exception.Excepciones.CredencialesInvalidasException;
+import com.example.deusto_hotel.exception.Excepciones.UsuarioBloqueadoException;
+import com.example.deusto_hotel.exception.Excepciones.UsuarioNoEncontradoException;
 import com.example.deusto_hotel.mapper.UserMapper;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.model.User;
@@ -50,14 +53,14 @@ public class UserService {
     public UserResponse login(String correo, String contrasena) {
 
         User usuario = userRepository.findByEmail(correo)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario no encontrado"));
 
         if (!usuario.getPassword().equals(contrasena)) {
-            throw new RuntimeException("Contraseña incorrecta");
+            throw new CredencialesInvalidasException("Contrasena incorrecta");
         }
 
         if (usuario.isBloqueado()) {
-            throw new RuntimeException("Usuario bloqueado");
+            throw new UsuarioBloqueadoException("Usuario bloqueado");
         }
 
         return new UserResponse(
@@ -82,5 +85,3 @@ public class UserService {
         throw new UnsupportedOperationException();
     }
 }
-
-
