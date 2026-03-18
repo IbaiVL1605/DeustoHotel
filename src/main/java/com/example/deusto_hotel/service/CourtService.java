@@ -236,4 +236,151 @@ public class CourtService {
         }
         return result;
     }
+
+    @Transactional(readOnly = true)
+    public List<CourtAvailabilityDTO> findAvailableByTypeAndWeek(String tipo, Integer semana) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate;
+        LocalDate endDate;
+
+        // Calcular rango de fechas basado en la semana del mes
+        if (semana != null && (semana == 1 || semana == 2)) {
+            // Semana 1: primeros 7 días desde hoy
+            // Semana 2: siguientes 7 días
+            startDate = today.plusDays((semana - 1) * 7);
+            endDate = startDate.plusDays(6);
+        } else {
+            // Si no se especifica semana, usar la semana actual
+            startDate = today;
+            endDate = today.plusDays(6);
+        }
+
+        // Si estamos en 2026, solo mostrar hasta fin de año + siguiente año
+        if (today.getYear() == 2026) {
+            LocalDate endOfYear2026 = LocalDate.of(2026, 12, 31);
+            LocalDate endOf2027 = LocalDate.of(2027, 12, 31);
+            endDate = endDate.isAfter(endOf2027) ? endOf2027 : endDate;
+        }
+
+        // Filtrar por tipo de pista si se proporciona
+        List<Court> courts;
+        if (tipo != null && !tipo.trim().isEmpty()) {
+            try {
+                CourtType courtType = CourtType.valueOf(tipo.toUpperCase());
+                courts = courtRepository.findByTipoAndEstado(courtType, CourtStatus.DISPONIBLE);
+            } catch (Exception e) {
+                courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
+            }
+        } else {
+            courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
+        }
+
+        // Agrupar reservas por tipo de pista
+        List<CourtAvailabilityDTO> result = new ArrayList<>();
+        for (CourtType courtType : CourtType.values()) {
+            List<Court> courtsByType = courts.stream()
+                .filter(c -> c.getTipo() == courtType)
+                .toList();
+
+            if (courtsByType.isEmpty()) continue;
+
+            // Obtener reservas confirmadas y pendientes (no canceladas) en el rango de fechas
+            List<CourtBookingResponse> bookings = new ArrayList<>();
+            final LocalDate finalStartDate = startDate;
+            final LocalDate finalEndDate = endDate;
+            for (Court court : courtsByType) {
+                List<CourtBookingResponse> courtBookings = court.getCourtBookings().stream()
+                    .filter(booking ->
+                        booking.getFecha().isAfter(finalStartDate.minusDays(1)) &&
+                        booking.getFecha().isBefore(finalEndDate.plusDays(1)) &&
+                        booking.getEstado() != CourtBookingStatus.CANCELADA
+                    )
+                    .map(booking -> new CourtBookingResponse(
+                        booking.getId(),
+                        booking.getCliente().getId(),
+                        booking.getCliente().getNombre(),
+                        booking.getPista().getId(),
+                        booking.getPista().getNombre(),
+                        booking.getFecha(),
+                        booking.getHoraInicio(),
+                        booking.getHoraFin(),
+                        booking.getEstado(),
+                        booking.getPrecioTotal(),
+                        booking.getCreadaEn()
+                    ))
+                    .toList();
+                bookings.addAll(courtBookings);
+            }
+
+            result.add(new CourtAvailabilityDTO(courtType, bookings));
+        }
+
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CourtAvailabilityDTO> findAvailableByType(String tipo) {
+        return findAvailableByTypeAndWeek(tipo, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CourtAvailabilityDTO> findAvailableByDate(String fecha) {
+        LocalDate targetDate;
+        try {
+            targetDate = LocalDate.parse(fecha);
+        } catch (Exception e) {
+            return List.of();
+        }
+
+        LocalDate today = LocalDate.now();
+
+        // Si estamos en 2026, validar que la fecha sea válida
+        if (today.getYear() == 2026) {
+            LocalDate endOf2027 = LocalDate.of(2027, 12, 31);
+            if (targetDate.isAfter(endOf2027)) {
+                return List.of();
+            }
+        }
+
+        List<Court> courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
+
+        // Agrupar reservas por tipo de pista
+        List<CourtAvailabilityDTO> result = new ArrayList<>();
+        for (CourtType courtType : CourtType.values()) {
+            List<Court> courtsByType = courts.stream()
+                .filter(c -> c.getTipo() == courtType)
+                .toList();
+
+            if (courtsByType.isEmpty()) continue;
+
+            // Obtener reservas para esa fecha específica
+            List<CourtBookingResponse> bookings = new ArrayList<>();
+            for (Court court : courtsByType) {
+                List<CourtBookingResponse> courtBookings = court.getCourtBookings().stream()
+                    .filter(booking ->
+                        booking.getFecha().equals(targetDate) &&
+                        booking.getEstado() != CourtBookingStatus.CANCELADA
+                    )
+                    .map(booking -> new CourtBookingResponse(
+                        booking.getId(),
+                        booking.getCliente().getId(),
+                        booking.getCliente().getNombre(),
+                        booking.getPista().getId(),
+                        booking.getPista().getNombre(),
+                        booking.getFecha(),
+                        booking.getHoraInicio(),
+                        booking.getHoraFin(),
+                        booking.getEstado(),
+                        booking.getPrecioTotal(),
+                        booking.getCreadaEn()
+                    ))
+                    .toList();
+                bookings.addAll(courtBookings);
+            }
+
+            result.add(new CourtAvailabilityDTO(courtType, bookings));
+        }
+
+        return result;
+    }
 }

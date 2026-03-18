@@ -1,9 +1,6 @@
 package com.example.deusto_hotel.controller;
 
-import com.example.deusto_hotel.dto.CourtDayAvailability;
-import com.example.deusto_hotel.dto.CourtRequest;
-import com.example.deusto_hotel.dto.CourtResponse;
-import com.example.deusto_hotel.dto.WeekAvailability;
+import com.example.deusto_hotel.dto.*;
 import com.example.deusto_hotel.service.CourtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,22 +17,31 @@ public class CourtController {
     private final CourtService courtService;
 
     @GetMapping("/available")
-    public ResponseEntity<?> getAvailableCourts(
+    public ResponseEntity<List<CourtAvailabilityDTO>> getAvailableCourts(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String fecha,
-            @RequestParam(required = false) String horaInicio,
-            @RequestParam(required = false) String horaFin
+            @RequestParam(required = false) Integer semana
     ) {
-        if (tipo != null && fecha != null && horaInicio == null && horaFin == null) {
-            List<CourtDayAvailability> courts = courtService.findCourtDayAvailability(tipo, fecha);
-            return ResponseEntity.ok(courts);
-        } else if (tipo != null && fecha != null && horaInicio != null && horaFin != null) {
-            List<CourtDayAvailability> courts = courtService.findCourtDayAvailabilityWithRange(tipo, fecha, horaInicio, horaFin);
-            return ResponseEntity.ok(courts);
+        List<CourtAvailabilityDTO> result;
+
+        if (tipo != null && !tipo.trim().isEmpty() && fecha != null && !fecha.trim().isEmpty()) {
+            // Ambos parámetros: tipo y fecha
+            List<CourtAvailabilityDTO> byDate = courtService.findAvailableByDate(fecha);
+            result = byDate.stream()
+                .filter(dto -> dto.tipo().name().equalsIgnoreCase(tipo))
+                .toList();
+        } else if (tipo != null && !tipo.trim().isEmpty()) {
+            // Solo tipo
+            result = courtService.findAvailableByTypeAndWeek(tipo, semana);
+        } else if (fecha != null && !fecha.trim().isEmpty()) {
+            // Solo fecha
+            result = courtService.findAvailableByDate(fecha);
         } else {
-            List<CourtResponse> courts = courtService.findAvailableCourts(tipo, fecha, horaInicio, horaFin);
-            return ResponseEntity.ok(courts);
+            // Ninguno: retornar todas las disponibilidades de la semana
+            result = courtService.findAvailableByTypeAndWeek(null, semana);
         }
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/weekly-availability")
