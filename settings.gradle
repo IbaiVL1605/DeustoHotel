@@ -1,1 +1,8 @@
 rootProject.name = 'deusto_hotel'
+
+
+
+include ':common'
+include ':server'
+include ':client-proxy'
+include 'client-proxy'
