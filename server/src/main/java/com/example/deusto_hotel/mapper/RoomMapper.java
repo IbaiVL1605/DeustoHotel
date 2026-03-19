@@ -1,6 +1,9 @@
 package com.example.deusto_hotel.mapper;
 
-import com.example.deusto_hotel.dto.RoomDisponiblesResponse;
+import com.example.deusto_hotel.dto.RoomDisponibleResponse;
+import com.example.deusto_hotel.dto.RoomDisponiblesSimplesResponse;
+import com.example.deusto_hotel.dto.RoomDisponiblesSuitResponse;
+import com.example.deusto_hotel.dto.SuitResponse;
 import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.model.RoomType;
 import org.mapstruct.Mapper;
@@ -11,9 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper(componentModel = "spring")
-public interface RoomMapper {
+public abstract class RoomMapper {
 
-    default List<RoomDisponiblesResponse> toRoomDisponiblesResponse(List<Room> rooms) {
+    public abstract SuitResponse suitToSuitResponse(Room room);
+
+    public List<RoomDisponibleResponse> toRoomDisponiblesResponse(List<Room> rooms) {
 
         if (rooms == null) {return new ArrayList<>();}
 
@@ -21,12 +26,19 @@ public interface RoomMapper {
                 java.util.stream.Collectors.groupingBy(Room::getTipo)
         );
 
-        List<RoomDisponiblesResponse> response = new ArrayList<>();
+        List<RoomDisponibleResponse> response = new ArrayList<>();
 
         map.forEach((tipo, disponibles) -> {
-            response.add(new RoomDisponiblesResponse(tipo, disponibles.size()));
+            if (tipo.equals(RoomType.SUITE)){
+                List<SuitResponse> suits = disponibles.stream().map(this::suitToSuitResponse).toList();
+                response.add(new RoomDisponiblesSuitResponse(tipo, suits));
+            } else {
+                response.add(new RoomDisponiblesSimplesResponse(tipo, disponibles.size()));
+            }
         });
 
         return response;
     }
+
+
 }

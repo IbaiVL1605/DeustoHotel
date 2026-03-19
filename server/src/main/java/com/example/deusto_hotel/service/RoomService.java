@@ -1,6 +1,6 @@
 package com.example.deusto_hotel.service;
 
-import com.example.deusto_hotel.dto.RoomDisponiblesResponse;
+import com.example.deusto_hotel.dto.RoomDisponibleResponse;
 import com.example.deusto_hotel.dto.RoomRequest;
 import com.example.deusto_hotel.dto.RoomResponse;
 import com.example.deusto_hotel.mapper.RoomMapper;
@@ -54,7 +54,7 @@ public class RoomService {
         throw new UnsupportedOperationException();
     }
 
-    public List<RoomDisponiblesResponse> getDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {
+    public List<RoomDisponibleResponse> getDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {
 
         List<Room> disponibles = roomRepository.findRoomDisponibles(fechaEntrada, fechaSalida);
 
