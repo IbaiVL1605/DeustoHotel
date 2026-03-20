@@ -2,7 +2,6 @@ package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.dto.RoomBookingResponse;
-import com.example.deusto_hotel.dto.RoomDisponiblesResponse;
 import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.repository.RoomBookingRepository;
 import lombok.RequiredArgsConstructor;

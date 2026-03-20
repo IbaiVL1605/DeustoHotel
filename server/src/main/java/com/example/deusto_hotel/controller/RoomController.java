@@ -1,6 +1,6 @@
 package com.example.deusto_hotel.controller;
 
-import com.example.deusto_hotel.dto.RoomDisponiblesResponse;
+import com.example.deusto_hotel.dto.RoomDisponibleResponse;
 import com.example.deusto_hotel.dto.RoomRequest;
 import com.example.deusto_hotel.dto.RoomResponse;
 import com.example.deusto_hotel.service.RoomService;
@@ -22,40 +22,41 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<List<RoomResponse>> getAll() {
-        return ResponseEntity.ok(roomService.findAll());
+        // TODO: Implementar
+        throw new UnsupportedOperationException();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(roomService.findById(id));
+        // TODO: Implementar
+        throw new UnsupportedOperationException();
     }
 
     @PostMapping
     public ResponseEntity<RoomResponse> create(@RequestBody @Valid RoomRequest request) {
-        RoomResponse created = roomService.create(request);
-        return ResponseEntity.status(201).body(created);
+        // TODO: Implementar
+        throw new UnsupportedOperationException();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<RoomResponse> update(
             @PathVariable Long id,
             @RequestBody @Valid RoomRequest request) {
-
-        return ResponseEntity.ok(roomService.update(id, request));
+        // TODO: Implementar
+        throw new UnsupportedOperationException();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        roomService.delete(id);
-        return ResponseEntity.noContent().build();
+        // TODO: Implementar
+        throw new UnsupportedOperationException();
     }
+
     @GetMapping("/disponibles")
-    public ResponseEntity<List<RoomDisponiblesResponse>> getByDisponibles(
+    public ResponseEntity<List<RoomDisponibleResponse>> getByDisponibles(
             @RequestParam LocalDate fechaEntrada,
             @RequestParam LocalDate fechaSalida) {
-
-        return ResponseEntity.ok(
-                roomService.getDisponibles(fechaEntrada, fechaSalida)
-        );
+        List<RoomDisponibleResponse> response = roomService.getDisponibles(fechaEntrada, fechaSalida);
+        return ResponseEntity.ok(response);
     }
 }
