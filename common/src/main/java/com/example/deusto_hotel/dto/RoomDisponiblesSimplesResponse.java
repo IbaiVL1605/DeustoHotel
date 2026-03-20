@@ -11,4 +11,7 @@ public record RoomDisponiblesSimplesResponse(
     public RoomType getTipo() {
         return this.tipo;
     }
+    public int getNumero_disponibles() {
+        return this.numero_disponibles;
+    }
 }

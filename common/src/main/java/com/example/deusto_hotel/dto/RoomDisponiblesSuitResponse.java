@@ -12,4 +12,7 @@ public record RoomDisponiblesSuitResponse(
     public RoomType getTipo() {
         return this.tipo;
     }
+    public List<SuitResponse> getSuites() {
+        return this.suites;
+    }
 }

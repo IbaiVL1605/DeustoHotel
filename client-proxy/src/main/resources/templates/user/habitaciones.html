@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habitaciones Disponibles – Deusto Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8C97A;
+            --dark: #0F0E0C;
+            --dark-2: #1A1916;
+            --dark-3: #252420;
+            --cream: #F5F0E8;
+            --cream-2: #EDE8DC;
+            --text-muted: #8A8070;
+            --accent: #7C5C2E;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--dark);
+            color: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 4rem;
+            border-bottom: 1px solid rgba(201,168,76,.2);
+            position: sticky;
+            top: 0;
+            background: var(--dark);
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            letter-spacing: .08em;
+            color: var(--gold);
+        }
+
+        .logo span { font-style: italic; color: var(--cream); }
+
+        /* ── CART BADGE ── */
+        .cart-btn {
+            position: relative;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: .6rem 1.4rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .8rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s, color .25s;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        .cart-btn:hover { background: var(--gold); color: var(--dark); }
+
+        .cart-count {
+            background: var(--gold);
+            color: var(--dark);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            font-weight: 500;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            text-align: center;
+            padding: 5rem 2rem 3rem;
+        }
+
+        .hero-label {
+            font-size: .7rem;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            color: var(--cream);
+        }
+
+        .hero h1 em { font-style: italic; color: var(--gold-light); }
+
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: var(--gold);
+            margin: 2rem auto;
+            opacity: .6;
+        }
+
+        /* ── MAIN GRID ── */
+        main {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 4rem 6rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: var(--cream);
+            margin-bottom: .4rem;
+        }
+
+        .section-subtitle {
+            font-size: .8rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+        }
+
+        /* ── HABITACIONES SIMPLES / DOBLES ── */
+        .rooms-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 5rem;
+        }
+
+        .room-card {
+            background: var(--dark-2);
+            border: 1px solid rgba(201,168,76,.15);
+            padding: 2rem;
+            cursor: pointer;
+            transition: border-color .3s, transform .3s, box-shadow .3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(201,168,76,.06) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .room-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+        .room-card:hover::before { opacity: 1; }
+
+        .room-card.selected {
+            border-color: var(--gold);
+            background: var(--dark-3);
+        }
+
+        .room-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 28px;
+            height: 28px;
+            background: var(--gold);
+            color: var(--dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .room-type-tag {
+            font-size: .65rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .room-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--cream);
+            margin-bottom: 1.2rem;
+        }
+
+        .room-availability {
+            display: flex;
+            align-items: baseline;
+            gap: .5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,.06);
+        }
+
+        .availability-number {
+            font-size: 2.8rem;
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-light);
+            line-height: 1;
+        }
+
+        .availability-label { font-size: .75rem; color: var(--text-muted); letter-spacing: .08em; }
+
+        .room-icon { font-size: 2rem; margin-bottom: 1rem; opacity: .6; }
+
+        /* ── SUITES LIST ── */
+        .suite-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 5rem; }
+
+        .suite-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--dark-2);
+            border: 1px solid rgba(201,168,76,.12);
+            padding: 1.6rem 2rem;
+            cursor: pointer;
+            transition: border-color .3s, background .3s;
+            position: relative;
+        }
+
+        .suite-item:hover { border-color: var(--gold); background: var(--dark-3); }
+
+        .suite-item.selected {
+            border-color: var(--gold);
+            background: var(--dark-3);
+        }
+
+        .suite-item.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            background: var(--gold);
+            color: var(--dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .suite-left { display: flex; align-items: center; gap: 1.5rem; }
+        .suite-index {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--gold);
+            opacity: .5;
+            min-width: 2rem;
+        }
+
+        .suite-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--cream);
+        }
+
+        .suite-capacity {
+            font-size: .75rem;
+            letter-spacing: .1em;
+            color: var(--text-muted);
+            margin-top: .2rem;
+        }
+
+        .suite-right { text-align: right; padding-right: 3rem; }
+
+        .suite-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--gold-light);
+        }
+
+        .suite-price-label { font-size: .7rem; color: var(--text-muted); letter-spacing: .1em; }
+
+        /* ── CARRITO PANEL ── */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.7);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s;
+        }
+
+        .cart-overlay.open { opacity: 1; pointer-events: all; }
+
+        .cart-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: min(420px, 100vw);
+            height: 100vh;
+            background: var(--dark-2);
+            border-left: 1px solid rgba(201,168,76,.2);
+            z-index: 300;
+            padding: 2.5rem 2rem;
+            transform: translateX(100%);
+            transition: transform .35s cubic-bezier(.4,0,.2,1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-panel.open { transform: translateX(0); }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(201,168,76,.2);
+        }
+
+        .cart-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--cream);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: color .2s;
+        }
+
+        .close-btn:hover { color: var(--gold); }
+
+        .cart-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            color: var(--text-muted);
+        }
+
+        .cart-empty-icon { font-size: 3rem; opacity: .3; }
+
+        .cart-items { flex: 1; display: flex; flex-direction: column; gap: .75rem; }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.2rem;
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,.1);
+        }
+
+        .cart-item-name { font-size: .95rem; color: var(--cream); }
+        .cart-item-type { font-size: .7rem; color: var(--gold); letter-spacing: .1em; text-transform: uppercase; margin-top: .2rem; }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color .2s;
+        }
+
+        .cart-item-remove:hover { color: #e05555; }
+
+        .cart-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(201,168,76,.2);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--cream);
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-total span { color: var(--gold-light); }
+
+        .reserve-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .85rem;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s;
+        }
+
+        .reserve-btn:hover { background: var(--gold-light); }
+
+        /* ── NO DATA STATE ── */
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-style: italic;
+            border: 1px dashed rgba(201,168,76,.2);
+        }
+
+        /* ── DATE SEARCH FORM ── */
+        .date-search {
+            max-width: 1300px;
+            margin: 0 auto 3rem;
+            padding: 0 4rem;
+        }
+
+        .date-form {
+            display: flex;
+            align-items: flex-end;
+            gap: 1.5rem;
+            background: var(--dark-2);
+            border: 1px solid rgba(201,168,76,.2);
+            padding: 2rem 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .date-field {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .date-field label {
+            font-size: .65rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .date-field input[type="date"] {
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,.2);
+            color: var(--cream);
+            padding: .85rem 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            font-weight: 300;
+            outline: none;
+            transition: border-color .25s;
+            width: 100%;
+            color-scheme: dark;
+        }
+
+        .date-field input[type="date"]:focus {
+            border-color: var(--gold);
+        }
+
+        .date-field input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(.5) sepia(1) saturate(2) hue-rotate(5deg);
+            cursor: pointer;
+            opacity: .7;
+        }
+
+        .search-btn {
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            padding: .85rem 2.5rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .8rem;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s;
+            white-space: nowrap;
+            align-self: flex-end;
+            height: fit-content;
+        }
+
+        .search-btn:hover { background: var(--gold-light); }
+
+        .date-error {
+            color: #e05555;
+            font-size: .8rem;
+            margin-top: .5rem;
+            display: none;
+        }
+
+        .date-error.show { display: block; }
+
+        .results-header {
+            padding: 0 4rem;
+            max-width: 1300px;
+            margin: 0 auto 1rem;
+        }
+
+        .results-dates {
+            font-size: .75rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            padding: .6rem 1rem;
+            border-left: 2px solid var(--gold);
+            background: rgba(201,168,76,.06);
+            display: inline-block;
+        }
+
+        /* ── ROOMS HIDDEN UNTIL SEARCH ── */
+        .rooms-section {
+            display: none;
+        }
+
+        .rooms-section.visible {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            header, main { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .date-search { padding: 0 1.5rem; }
+            .date-form { flex-direction: column; gap: 1rem; }
+            .search-btn { width: 100%; }
+            .suite-item { flex-direction: column; align-items: flex-start; gap: .8rem; }
+            .suite-right { padding-right: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+
+<!-- ── HEADER ── -->
+<header>
+    <div class="logo">Deusto <span>Hotel</span></div>
+    <button class="cart-btn" onclick="openCart()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Reservar selección
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
+</header>
+
+<!-- ── HERO ── -->
+<div class="hero">
+    <p class="hero-label">Disponibilidad en tiempo real</p>
+    <h1>Elige tu <em>estancia</em><br>perfecta</h1>
+    <div class="divider"></div>
+</div>
+
+<!-- ── DATE SEARCH FORM ── -->
+<div class="date-search">
+    <form th:action="@{/habitaciones/disponibles}" method="get" class="date-form" id="dateForm">
+        <div class="date-field">
+            <label for="fechaEntrada">Fecha de entrada</label>
+            <input
+                type="date"
+                id="fechaEntrada"
+                name="fechaEntrada"
+                th:value="${param.fechaEntrada}"
+                required
+            />
+        </div>
+        <div class="date-field">
+            <label for="fechaSalida">Fecha de salida</label>
+            <input
+                type="date"
+                id="fechaSalida"
+                name="fechaSalida"
+                th:value="${param.fechaSalida}"
+                required
+            />
+        </div>
+        <button type="submit" class="search-btn">
+            Buscar disponibilidad
+        </button>
+    </form>
+    <div class="date-error" id="dateError">La fecha de salida debe ser posterior a la de entrada.</div>
+</div>
+
+<!-- Fechas activas mostradas cuando hay resultados -->
+<div class="results-header" th:if="${param.fechaEntrada != null}">
+    <div class="results-dates"
+         th:text="'Resultados para: ' + ${param.fechaEntrada} + '  →  ' + ${param.fechaSalida}">
+    </div>
+</div>
+
+<!-- ── MAIN CONTENT – solo visible si el controller devolvió datos ── -->
+<main th:if="${habitacionSimple != null or habitacionDoble != null or habitacionSuite != null}">
+
+    <!-- HABITACIONES SIMPLES -->
+    <section>
+        <h2 class="section-title">Habitaciones Simples</h2>
+        <p class="section-subtitle">Individual · Una cama</p>
+
+        <div class="rooms-row" id="simplesContainer">
+            <div th:if="${habitacionSimple != null}"
+                 class="room-card"
+                 th:data-type="SIMPLE"
+                 th:data-disponibles="${habitacionSimple.numero_disponibles}"
+                 onclick="toggleRoomCard(this)">
+
+                <div class="room-icon">🛏</div>
+                <div class="room-type-tag">Habitación Simple</div>
+                <div class="room-name">Individual Clásica</div>
+
+                <div class="room-availability">
+                    <span class="availability-number" th:text="${habitacionSimple.numero_disponibles}">0</span>
+                    <span class="availability-label">habitaciones<br>disponibles</span>
+                </div>
+            </div>
+
+            <div th:if="${habitacionSimple == null}" class="no-data">
+                No hay habitaciones simples disponibles para las fechas seleccionadas.
+            </div>
+        </div>
+    </section>
+
+    <!-- HABITACIONES DOBLES -->
+    <section>
+        <h2 class="section-title">Habitaciones Dobles</h2>
+        <p class="section-subtitle">Doble · Dos camas o cama king</p>
+
+        <div class="rooms-row" id="doblesContainer">
+            <div th:if="${habitacionDoble != null}"
+                 class="room-card"
+                 th:data-type="DOBLE"
+                 th:data-disponibles="${habitacionDoble.numero_disponibles}"
+                 onclick="toggleRoomCard(this)">
+
+                <div class="room-icon">🛏🛏</div>
+                <div class="room-type-tag">Habitación Doble</div>
+                <div class="room-name">Doble Superior</div>
+
+                <div class="room-availability">
+                    <span class="availability-number" th:text="${habitacionDoble.numero_disponibles}">0</span>
+                    <span class="availability-label">habitaciones<br>disponibles</span>
+                </div>
+            </div>
+
+            <div th:if="${habitacionDoble == null}" class="no-data">
+                No hay habitaciones dobles disponibles para las fechas seleccionadas.
+            </div>
+        </div>
+    </section>
+
+    <!-- SUITES -->
+    <section>
+        <h2 class="section-title">Suites</h2>
+        <p class="section-subtitle">Exclusivo · Experiencia premium</p>
+
+        <ul class="suite-list" id="suitesContainer" th:if="${habitacionSuite != null}">
+            <li th:each="suite, iterStat : ${habitacionSuite.suites}"
+                class="suite-item"
+                th:data-type="SUITE"
+                th:data-index="${iterStat.index}"
+                th:data-capacidad="${suite.capacidad}"
+                th:data-precio="${suite.precioPorNoche}"
+                onclick="toggleSuiteItem(this)">
+
+                <div class="suite-left">
+                    <span class="suite-index" th:text="${'0' + (iterStat.index + 1)}">01</span>
+                    <div>
+                        <div class="suite-name" th:text="'Suite Presidencial ' + (${iterStat.index + 1})">Suite</div>
+                        <div class="suite-capacity"
+                             th:text="'Capacidad: ' + ${suite.capacidad} + ' personas'">
+                            Capacidad: 2 personas
+                        </div>
+                    </div>
+                </div>
+
+                <div class="suite-right">
+                    <div class="suite-price" th:text="'€' + ${suite.precioPorNoche}">€350</div>
+                    <div class="suite-price-label">por noche</div>
+                </div>
+            </li>
+        </ul>
+
+        <div th:if="${habitacionSuite == null}" class="no-data">
+            No hay suites disponibles para las fechas seleccionadas.
+        </div>
+    </section>
+
+</main>
+
+<!-- ── CARRITO OVERLAY + PANEL ── -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+<div class="cart-panel" id="cartPanel">
+    <div class="cart-header">
+        <div class="cart-title">Tu selección</div>
+        <button class="close-btn" onclick="closeCart()">✕</button>
+    </div>
+
+    <div class="cart-empty" id="cartEmpty">
+        <div class="cart-empty-icon">🛎</div>
+        <p>No has seleccionado ninguna habitación</p>
+    </div>
+
+    <div class="cart-items" id="cartItems" style="display:none"></div>
+
+    <div class="cart-footer" id="cartFooter" style="display:none">
+        <div class="cart-total">
+            Total seleccionado: <span id="cartTotal">0 habitaciones</span>
+        </div>
+        <button class="reserve-btn" onclick="reservar()">Confirmar reserva</button>
+    </div>
+</div>
+
+<script>
+    // ── STATE ──────────────────────────────────────────────
+    const STORAGE_KEY = 'deusto_hotel_carrito';
+    let carrito = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+    // ── DATE VALIDATION ───────────────────────────────────
+    document.getElementById('dateForm').addEventListener('submit', function(e) {
+        const entrada = document.getElementById('fechaEntrada').value;
+        const salida  = document.getElementById('fechaSalida').value;
+        const errDiv  = document.getElementById('dateError');
+
+        if (entrada && salida && salida <= entrada) {
+            e.preventDefault();
+            errDiv.classList.add('show');
+        } else {
+            errDiv.classList.remove('show');
+        }
+    });
+
+    // Set min date on inputs (today)
+    (function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fechaEntrada').min = today;
+        document.getElementById('fechaSalida').min = today;
+
+        document.getElementById('fechaEntrada').addEventListener('change', function() {
+            document.getElementById('fechaSalida').min = this.value;
+        });
+    })();
+
+    // ── TOGGLE HABITACION SIMPLE/DOBLE ────────────────────
+    function toggleRoomCard(card) {
+        const tipo = card.dataset.type;
+        const disponibles = parseInt(card.dataset.disponibles);
+        if (disponibles === 0) return;
+
+        const idx = carrito.findIndex(i => i.tipo === tipo && i.category === 'habitacion');
+
+        if (card.classList.contains('selected')) {
+            card.classList.remove('selected');
+            if (idx !== -1) carrito.splice(idx, 1);
+        } else {
+            card.classList.add('selected');
+            if (idx === -1) {
+                carrito.push({
+                    id: tipo + '_hab',
+                    category: 'habitacion',
+                    tipo,
+                    nombre: tipo === 'SIMPLE' ? 'Individual Clásica' : 'Doble Superior',
+                    disponibles
+                });
+            }
+        }
+        saveAndUpdate();
+    }
+
+    // ── TOGGLE SUITE ──────────────────────────────────────
+    function toggleSuiteItem(item) {
+        const index = item.dataset.index;
+        const precio = item.dataset.precio;
+        const capacidad = item.dataset.capacidad;
+        const id = 'SUITE_' + index;
+        const idx = carrito.findIndex(i => i.id === id);
+
+        if (item.classList.contains('selected')) {
+            item.classList.remove('selected');
+            if (idx !== -1) carrito.splice(idx, 1);
+        } else {
+            item.classList.add('selected');
+            if (idx === -1) {
+                carrito.push({
+                    id,
+                    category: 'suite',
+                    tipo: 'SUITE',
+                    nombre: 'Suite Presidencial ' + (parseInt(index) + 1),
+                    capacidad,
+                    precio: parseInt(precio)
+                });
+            }
+        }
+        saveAndUpdate();
+    }
+
+    // ── SAVE + UPDATE UI ──────────────────────────────────
+    function saveAndUpdate() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(carrito));
+        updateCartUI();
+        updateCartCount();
+    }
+
+    function updateCartCount() {
+        document.getElementById('cartCount').textContent = carrito.length;
+    }
+
+    function updateCartUI() {
+        const empty  = document.getElementById('cartEmpty');
+        const items  = document.getElementById('cartItems');
+        const footer = document.getElementById('cartFooter');
+        const total  = document.getElementById('cartTotal');
+
+        if (carrito.length === 0) {
+            empty.style.display = 'flex';
+            items.style.display = 'none';
+            footer.style.display = 'none';
+            return;
+        }
+
+        empty.style.display = 'none';
+        items.style.display = 'flex';
+        footer.style.display = 'block';
+
+        items.innerHTML = carrito.map(item => `
+            <div class="cart-item">
+                <div>
+                    <div class="cart-item-name">${item.nombre}</div>
+                    <div class="cart-item-type">${item.category === 'suite' ? 'Suite · €' + item.precio + '/noche' : 'Habitación ' + item.tipo.toLowerCase()}</div>
+                </div>
+                <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">✕</button>
+            </div>
+        `).join('');
+
+        const suiteTotal = carrito.filter(i => i.category === 'suite').reduce((s, i) => s + i.precio, 0);
+        total.textContent = carrito.length + ' habitación' + (carrito.length !== 1 ? 'es' : '') +
+            (suiteTotal > 0 ? ' · €' + suiteTotal + '/noche en suites' : '');
+    }
+
+    // ── REMOVE ITEM ───────────────────────────────────────
+    function removeFromCart(id) {
+        const item = carrito.find(i => i.id === id);
+        carrito = carrito.filter(i => i.id !== id);
+
+        if (item) {
+            if (item.category === 'habitacion') {
+                document.querySelectorAll(`.room-card[data-type="${item.tipo}"]`)
+                    .forEach(el => el.classList.remove('selected'));
+            } else {
+                const idx = id.replace('SUITE_', '');
+                document.querySelectorAll(`.suite-item[data-index="${idx}"]`)
+                    .forEach(el => el.classList.remove('selected'));
+            }
+        }
+        saveAndUpdate();
+    }
+
+    // ── OPEN / CLOSE CART ─────────────────────────────────
+    function openCart() {
+        document.getElementById('cartOverlay').classList.add('open');
+        document.getElementById('cartPanel').classList.add('open');
+    }
+
+    function closeCart() {
+        document.getElementById('cartOverlay').classList.remove('open');
+        document.getElementById('cartPanel').classList.remove('open');
+    }
+
+    // ── RESERVAR ─────────────────────────────────────────
+    function reservar() {
+        alert('Reserva confirmada para ' + carrito.length + ' habitación(es). Redirigiendo al proceso de pago...');
+    }
+
+    // ── RESTORE FROM LOCALSTORAGE ON LOAD ─────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        carrito.forEach(item => {
+            if (item.category === 'habitacion') {
+                document.querySelectorAll(`.room-card[data-type="${item.tipo}"]`)
+                    .forEach(el => el.classList.add('selected'));
+            } else {
+                const idx = item.id.replace('SUITE_', '');
+                document.querySelectorAll(`.suite-item[data-index="${idx}"]`)
+                    .forEach(el => el.classList.add('selected'));
+            }
+        });
+        updateCartCount();
+        updateCartUI();
+    });
+</script>
+
+</body>
+</html>
