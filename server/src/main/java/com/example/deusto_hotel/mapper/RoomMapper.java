@@ -15,7 +15,9 @@ public interface RoomMapper {
 
     default List<RoomDisponiblesResponse> toRoomDisponiblesResponse(List<Room> rooms) {
 
-        if (rooms == null) {return new ArrayList<>();}
+        if (rooms == null) {
+            return new ArrayList<>();
+        }
 
         Map<RoomType, List<Room>> map = rooms.stream().collect(
                 java.util.stream.Collectors.groupingBy(Room::getTipo)
