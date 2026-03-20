@@ -22,41 +22,40 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<List<RoomResponse>> getAll() {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+        return ResponseEntity.ok(roomService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomResponse> getById(@PathVariable Long id) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+        return ResponseEntity.ok(roomService.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<RoomResponse> create(@RequestBody @Valid RoomRequest request) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+        RoomResponse created = roomService.create(request);
+        return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<RoomResponse> update(
             @PathVariable Long id,
             @RequestBody @Valid RoomRequest request) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+
+        return ResponseEntity.ok(roomService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+        roomService.delete(id);
+        return ResponseEntity.noContent().build();
     }
-
     @GetMapping("/disponibles")
     public ResponseEntity<List<RoomDisponibleResponse>> getByDisponibles(
             @RequestParam LocalDate fechaEntrada,
             @RequestParam LocalDate fechaSalida) {
-        List<RoomDisponibleResponse> response = roomService.getDisponibles(fechaEntrada, fechaSalida);
-        return ResponseEntity.ok(response);
+
+        return ResponseEntity.ok(
+                roomService.getDisponibles(fechaEntrada, fechaSalida)
+        );
     }
 }
