@@ -54,6 +54,14 @@ public class RoomController {
             @RequestParam LocalDate fechaEntrada,
             @RequestParam LocalDate fechaSalida) {
 
+        if(fechaEntrada.isAfter(fechaSalida) || fechaEntrada.isEqual(fechaSalida)) {
+            throw new IllegalArgumentException("La fecha de salida debe de ser posterior a la fecha de entrada.");
+
+        } else if(fechaEntrada.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("La fecha de entrada no puede ser anterior a la fecha actual.");
+
+        }
+
         return ResponseEntity.ok(
                 roomService.getDisponibles(fechaEntrada, fechaSalida)
         );
