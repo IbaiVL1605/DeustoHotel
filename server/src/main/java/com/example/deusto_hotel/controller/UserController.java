@@ -45,6 +45,14 @@ public class UserController {
         @RequestParam String correo,
         @RequestParam String contrasena
     ) {
+        if (correo == null || correo.isBlank()) {
+            throw new IllegalArgumentException("El correo es obligatorio.");
+        }
+
+        if (contrasena == null || contrasena.isBlank()) {
+            throw new IllegalArgumentException("La contrasena es obligatoria.");
+        }
+
         UserResponse response = userService.login(correo, contrasena);
         return ResponseEntity.ok(response);
     }

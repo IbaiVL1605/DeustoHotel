@@ -2,9 +2,6 @@ package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.UserRequest;
 import com.example.deusto_hotel.dto.UserResponse;
-import com.example.deusto_hotel.exception.Excepciones.CredencialesInvalidasException;
-import com.example.deusto_hotel.exception.Excepciones.UsuarioBloqueadoException;
-import com.example.deusto_hotel.exception.Excepciones.UsuarioNoEncontradoException;
 import com.example.deusto_hotel.mapper.UserMapper;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.model.User;
@@ -53,14 +50,14 @@ public class UserService {
     public UserResponse login(String correo, String contrasena) {
 
         User usuario = userRepository.findByEmail(correo)
-                .orElseThrow(() -> new UsuarioNoEncontradoException("Usuario no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         if (!usuario.getPassword().equals(contrasena)) {
-            throw new CredencialesInvalidasException("Contrasena incorrecta");
+            throw new IllegalArgumentException("Contrasena incorrecta");
         }
 
         if (usuario.isBloqueado()) {
-            throw new UsuarioBloqueadoException("Usuario bloqueado");
+            throw new IllegalArgumentException("Usuario bloqueado");
         }
 
         return new UserResponse(
