@@ -60,7 +60,7 @@ public class RoomBookingService {
 
         return roomBookingMapper.toResponse(booking);
     }
-    /*
+
     // Actualizar reserva
     public RoomBookingResponse update(Long id, RoomBookingRequest request) {
 
@@ -79,7 +79,6 @@ public class RoomBookingService {
 
         return roomBookingMapper.toResponse(booking);
     }
-    */
     //  Eliminar reserva
     public void delete(Long id) {
         if (!roomBookingRepository.existsById(id)) {
