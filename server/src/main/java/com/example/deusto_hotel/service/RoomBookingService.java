@@ -42,7 +42,7 @@ public class RoomBookingService {
         return roomBookingMapper.toResponse(booking);
     }
 
-    // 🔹 Crear reserva
+    // Crear reserva
     public RoomBookingResponse create(RoomBookingRequest request) {
 
         Room room = roomRepository.findById(request.habitacionId())
@@ -60,8 +60,8 @@ public class RoomBookingService {
 
         return roomBookingMapper.toResponse(booking);
     }
-
-    // 🔹 Actualizar reserva
+    /*
+    // Actualizar reserva
     public RoomBookingResponse update(Long id, RoomBookingRequest request) {
 
         validarFechas(request.checkIn(), request.checkOut());
@@ -79,7 +79,7 @@ public class RoomBookingService {
 
         return roomBookingMapper.toResponse(booking);
     }
-
+    */
     //  Eliminar reserva
     public void delete(Long id) {
         if (!roomBookingRepository.existsById(id)) {

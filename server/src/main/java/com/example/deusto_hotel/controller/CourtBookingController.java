@@ -4,6 +4,7 @@ import com.example.deusto_hotel.dto.CourtBookingRequest;
 import com.example.deusto_hotel.dto.CourtBookingResponse;
 import com.example.deusto_hotel.service.CourtBookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,47 +18,63 @@ public class CourtBookingController {
 
     private final CourtBookingService courtBookingService;
 
+    // 🔹 GET ALL
     @GetMapping
     public ResponseEntity<List<CourtBookingResponse>> getAll() {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+        return ResponseEntity.ok(courtBookingService.findAll());
     }
 
+    // 🔹 GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<CourtBookingResponse> getById(@PathVariable Long id) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+        return ResponseEntity.ok(courtBookingService.findById(id));
     }
 
+    // 🔹 CREATE
     @PostMapping
-    public ResponseEntity<CourtBookingResponse> create(@RequestBody @Valid CourtBookingRequest request) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+    public ResponseEntity<CourtBookingResponse> create(
+            @RequestBody @Valid CourtBookingRequest request) {
+
+        CourtBookingResponse response = courtBookingService.create(request);
+
+        // 🔥 REST correcto → 201 CREATED
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // 🔹 UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<CourtBookingResponse> update(
             @PathVariable Long id,
             @RequestBody @Valid CourtBookingRequest request) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+
+        CourtBookingResponse response = courtBookingService.update(id, request);
+        return ResponseEntity.ok(response);
     }
 
+    // 🔹 DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+        courtBookingService.delete(id);
+        return ResponseEntity.noContent().build(); // 204
     }
 
+    // 🔹 GET BY CLIENTE
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<CourtBookingResponse>> getByClienteId(@PathVariable Long clienteId) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+    public ResponseEntity<List<CourtBookingResponse>> getByClienteId(
+            @PathVariable Long clienteId) {
+
+        return ResponseEntity.ok(
+                courtBookingService.findByClienteId(clienteId)
+        );
     }
 
+    // 🔹 GET BY PISTA
     @GetMapping("/pista/{pistaId}")
-    public ResponseEntity<List<CourtBookingResponse>> getByPistaId(@PathVariable Long pistaId) {
-        // TODO: Implementar
-        throw new UnsupportedOperationException();
+    public ResponseEntity<List<CourtBookingResponse>> getByPistaId(
+            @PathVariable Long pistaId) {
+
+        return ResponseEntity.ok(
+                courtBookingService.findByPistaId(pistaId)
+        );
     }
 }
