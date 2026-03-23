@@ -7,16 +7,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -112,5 +112,35 @@ public class Proxy {
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return objectMapper.readValue(response.body(), new TypeReference<List<?>>() {});
+    }
+
+    public UserResponse login(String email, String password) throws IOException, InterruptedException {
+        String correo = URLEncoder.encode(email, StandardCharsets.UTF_8);
+        String contrasena = URLEncoder.encode(password, StandardCharsets.UTF_8);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create(String.format(
+                        "http://localhost:8080/api/v1/users/login?correo=%s&contrasena=%s",
+                        correo,
+                        contrasena
+                )))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            JsonNode root = objectMapper.readTree(response.body());
+            JsonNode usuarioNode = root.get("usuario");
+            if (usuarioNode == null || usuarioNode.isNull()) {
+                throw new IllegalArgumentException("Respuesta de login invalida");
+            }
+            return objectMapper.treeToValue(usuarioNode, UserResponse.class);
+        }
+
+        String errorMessage = response.body() == null || response.body().isBlank()
+                ? "No se pudo iniciar sesion"
+                : response.body();
+        throw new IllegalArgumentException(errorMessage);
     }
 }

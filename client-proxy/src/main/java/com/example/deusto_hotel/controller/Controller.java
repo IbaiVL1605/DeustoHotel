@@ -1,8 +1,10 @@
 package com.example.deusto_hotel.controller;
 
 import com.example.deusto_hotel.dto.RoomDisponibleResponse;
+import com.example.deusto_hotel.dto.UserResponse;
 import com.example.deusto_hotel.dto.WeekAvailability;
 import com.example.deusto_hotel.proxy.Proxy;
+import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,5 +64,26 @@ public class Controller {
         model.addAttribute("month", currentMonth);
         model.addAttribute("hoy", today);
         return "user/pistas";
+    }
+
+    @GetMapping("/login")
+    public String login(HttpSession session, String email, String password) throws IOException, InterruptedException {
+
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("El correo es obligatorio");
+        }
+
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("La contrasena es obligatoria");
+        }
+
+        UserResponse usuario = proxy.login(email, password);
+
+        session.setAttribute("userId", usuario.id());
+        session.setAttribute("username", usuario.nombre());
+        session.setAttribute("userEmail", usuario.email());
+        session.setAttribute("userRole", usuario.rol());
+
+        return "redirect:/habitaciones/disponibles";
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(
+    public ResponseEntity<Map<String, Object>> login(
         @RequestParam String correo,
         @RequestParam String contrasena
     ) {
@@ -54,7 +55,10 @@ public class UserController {
         }
 
         UserResponse response = userService.login(correo, contrasena);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "Sesion iniciada correctamente",
+                "usuario", response
+        ));
     }
 
     @PutMapping("/{id}")
