@@ -1,6 +1,7 @@
 package com.example.deusto_hotel.controller;
 
 import com.example.deusto_hotel.dto.*;
+import com.example.deusto_hotel.model.CourtType;
 import com.example.deusto_hotel.service.CourtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -47,10 +48,26 @@ public class CourtController {
     @GetMapping("/weekly-availability")
     public ResponseEntity<List<WeekAvailability>> getWeeklyAvailability(
             @RequestParam int year,
-            @RequestParam int month
+            @RequestParam int month,
+            @RequestParam(required = false) String tipo
     ) {
-        List<WeekAvailability> availability = courtService.findWeeklyAvailability(year, month, null);
+        CourtType courtType = null;
+        if (tipo != null && !tipo.trim().isEmpty()) {
+            try {
+                courtType = CourtType.valueOf(tipo.toUpperCase());
+            } catch (Exception ignored) {}
+        }
+        List<WeekAvailability> availability = courtService.findWeeklyAvailability(year, month, courtType);
         return ResponseEntity.ok(availability);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CourtResponse>> getAll(@RequestParam(required = false) String tipo) {
+        List<CourtResponse> courts = courtService.findAll();
+        if (tipo != null && !tipo.trim().isEmpty()) {
+            courts = courts.stream().filter(c -> c.tipo().name().equalsIgnoreCase(tipo)).toList();
+        }
+        return ResponseEntity.ok(courts);
     }
 
     @GetMapping("/{id}")

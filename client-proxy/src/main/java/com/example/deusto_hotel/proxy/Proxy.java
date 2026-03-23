@@ -2,10 +2,13 @@ package com.example.deusto_hotel.proxy;
 
 import com.example.deusto_hotel.dto.*;
 import com.example.deusto_hotel.model.RoomType;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -23,9 +26,9 @@ public class Proxy {
 
     private final HttpClient httpClient =  HttpClient.newBuilder().build();
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-    private ArrayList<RoomDisponibleResponse> parseRoomDisponibleResponse(String response) {
+    private ArrayList<RoomDisponibleResponse> parseRoomDisponibleResponse(String response) throws JsonProcessingException {
         JsonNode node = objectMapper.readTree(response);
         ArrayList<RoomDisponibleResponse> roomDisponibleResponses = new ArrayList<>();
 
@@ -50,7 +53,7 @@ public class Proxy {
                 ));
             } else {
                 roomDisponibleResponses.add(new RoomDisponiblesSimplesResponse(
-                        RoomType.valueOf(item.get("tipo").asString()),
+                        RoomType.valueOf(item.get("tipo").asText()),
                         item.get("numero_disponibles").asInt()
                 ));
             }
@@ -59,7 +62,7 @@ public class Proxy {
         return roomDisponibleResponses;
     }
 
-    public ArrayList<RoomDisponibleResponse> getHabitacionesDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) throws IOException, InterruptedException {
+    public ArrayList<RoomDisponibleResponse> getHabitacionesDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) throws IOException, InterruptedException, JsonProcessingException {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(java.net.URI.create(String.format("http://localhost:8080/api/v1/rooms/disponibles?fechaEntrada=%s&fechaSalida=%s",fechaEntrada.toString(), fechaSalida.toString())))
@@ -71,5 +74,43 @@ public class Proxy {
 
         return parseRoomDisponibleResponse(response.body());
     }
-}
 
+    public List<CourtResponse> getCourts(String tipo) throws IOException, InterruptedException, JsonProcessingException {
+        String url = "http://localhost:8080/api/v1/courts";
+        if (tipo != null && !tipo.trim().isEmpty()) {
+            url += "?tipo=" + tipo;
+        }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url))
+                .GET()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return objectMapper.readValue(response.body(), new TypeReference<List<CourtResponse>>() {});
+    }
+
+    public List<WeekAvailability> getCourtsWeeklyAvailability(int year, int month, String tipo) throws IOException, InterruptedException, JsonProcessingException {
+        StringBuilder url = new StringBuilder(String.format("http://localhost:8080/api/v1/courts/weekly-availability?year=%d&month=%d", year, month));
+        if (tipo != null && !tipo.trim().isEmpty()) {
+            url.append("&tipo=").append(tipo);
+        }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url.toString()))
+                .GET()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return objectMapper.readValue(response.body(), new TypeReference<List<WeekAvailability>>() {});
+    }
+
+    public List<?> getCourtsAvailable(String tipo, String fecha, Integer semana) throws IOException, InterruptedException, JsonProcessingException {
+        StringBuilder url = new StringBuilder("http://localhost:8080/api/v1/courts/available?");
+        if (tipo != null && !tipo.trim().isEmpty()) url.append("tipo=").append(tipo).append("&");
+        if (fecha != null && !fecha.trim().isEmpty()) url.append("fecha=").append(fecha).append("&");
+        if (semana != null) url.append("semana=").append(semana);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url.toString()))
+                .GET()
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return objectMapper.readValue(response.body(), new TypeReference<List<?>>() {});
+    }
+}

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Disponibilidad de Pistas</title>
+    <!-- Use a modern Google Font like Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6; /* Blue */
+            --primary-hover: #2563eb;
+            --bg-color: #f8fafc;
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --avail-color: #10b981; /* Green */
+            --avail-bg: #d1fae5;
+            --full-color: #ef4444; /* Red */
+            --full-bg: #fee2e2;
+            --past-bg: #f1f5f9;
+            --today-bg: #eff6ff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .calendar-container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--surface-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin: 0;
+        }
+
+        select {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .nav-btn {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .calendar-grid {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            padding: 1rem 0;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .day-name {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .day-date {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        td {
+            height: 60px;
+            position: relative;
+            padding: 4px;
+            vertical-align: top;
+        }
+
+        .time-col {
+            width: 60px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: right;
+            padding-right: 0.5rem;
+            border-top: none;
+            border-bottom: none;
+            border-left: none;
+            position: relative;
+        }
+
+        .time-col span {
+            position: absolute;
+            top: -0.6em;
+            right: 0.5rem;
+        }
+
+        .past-day {
+            background-color: var(--past-bg);
+        }
+
+        .today-col {
+            background-color: var(--today-bg);
+        }
+
+        .today-col .day-date {
+            color: var(--primary-color);
+        }
+
+        .event-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        
+        .event-box:hover {
+            transform: scale(0.98);
+        }
+
+        .available {
+            background-color: var(--avail-bg);
+            color: var(--avail-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .full {
+            background-color: var(--full-bg);
+            color: var(--full-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .past-event {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px dashed var(--border-color);
+            cursor: default;
+            transform: none !important;
+        }
+
+        .week-container {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .week-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="calendar-container">
+    <header>
+        <div>
+            <h1>Reservas de Pistas</h1>
+            <!-- Current month/year info -->
+            <p style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.95rem;">
+                Semana vista <span id="week-indicator"></span>
+            </p>
+        </div>
+        
+        <div class="controls">
+            <button class="nav-btn" id="prev-week-btn" onclick="changeWeek(-1)">← Anterior</button>
+            <button class="nav-btn" id="next-week-btn" onclick="changeWeek(1)">Siguiente →</button>
+            
+            <form method="get" action="/pistas" id="filter-form">
+                <!-- Keep year and month in the request -->
+                <input type="hidden" name="year" th:value="${year}">
+                <input type="hidden" name="month" th:value="${month}">
+                <select name="tipo" onchange="document.getElementById('filter-form').submit()">
+                    <option value="" th:selected="${tipo == null}">Todas las pistas</option>
+                    <option value="TENIS" th:selected="${tipo == 'TENIS'}">Tenis</option>
+                    <option value="PADEL" th:selected="${tipo == 'PADEL'}">Pádel</option>
+                    <option value="FUTBOL" th:selected="${tipo == 'FUTBOL'}">Fútbol</option>
+                    <option value="PISCINA" th:selected="${tipo == 'PISCINA'}">Piscina</option>
+                </select>
+            </form>
+            
+            <!-- Navigate to next/prev month completely via backend -->
+            <form method="get" action="/pistas" style="margin-left: 1rem;">
+                <input type="hidden" name="year" th:value="${month == 1 ? year - 1 : year}">
+                <input type="hidden" name="month" th:value="${month == 1 ? 12 : month - 1}">
+                <input type="hidden" name="tipo" th:value="${tipo}">
+                <button type="submit" class="nav-btn">Mes Anterior</button>
+            </form>
+            <form method="get" action="/pistas">
+                <input type="hidden" name="year" th:value="${month == 12 ? year + 1 : year}">
+                <input type="hidden" name="month" th:value="${month == 12 ? 1 : month + 1}">
+                <input type="hidden" name="tipo" th:value="${tipo}">
+                <button type="submit" class="nav-btn">Mes Siguiente</button>
+            </form>
+        </div>
+    </header>
+
+    <div th:if="${disponibilidad != null}">
+        <!-- Looping through the weeks from the month. We use JS to show only one. -->
+        <div th:each="week, weekStat : ${disponibilidad}" 
+             class="week-container" 
+             th:id="'week-' + ${weekStat.index}"
+             th:data-has-today="${week.days.?[fecha.equals(#root.hoy)].size() > 0 ? 'true' : 'false'}">
+            
+            <table class="calendar-grid">
+                <thead>
+                    <tr>
+                        <th class="time-col">Hora</th>
+                        <th th:each="dia : ${week.days}" 
+                            th:classappend="${dia.fecha.equals(hoy)} ? 'today-col' : (${dia.fecha.isBefore(hoy)} ? 'past-day' : '')">
+                            <!-- Try to format in Spanish if possible, but fallback to simple pattern -->
+                            <span class="day-name" th:text="${#temporals.format(dia.fecha, 'EEEE')}">Día</span>
+                            <span class="day-date" th:text="${#temporals.format(dia.fecha, 'd MMM')}">Fecha</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="hora : ${#numbers.sequence(8, 21)}">
+                        <td class="time-col">
+                            <span th:text="${hora + ':00'}">8:00</span>
+                        </td>
+                        
+                        <td th:each="dia : ${week.days}" 
+                            th:classappend="${dia.fecha.equals(hoy)} ? 'today-col' : (${dia.fecha.isBefore(hoy)} ? 'past-day' : '')">
+                            
+                            <!-- Check if date is past or hours is past -->
+                            <div th:if="${dia.fecha.isBefore(hoy) || (dia.fecha.equals(hoy) && hora < T(java.time.LocalTime).now().getHour())}" 
+                                 class="event-box past-event">
+                                <span>-</span>
+                            </div>
+                            
+                            <div th:if="${!dia.fecha.isBefore(hoy) && (!dia.fecha.equals(hoy) || hora >= T(java.time.LocalTime).now().getHour())}">
+                                <!-- Find slot for current hour using matching -->
+                                <div th:with="matchingSlots=${dia.slots.?[start.hour == __${hora}__]}">
+                                    <div th:if="${matchingSlots.size() > 0}" th:with="slot=${matchingSlots[0]}">
+                                        <div th:if="${slot.availableCourts.size() > 0}" class="event-box available" th:title="'Pistas disponibles: ' + ${slot.availableCourts.size()}">
+                                            <span th:text="${slot.availableCourts.size()} + ' disp.'"></span>
+                                        </div>
+                                        <div th:if="${slot.availableCourts.size() == 0}" class="event-box full">
+                                            <span>Ocupado</span>
+                                        </div>
+                                    </div>
+                                    <!-- Fallback if no slot data found -->
+                                    <div th:if="${matchingSlots.size() == 0}" class="event-box past-event">
+                                        <span>N/A</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div th:if="${disponibilidad == null || disponibilidad.size() == 0}" style="text-align: center; padding: 4rem; color: var(--text-muted);">
+        <p>No hay datos de disponibilidad para este mes.</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const weeks = document.querySelectorAll('.week-container');
+        if (weeks.length === 0) return;
+        
+        let currentWeekIndex = 0;
+        
+        // Find week with 'today'
+        for (let i = 0; i < weeks.length; i++) {
+            if (weeks[i].getAttribute('data-has-today') === 'true') {
+                currentWeekIndex = i;
+                break;
+            }
+        }
+        
+        updateWeekVisibility(currentWeekIndex);
+        
+        window.changeWeek = function(direction) {
+            const newIndex = currentWeekIndex + direction;
+            if (newIndex >= 0 && newIndex < weeks.length) {
+                currentWeekIndex = newIndex;
+                updateWeekVisibility(currentWeekIndex);
+            }
+        };
+        
+        function updateWeekVisibility(index) {
+            weeks.forEach((w, i) => {
+                if (i === index) {
+                    w.classList.add('active');
+                } else {
+                    w.classList.remove('active');
+                }
+            });
+            
+            document.getElementById('prev-week-btn').disabled = (index === 0);
+            document.getElementById('next-week-btn').disabled = (index === weeks.length - 1);
+            document.getElementById('week-indicator').textContent = (index + 1) + " de " + weeks.length;
+        }
+    });
+</script>
+
+</body>
+</html>

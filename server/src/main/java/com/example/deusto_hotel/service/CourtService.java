@@ -29,7 +29,9 @@ public class CourtService {
 
     @Transactional(readOnly = true)
     public List<CourtResponse> findAll() {
-        throw new UnsupportedOperationException();
+        return courtRepository.findAll().stream()
+                .map(c -> new CourtResponse(c.getId(), c.getNombre(), c.getTipo(), c.getPrecioPorHora(), c.getEstado()))
+                .toList();
     }
 
     @Transactional(readOnly = true)
