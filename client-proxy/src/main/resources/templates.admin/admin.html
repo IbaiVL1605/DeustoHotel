@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Crear Habitación</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=DM+Sans&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold:#C9A84C;
+            --dark:#0F0E0C;
+            --dark2:#1A1916;
+            --cream:#F5F0E8;
+            --muted:#8A8070;
+        }
+
+        body {
+            background: var(--dark);
+            color: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            padding: 3rem;
+        }
+
+        /* CARD */
+        .card {
+            max-width: 500px;
+            margin: auto;
+            background: var(--dark2);
+            padding: 2.5rem;
+            border: 1px solid rgba(201,168,76,.2);
+        }
+
+        /* TITLE */
+        h2 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 2rem;
+        }
+
+        /* INPUTS */
+        .field {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-size: .7rem;
+            letter-spacing: .2em;
+            color: var(--gold);
+        }
+
+        input, select {
+            width: 100%;
+            padding: .8rem;
+            background: transparent;
+            border: 1px solid rgba(201,168,76,.2);
+            color: var(--cream);
+        }
+
+        /* BUTTON */
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gold);
+            border: none;
+            cursor: pointer;
+        }
+
+        /* STATUS */
+        .status {
+            margin-top: 1rem;
+            font-size: .85rem;
+        }
+
+        .success { color: #6ee7a2; }
+        .error { color: #ff6b6b; }
+
+        /* PREVIEW */
+        .preview {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px dashed rgba(201,168,76,.2);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Crear Habitación</h2>
+
+    <form id="formRoom">
+
+        <div class="field">
+            <label>NÚMERO</label>
+            <input type="text" id="numero" required>
+        </div>
+
+        <div class="field">
+            <label>TIPO</label>
+            <select id="tipo">
+                <option value="INDIVIDUAL">INDIVIDUAL</option>
+                <option value="DOBLE">DOBLE</option>
+                <option value="SUITE">SUITE</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>CAPACIDAD</label>
+            <input type="number" id="capacidad" required>
+        </div>
+
+        <div class="field">
+            <label>PRECIO (€)</label>
+            <input type="number" id="precio" required>
+        </div>
+
+        <button type="submit" id="submitBtn">Crear habitación</button>
+
+        <div class="status" id="statusMsg"></div>
+
+    </form>
+
+    <div class="preview" id="preview">
+        <strong>Vista previa</strong><br>
+        <span id="previewText">Rellena el formulario...</span>
+    </div>
+</div>
+
+<script>
+
+    // ── ELEMENTOS ──
+    const form = document.getElementById("formRoom");
+    const statusMsg = document.getElementById("statusMsg");
+    const previewText = document.getElementById("previewText");
+    const btn = document.getElementById("submitBtn");
+
+    // ── LIVE PREVIEW ──
+    form.addEventListener("input", updatePreview);
+
+    function updatePreview() {
+        const numero = numeroInput.value || "-";
+        const tipo = tipoInput.value;
+        const capacidad = capacidadInput.value || "-";
+        const precio = precioInput.value || "-";
+
+        previewText.innerHTML = `
+        Habitación <b>${numero}</b><br>
+        Tipo: ${tipo}<br>
+        Capacidad: ${capacidad}<br>
+        Precio: €${precio}/noche
+    `;
+    }
+
+    // refs
+    const numeroInput = document.getElementById("numero");
+    const tipoInput = document.getElementById("tipo");
+    const capacidadInput = document.getElementById("capacidad");
+    const precioInput = document.getElementById("precio");
+
+    // ── SUBMIT ──
+    form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const numero = numeroInput.value.trim();
+        const tipo = tipoInput.value;
+        const capacidad = parseInt(capacidadInput.value);
+        const precio = parseFloat(precioInput.value);
+
+        // VALIDACIÓN
+        if (!numero || capacidad <= 0 || precio <= 0) {
+            showStatus("Datos inválidos ❌", "error");
+            return;
+        }
+
+        // LOADING
+        btn.disabled = true;
+        btn.textContent = "Creando...";
+        showStatus("Enviando datos...", "");
+
+        try {
+            const res = await fetch("/api/v1/rooms", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Basic " + btoa("admin:admin")
+                },
+                body: JSON.stringify({
+                    numero,
+                    tipo,
+                    capacidad,
+                    precioPorNoche: precio
+                })
+            });
+
+            if (res.ok) {
+                showStatus("Habitación creada correctamente ✅", "success");
+                form.reset();
+                updatePreview();
+            } else {
+                showStatus("Error del servidor ❌", "error");
+            }
+
+        } catch {
+            showStatus("Error de conexión ❌", "error");
+        }
+
+        btn.disabled = false;
+        btn.textContent = "Crear habitación";
+    });
+
+    // ── STATUS ──
+    function showStatus(msg, type) {
+        statusMsg.textContent = msg;
+        statusMsg.className = "status " + type;
+    }
+
+
+</script>
+
+</body>
+</html>
