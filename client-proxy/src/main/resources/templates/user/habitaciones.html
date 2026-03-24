@@ -582,21 +582,21 @@
         <div class="date-field">
             <label for="fechaEntrada">Fecha de entrada</label>
             <input
-                type="date"
-                id="fechaEntrada"
-                name="fechaEntrada"
-                th:value="${param.fechaEntrada}"
-                required
+                    type="date"
+                    id="fechaEntrada"
+                    name="fechaEntrada"
+                    th:value="${param.fechaEntrada}"
+                    required
             />
         </div>
         <div class="date-field">
             <label for="fechaSalida">Fecha de salida</label>
             <input
-                type="date"
-                id="fechaSalida"
-                name="fechaSalida"
-                th:value="${param.fechaSalida}"
-                required
+                    type="date"
+                    id="fechaSalida"
+                    name="fechaSalida"
+                    th:value="${param.fechaSalida}"
+                    required
             />
         </div>
         <button type="submit" class="search-btn">
@@ -682,6 +682,7 @@
                 class="suite-item"
                 th:data-type="SUITE"
                 th:data-index="${iterStat.index}"
+                th:data-id="${suite.id}"
                 th:data-capacidad="${suite.capacidad}"
                 th:data-precio="${suite.precioPorNoche}"
                 onclick="toggleSuiteItem(this)">
@@ -769,25 +770,26 @@
     function toggleRoomCard(card) {
         const tipo = card.dataset.type;
         const disponibles = parseInt(card.dataset.disponibles);
-        if (disponibles === 0) return;
-
         const idx = carrito.findIndex(i => i.tipo === tipo && i.category === 'habitacion');
 
-        if (card.classList.contains('selected')) {
-            card.classList.remove('selected');
-            if (idx !== -1) carrito.splice(idx, 1);
+        const current = idx !== -1 ? carrito[idx].cantidad : 0;
+
+        if (current >= disponibles) return; // no superar disponibles
+
+        if (idx === -1) {
+            carrito.push({
+                id: tipo + '_hab',
+                category: 'habitacion',
+                tipo,
+                nombre: tipo === 'SIMPLE' ? 'Individual Clásica' : 'Doble Superior',
+                disponibles,
+                cantidad: 1
+            });
         } else {
-            card.classList.add('selected');
-            if (idx === -1) {
-                carrito.push({
-                    id: tipo + '_hab',
-                    category: 'habitacion',
-                    tipo,
-                    nombre: tipo === 'SIMPLE' ? 'Individual Clásica' : 'Doble Superior',
-                    disponibles
-                });
-            }
+            carrito[idx].cantidad += 1;
         }
+
+        card.classList.add('selected');
         saveAndUpdate();
     }
 
@@ -796,6 +798,7 @@
         const index = item.dataset.index;
         const precio = item.dataset.precio;
         const capacidad = item.dataset.capacidad;
+        const suiteId  = item.dataset.id;
         const id = 'SUITE_' + index;
         const idx = carrito.findIndex(i => i.id === id);
 
@@ -811,7 +814,8 @@
                     tipo: 'SUITE',
                     nombre: 'Suite Presidencial ' + (parseInt(index) + 1),
                     capacidad,
-                    precio: parseInt(precio)
+                    precio: parseInt(precio),
+                    suiteId: parseInt(suiteId)
                 });
             }
         }
