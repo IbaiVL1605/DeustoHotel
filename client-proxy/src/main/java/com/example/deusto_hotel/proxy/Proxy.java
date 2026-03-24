@@ -43,7 +43,8 @@ public class Proxy {
                         .stream(suitesNode.spliterator(), false)  // ArrayNode → Stream
                         .map(suit -> new SuitResponse(
                                 suit.get("capacidad").asInt(),
-                                suit.get("precioPorNoche").asInt()
+                                suit.get("precioPorNoche").asInt(),
+                                suit.get("id").asInt()
                         ))
                         .collect(Collectors.toList());
 
