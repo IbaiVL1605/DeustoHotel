@@ -10,7 +10,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -37,8 +39,8 @@ public class Controller {
         habitaciones.forEach(habitacion -> {
             String key = switch (habitacion.getTipo()) {
                 case INDIVIDUAL -> "habitacionSimple";
-                case DOBLE  -> "habitacionDoble";
-                case SUITE  -> "habitacionSuite";
+                case DOBLE -> "habitacionDoble";
+                case SUITE -> "habitacionSuite";
             };
             model.addAttribute(key, habitacion);
         });
@@ -99,6 +101,29 @@ public class Controller {
         }
     }
 
+    @GetMapping("/signup")
+    public String showSignupForm() {
+        return "auth/signup";
+    }
+
+    @PostMapping("/signup")
+    public String signup(
+            @RequestParam String nombre,
+            @RequestParam String email,
+            @RequestParam String password,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            proxy.signup(nombre, email, password);
+            redirectAttributes.addFlashAttribute("success", "Cuenta creada correctamente. ¡Ya puedes iniciar sesión!");
+            return "redirect:/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al registrar: " + e.getMessage());
+            return "redirect:/signup";
+        }
+    }
+
+
     @GetMapping("/admin")
     public String adminPage(HttpSession session) {
         String role = (String) session.getAttribute("userRole");
@@ -108,4 +133,5 @@ public class Controller {
         }
         return "admin/admin";
     }
+
 }

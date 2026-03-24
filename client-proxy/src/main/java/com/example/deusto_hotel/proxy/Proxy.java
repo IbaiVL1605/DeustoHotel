@@ -144,4 +144,33 @@ public class Proxy {
                 : response.body();
         throw new IllegalArgumentException(errorMessage);
     }
+
+    public void signup(String nombre, String email, String password) {
+        try {
+            String encodedNombre = URLEncoder.encode(nombre, StandardCharsets.UTF_8);
+            String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
+            String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(String.format(
+                            "http://localhost:8080/api/v1/users/signup?nombre=%s&correo=%s&contrasena=%s",
+                            encodedNombre,
+                            encodedEmail,
+                            encodedPassword
+                    )))
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                String errorMessage = response.body() == null || response.body().isBlank()
+                        ? "No se pudo registrar el usuario"
+                        : response.body();
+                throw new IllegalArgumentException(errorMessage);
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Error al registrar el usuario", e);
+        }
+    }
 }
