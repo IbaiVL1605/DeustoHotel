@@ -31,21 +31,49 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<RoomResponse> create(@RequestBody @Valid RoomRequest request) {
+    public ResponseEntity<RoomResponse> create(
+            @RequestBody @Valid RoomRequest request,
+            jakarta.servlet.http.HttpSession session
+    ) {
+
+        Object role = session.getAttribute("userRole");
+
+        // SOLO ADMIN
+        if (role == null || !role.equals(com.example.deusto_hotel.model.Role.ADMIN)) {
+            return ResponseEntity.status(403).build(); // Forbidden
+        }
+
         RoomResponse created = roomService.create(request);
         return ResponseEntity.status(201).body(created);
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<RoomResponse> update(
             @PathVariable Long id,
-            @RequestBody @Valid RoomRequest request) {
+            @RequestBody @Valid RoomRequest request,
+            jakarta.servlet.http.HttpSession session
+    ) {
+
+        Object role = session.getAttribute("userRole");
+
+        if (role == null || !role.equals(com.example.deusto_hotel.model.Role.ADMIN)) {
+            return ResponseEntity.status(403).build();
+        }
 
         return ResponseEntity.ok(roomService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            jakarta.servlet.http.HttpSession session
+    ) {
+
+        Object role = session.getAttribute("userRole");
+
+        if (role == null || !role.equals(com.example.deusto_hotel.model.Role.ADMIN)) {
+            return ResponseEntity.status(403).build();
+        }
+
         roomService.delete(id);
         return ResponseEntity.noContent().build();
     }
