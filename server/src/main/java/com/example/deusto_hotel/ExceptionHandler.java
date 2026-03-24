@@ -1,3 +1,7 @@
+// Este archivo fue reemplazado por GlobalExceptionHandler en el paquete exception
+// Ver: com.example.deusto_hotel.exception.GlobalExceptionHandler
+
+/*
 package com.example.deusto_hotel;
 
 import org.springframework.http.ResponseEntity;
@@ -14,3 +18,4 @@ public class ExceptionHandler {
 
 
 }
+*/

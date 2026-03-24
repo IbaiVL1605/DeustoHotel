@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión – Deusto Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8C97A;
+            --dark: #0F0E0C;
+            --dark-2: #1A1916;
+            --dark-3: #252420;
+            --cream: #F5F0E8;
+            --cream-2: #EDE8DC;
+            --text-muted: #8A8070;
+            --accent: #7C5C2E;
+            --error: #e05555;
+            --success: #6ee7a2;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        /* ── HEADER ── */
+        .logo-header {
+            position: absolute;
+            top: 2rem;
+            left: 4rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            letter-spacing: .08em;
+            color: var(--gold);
+            text-decoration: none;
+            transition: color .25s;
+        }
+
+        .logo-header:hover {
+            color: var(--gold-light);
+        }
+
+        .logo-header span {
+            font-style: italic;
+            color: var(--cream);
+        }
+
+        /* ── MAIN CONTAINER ── */
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* ── CARD ── */
+        .auth-card {
+            background: var(--dark-2);
+            border: 1px solid rgba(201, 168, 76, .2);
+            padding: 3rem 2.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--cream);
+            margin-bottom: .5rem;
+        }
+
+        .auth-subtitle {
+            font-size: .75rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background: var(--gold);
+            margin: 1.5rem auto;
+            opacity: .6;
+        }
+
+        /* ── FORM ── */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+        }
+
+        .form-group label {
+            font-size: .7rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            background: var(--dark-3);
+            border: 1px solid rgba(201, 168, 76, .2);
+            color: var(--cream);
+            padding: 1rem 1.2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            font-weight: 300;
+            outline: none;
+            transition: border-color .25s, box-shadow .25s;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+            opacity: .6;
+        }
+
+        .form-group input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(201, 168, 76, .1);
+        }
+
+        .form-group input:invalid {
+            border-color: var(--error);
+        }
+
+        /* ── SUBMIT BUTTON ── */
+        .submit-btn {
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            padding: 1.1rem 1.5rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .85rem;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s, transform .1s;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: var(--gold-light);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: scale(.98);
+        }
+
+        .submit-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        /* ── ALERTS ── */
+        .alert {
+            padding: 1rem 1.2rem;
+            border-radius: 2px;
+            font-size: .9rem;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+            display: none;
+            animation: slideDown .3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.show {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .alert-error {
+            background: rgba(224, 85, 85, .1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .alert-success {
+            background: rgba(110, 231, 162, .1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        /* ── FOOTER LINK ── */
+        .auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(201, 168, 76, .1);
+            font-size: .9rem;
+        }
+
+        .auth-footer a {
+            color: var(--gold);
+            text-decoration: none;
+            transition: color .25s;
+            font-weight: 500;
+            letter-spacing: .05em;
+        }
+
+        .auth-footer a:hover {
+            color: var(--gold-light);
+        }
+
+        /* ── LOADING STATE ── */
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            font-size: .85rem;
+        }
+
+        .loading.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(201, 168, 76, .3);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 480px) {
+            .logo-header {
+                left: 1.5rem;
+                font-size: 1.2rem;
+            }
+
+            .auth-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .auth-title {
+                font-size: 1.6rem;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<a href="/" class="logo-header">Deusto <span>Hotel</span></a>
+
+<!-- AUTH CONTAINER -->
+<div class="auth-container">
+    <div class="auth-card">
+        <!-- HEADER -->
+        <div class="auth-header">
+            <h1 class="auth-title">Bienvenido</h1>
+            <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
+            <div class="divider"></div>
+        </div>
+
+        <!-- ALERTS -->
+        <div class="alert alert-error" id="errorAlert">
+            <span class="alert-icon">⚠</span>
+            <span id="errorMessage"></span>
+        </div>
+
+        <div class="alert alert-success" id="successAlert">
+            <span class="alert-icon">✓</span>
+            <span id="successMessage">¡Sesión iniciada correctamente!</span>
+        </div>
+
+        <!-- FORM -->
+        <form class="auth-form" id="loginForm">
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="tu@email.com"
+                    required
+                    autocomplete="email"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    required
+                    autocomplete="current-password"
+                />
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span id="submitText">Iniciar sesión</span>
+                <span class="loading" id="loadingSpinner">
+                    <span class="spinner"></span>
+                    <span>Verificando...</span>
+                </span>
+            </button>
+        </form>
+
+        <!-- FOOTER -->
+        <div class="auth-footer">
+            ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const errorAlert = document.getElementById('errorAlert');
+    const errorMessage = document.getElementById('errorMessage');
+    const successAlert = document.getElementById('successAlert');
+
+    // Hide alerts on input
+    emailInput.addEventListener('focus', hideAlert);
+    passwordInput.addEventListener('focus', hideAlert);
+
+    // Handle form submission
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        // Client-side validation
+        if (!email) {
+            showError('Por favor ingresa tu correo electrónico');
+            return;
+        }
+
+        if (!password) {
+            showError('Por favor ingresa tu contraseña');
+            return;
+        }
+
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        submitText.style.display = 'none';
+        loadingSpinner.classList.add('show');
+
+        try {
+            // Build URL with parameters (GET request)
+            const url = new URL('/api/v1/login', window.location.origin);
+            url.searchParams.append('email', email);
+            url.searchParams.append('password', password);
+
+            const loginResponse = await fetch(url.toString(), {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (loginResponse.ok) {
+                // Success
+                showSuccess();
+                form.reset();
+
+                // Redirect after 1.5 seconds
+                setTimeout(() => {
+                    window.location.href = '/habitaciones/disponibles';
+                }, 1500);
+            } else {
+                // Server error response
+                const errorText = await loginResponse.text();
+                showError(errorText || 'Error al iniciar sesión. Intenta nuevamente.');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showError('Error de conexión. Intenta nuevamente.');
+        } finally {
+            // Re-enable button and hide loading
+            submitBtn.disabled = false;
+            submitText.style.display = 'inline';
+            loadingSpinner.classList.remove('show');
+        }
+    });
+
+    // Show error alert
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorAlert.classList.add('show');
+        successAlert.classList.remove('show');
+    }
+
+    // Show success alert
+    function showSuccess() {
+        successAlert.classList.add('show');
+        errorAlert.classList.remove('show');
+    }
+
+    // Hide all alerts
+    function hideAlert() {
+        errorAlert.classList.remove('show');
+        successAlert.classList.remove('show');
+    }
+
+    // Optional: Clear form on page load
+    window.addEventListener('load', () => {
+        form.reset();
+    });
+</script>
+
+</body>
+</html>
+
+

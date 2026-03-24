@@ -67,6 +67,11 @@ public class Controller {
     }
 
     @GetMapping("/login")
+    public String showLoginForm() {
+        return "auth/login";
+    }
+
+    @GetMapping("/api/v1/login")
     public String login(HttpSession session, String email, String password) throws IOException, InterruptedException {
 
         if (email == null || email.isBlank()) {
