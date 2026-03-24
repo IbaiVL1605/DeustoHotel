@@ -3,6 +3,7 @@ package com.example.deusto_hotel.controller;
 import com.example.deusto_hotel.dto.RoomDisponibleResponse;
 import com.example.deusto_hotel.dto.UserResponse;
 import com.example.deusto_hotel.dto.WeekAvailability;
+import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.proxy.Proxy;
 import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,14 +73,15 @@ public class Controller {
     }
 
     @GetMapping("/api/v1/login")
-    public String login(HttpSession session, String email, String password) throws IOException, InterruptedException {
+    public String login(HttpSession session, String email, String password)
+            throws IOException, InterruptedException {
 
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("El correo es obligatorio");
         }
 
         if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("La contrasena es obligatoria");
+            throw new IllegalArgumentException("La contraseña es obligatoria");
         }
 
         UserResponse usuario = proxy.login(email, password);
@@ -87,8 +89,23 @@ public class Controller {
         session.setAttribute("userId", usuario.id());
         session.setAttribute("username", usuario.nombre());
         session.setAttribute("userEmail", usuario.email());
-        session.setAttribute("userRole", usuario.rol());
+        session.setAttribute("userRole", usuario.rol().name());
 
-        return "redirect:/habitaciones/disponibles";
+
+        if (usuario.rol() == Role.ADMIN) {
+            return "redirect:/admin";
+        } else {
+            return "redirect:/habitaciones/disponibles";
+        }
+    }
+
+    @GetMapping("/admin")
+    public String adminPage(HttpSession session) {
+        String role = (String) session.getAttribute("userRole");
+        System.out.println("ROL EN SESIÓN EN /admin: " + role);
+        if (role == null || !role.equals("ADMIN")) {
+            return "redirect:/login";
+        }
+        return "admin/admin";
     }
 }

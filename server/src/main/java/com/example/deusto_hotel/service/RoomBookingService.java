@@ -64,7 +64,7 @@ public class RoomBookingService {
     // Actualizar reserva
     public RoomBookingResponse update(Long id, RoomBookingRequest request) {
 
-        validarFechas(request.checkIn(), request.checkOut());
+
 
         RoomBooking booking = roomBookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
