@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión – Deusto Hotel</title>
+    <title>Crear Cuenta – Deusto Hotel</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -20,11 +20,7 @@
             --success: #6ee7a2;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--dark);
@@ -51,9 +47,7 @@
             transition: color .25s;
         }
 
-        .logo-header:hover {
-            color: var(--gold-light);
-        }
+        .logo-header:hover { color: var(--gold-light); }
 
         .logo-header span {
             font-style: italic;
@@ -133,6 +127,7 @@
             font-weight: 300;
             outline: none;
             transition: border-color .25s, box-shadow .25s;
+            width: 100%;
         }
 
         .form-group input::placeholder {
@@ -145,9 +140,25 @@
             box-shadow: 0 0 0 2px rgba(201, 168, 76, .1);
         }
 
-        .form-group input:invalid {
-            border-color: var(--error);
+        /* Password wrapper */
+        .password-wrap { position: relative; }
+        .password-wrap input { padding-right: 3rem; }
+
+        .toggle-pw {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 0;
+            display: flex;
+            transition: color .25s;
         }
+
+        .toggle-pw:hover { color: var(--gold); }
 
         /* ── SUBMIT BUTTON ── */
         .submit-btn {
@@ -163,20 +174,12 @@
             cursor: pointer;
             transition: background .25s, transform .1s;
             margin-top: 1rem;
+            width: 100%;
         }
 
-        .submit-btn:hover:not(:disabled) {
-            background: var(--gold-light);
-        }
-
-        .submit-btn:active:not(:disabled) {
-            transform: scale(.98);
-        }
-
-        .submit-btn:disabled {
-            opacity: .6;
-            cursor: not-allowed;
-        }
+        .submit-btn:hover:not(:disabled) { background: var(--gold-light); }
+        .submit-btn:active:not(:disabled) { transform: scale(.98); }
+        .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
 
         /* ── ALERTS ── */
         .alert {
@@ -190,14 +193,8 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .alert.show {
@@ -218,10 +215,29 @@
             color: var(--success);
         }
 
-        .alert-icon {
-            font-size: 1.1rem;
-            flex-shrink: 0;
+        .alert-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+        /* ── LOADING STATE ── */
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            font-size: .85rem;
         }
+
+        .loading.show { display: flex; }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(201, 168, 76, .3);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ── FOOTER LINK ── */
         .auth-footer {
@@ -240,54 +256,14 @@
             letter-spacing: .05em;
         }
 
-        .auth-footer a:hover {
-            color: var(--gold-light);
-        }
-
-        /* ── LOADING STATE ── */
-        .loading {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: .5rem;
-            font-size: .85rem;
-        }
-
-        .loading.show {
-            display: flex;
-        }
-
-        .spinner {
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(201, 168, 76, .3);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin .6s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        .auth-footer a:hover { color: var(--gold-light); }
 
         /* ── RESPONSIVE ── */
         @media (max-width: 480px) {
-            .logo-header {
-                left: 1.5rem;
-                font-size: 1.2rem;
-            }
-
-            .auth-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .auth-title {
-                font-size: 1.6rem;
-            }
-
-            body {
-                padding: 1rem;
-            }
+            .logo-header { left: 1.5rem; font-size: 1.2rem; }
+            .auth-card { padding: 2rem 1.5rem; }
+            .auth-title { font-size: 1.6rem; }
+            body { padding: 1rem; }
         }
     </style>
 </head>
@@ -299,167 +275,138 @@
 <!-- AUTH CONTAINER -->
 <div class="auth-container">
     <div class="auth-card">
+
         <!-- HEADER -->
         <div class="auth-header">
-            <h1 class="auth-title">Bienvenido</h1>
-            <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
+            <h1 class="auth-title">Crear cuenta</h1>
+            <p class="auth-subtitle">Regístrate como nuevo huésped</p>
             <div class="divider"></div>
         </div>
 
-        <!-- ALERTS -->
-        <div class="alert alert-error" id="errorAlert">
+        <!-- ALERTS (Thymeleaf flash) -->
+        <div class="alert alert-error"
+             th:classappend="${error != null} ? ' show' : ''"
+             id="errorAlert">
             <span class="alert-icon">⚠</span>
-            <span id="errorMessage"></span>
+            <span th:text="${error}"></span>
         </div>
 
-        <div class="alert alert-success" id="successAlert">
+        <div class="alert alert-success"
+             th:classappend="${success != null} ? ' show' : ''"
+             id="successAlert">
             <span class="alert-icon">✓</span>
-            <span id="successMessage">¡Sesión iniciada correctamente!</span>
+            <span th:text="${success}">¡Cuenta creada correctamente!</span>
         </div>
 
         <!-- FORM -->
-        <form class="auth-form" id="loginForm">
+        <form class="auth-form" id="signupForm" th:action="@{/signup}" method="post">
+
+            <div class="form-group">
+                <label for="nombre">Nombre completo</label>
+                <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        placeholder="Ana García"
+                        required
+                        autocomplete="name"
+                />
+            </div>
+
             <div class="form-group">
                 <label for="email">Correo electrónico</label>
                 <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="tu@email.com"
-                    required
-                    autocomplete="email"
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="tu@email.com"
+                        required
+                        autocomplete="email"
                 />
             </div>
 
             <div class="form-group">
                 <label for="password">Contraseña</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="••••••••"
-                    required
-                    autocomplete="current-password"
-                />
+                <div class="password-wrap">
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="••••••••"
+                            required
+                            autocomplete="new-password"
+                    />
+                    <button type="button" class="toggle-pw"
+                            aria-label="Mostrar contraseña"
+                            onclick="togglePassword()">
+                        <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="1.8"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="submit-btn" id="submitBtn">
-                <span id="submitText">Iniciar sesión</span>
+                <span id="submitText">Crear cuenta</span>
                 <span class="loading" id="loadingSpinner">
                     <span class="spinner"></span>
-                    <span>Verificando...</span>
+                    <span>Registrando...</span>
                 </span>
             </button>
         </form>
 
         <!-- FOOTER -->
         <div class="auth-footer">
-            ¿No tienes cuenta? <a href="/signup">Regístrate aquí</a>
+            ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
         </div>
     </div>
 </div>
 
 <script>
-    const form = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submitBtn');
-    const submitText = document.getElementById('submitText');
+    const form           = document.getElementById('signupForm');
+    const submitBtn      = document.getElementById('submitBtn');
+    const submitText     = document.getElementById('submitText');
     const loadingSpinner = document.getElementById('loadingSpinner');
-    const errorAlert = document.getElementById('errorAlert');
-    const errorMessage = document.getElementById('errorMessage');
-    const successAlert = document.getElementById('successAlert');
+    const errorAlert     = document.getElementById('errorAlert');
+    const successAlert   = document.getElementById('successAlert');
 
-    // Hide alerts on input
-    emailInput.addEventListener('focus', hideAlert);
-    passwordInput.addEventListener('focus', hideAlert);
+    // Ocultar alertas al escribir
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', hideAlerts);
+    });
 
-    // Handle form submission
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideAlert();
-
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        // Client-side validation
-        if (!email) {
-            showError('Por favor ingresa tu correo electrónico');
-            return;
-        }
-
-        if (!password) {
-            showError('Por favor ingresa tu contraseña');
-            return;
-        }
-
-        // Disable button and show loading
+    // Loading state al enviar
+    form.addEventListener('submit', () => {
         submitBtn.disabled = true;
         submitText.style.display = 'none';
         loadingSpinner.classList.add('show');
-
-        try {
-            // Build URL with parameters (GET request)
-            const url = new URL('/api/v1/login', window.location.origin);
-            url.searchParams.append('email', email);
-            url.searchParams.append('password', password);
-
-            const loginResponse = await fetch(url.toString(), {
-                method: 'GET',
-                credentials: 'include'
-            });
-
-            if (loginResponse.ok) {
-                // Success
-                showSuccess();
-                form.reset();
-
-                // Redirect after 1.5 seconds to the app menu
-                setTimeout(() => {
-                    window.location.href = '/menu';
-                }, 1500);
-            } else {
-                // Server error response
-                const errorText = await loginResponse.text();
-                showError(errorText || 'Error al iniciar sesión. Intenta nuevamente.');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            showError('Error de conexión. Intenta nuevamente.');
-        } finally {
-            // Re-enable button and hide loading
-            submitBtn.disabled = false;
-            submitText.style.display = 'inline';
-            loadingSpinner.classList.remove('show');
-        }
     });
 
-    // Show error alert
-    function showError(message) {
-        errorMessage.textContent = message;
-        errorAlert.classList.add('show');
-        successAlert.classList.remove('show');
+    // Toggle visibilidad contraseña
+    function togglePassword() {
+        const input = document.getElementById('password');
+        const icon  = document.getElementById('eye-icon');
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        icon.innerHTML = isHidden
+            ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+               <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+               <line x1="1" y1="1" x2="23" y2="23"/>`
+            : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+               <circle cx="12" cy="12" r="3"/>`;
     }
 
-    // Show success alert
-    function showSuccess() {
-        successAlert.classList.add('show');
-        errorAlert.classList.remove('show');
-    }
-
-    // Hide all alerts
-    function hideAlert() {
+    function hideAlerts() {
         errorAlert.classList.remove('show');
         successAlert.classList.remove('show');
     }
 
-    // Optional: Clear form on page load
-    window.addEventListener('load', () => {
-        form.reset();
-    });
+    // Limpiar formulario al cargar
+    window.addEventListener('load', () => form.reset());
 </script>
 
 </body>
 </html>
-
-
