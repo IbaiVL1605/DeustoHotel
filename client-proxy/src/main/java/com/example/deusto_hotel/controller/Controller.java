@@ -6,6 +6,7 @@ import com.example.deusto_hotel.dto.UserResponse;
 import com.example.deusto_hotel.dto.WeekAvailability;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.proxy.Proxy;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,7 @@ public class Controller {
         model.addAttribute("year", currentYear);
         model.addAttribute("month", currentMonth);
         model.addAttribute("hoy", today);
+        model.addAttribute("objectMapper", new ObjectMapper());
         return "user/pistas";
     }
 
