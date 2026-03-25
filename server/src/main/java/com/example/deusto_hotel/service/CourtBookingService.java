@@ -5,7 +5,6 @@ import com.example.deusto_hotel.dto.CourtBookingResponse;
 import com.example.deusto_hotel.mapper.CourtBookingMapper;
 import com.example.deusto_hotel.model.Court;
 import com.example.deusto_hotel.model.CourtBooking;
-import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
 import com.example.deusto_hotel.repository.CourtRepository;
 import com.example.deusto_hotel.repository.UserRepository;
@@ -51,6 +50,14 @@ public class CourtBookingService {
     public CourtBookingResponse create(CourtBookingRequest request, HttpSession session) {
 
         CourtBooking booking = courtBookingMapper.toEntity(request);
+
+        booking.setPista(courtRepository.getReferenceById(request.pistaId()));
+
+        booking.setHoraInicio(request.horaInicio());
+
+        booking.setHoraFin(request.horaFin());
+
+        booking.setFecha(request.fecha());
 
         Long horas = ChronoUnit.HOURS.between(request.horaFin(), request.horaInicio());
 
