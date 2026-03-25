@@ -2,57 +2,134 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Disponibilidad de Pistas</title>
-    <!-- Use a modern Google Font like Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disponibilidad de Pistas – Deusto Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #3b82f6; /* Blue */
-            --primary-hover: #2563eb;
-            --bg-color: #f8fafc;
-            --surface-color: #ffffff;
-            --border-color: #e2e8f0;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --avail-color: #10b981; /* Green */
-            --avail-bg: #d1fae5;
-            --full-color: #ef4444; /* Red */
-            --full-bg: #fee2e2;
-            --past-bg: #f1f5f9;
-            --today-bg: #eff6ff;
+            --gold: #C9A84C;
+            --gold-light: #E8C97A;
+            --dark: #0F0E0C;
+            --dark-2: #1A1916;
+            --dark-3: #252420;
+            --cream: #F5F0E8;
+            --cream-2: #EDE8DC;
+            --text-muted: #8A8070;
+            --accent: #7C5C2E;
+            
+            /* Pistas specific overrides for calendar */
+            --avail-color: #C9A84C;
+            --avail-bg: rgba(201,168,76,.1);
+            --full-color: #8A8070;
+            --full-bg: rgba(255,255,255,.02);
+            --past-bg: rgba(0,0,0,.2);
+            --today-bg: rgba(201,168,76,.05);
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 2rem;
+            background-color: var(--dark);
+            color: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        /* ── HEADER ── */
+        header.main-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            padding: 2rem 4rem;
+            border-bottom: 1px solid rgba(201,168,76,.2);
+            position: sticky;
+            top: 0;
+            background: var(--dark);
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            letter-spacing: .08em;
+            color: var(--gold);
+        }
+
+        .logo span { font-style: italic; color: var(--cream); }
+
+        /* ── HERO ── */
+        .hero {
+            text-align: center;
+            padding: 5rem 2rem 3rem;
+        }
+
+        .hero-label {
+            font-size: .7rem;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            color: var(--cream);
+        }
+
+        .hero h1 em { font-style: italic; color: var(--gold-light); }
+
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: var(--gold);
+            margin: 2rem auto;
+            opacity: .6;
+        }
+
+        /* ── MAIN / CALENDAR ── */
+        main {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 4rem 6rem;
+            width: 100%;
         }
 
         .calendar-container {
-            width: 100%;
-            max-width: 1200px;
-            background: var(--surface-color);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            background: var(--dark-2);
+            border: 1px solid rgba(201,168,76,.15);
             padding: 2rem;
-            box-sizing: border-box;
+            margin-bottom: 3rem;
+            border-radius: 4px;
         }
 
-        header {
+        .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
 
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .calendar-title-wrap h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: var(--cream);
+            margin-bottom: 0.4rem;
+        }
+
+        .calendar-title-wrap p {
+            font-size: .8rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
             margin: 0;
         }
 
@@ -60,53 +137,54 @@
             display: flex;
             gap: 1rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         form {
             display: flex;
-            gap: 1rem;
             align-items: center;
             margin: 0;
         }
 
         select {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: var(--surface-color);
-            font-family: inherit;
-            font-size: 0.95rem;
-            color: var(--text-main);
+            padding: 0.6rem 1.2rem;
+            border: 1px solid rgba(201,168,76,.2);
+            background-color: var(--dark-3);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem;
+            color: var(--cream);
             outline: none;
             cursor: pointer;
-            transition: border-color 0.2s;
+            transition: border-color 0.25s;
         }
         
         select:focus {
-            border-color: var(--primary-color);
+            border-color: var(--gold);
         }
 
         .nav-btn {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+            background-color: transparent;
+            border: 1px solid rgba(201,168,76,.2);
+            color: var(--cream);
+            padding: 0.6rem 1.2rem;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .8rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            transition: all 0.25s;
         }
 
         .nav-btn:hover:not(:disabled) {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(201,168,76,.05);
         }
 
         .nav-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.3;
             cursor: not-allowed;
+            border-color: rgba(201,168,76,.1);
         }
 
         .calendar-grid {
@@ -116,54 +194,56 @@
         }
 
         th, td {
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(201,168,76,.1);
         }
 
         th {
-            padding: 1rem 0;
+            padding: 1.5rem 0;
             text-align: center;
             font-weight: normal;
         }
 
         .day-name {
             display: block;
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            font-size: .65rem;
+            color: var(--gold);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
+            letter-spacing: .2em;
+            margin-bottom: 0.5rem;
         }
 
         .day-date {
             display: block;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-main);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--cream);
         }
 
         td {
-            height: 60px;
+            height: 70px;
             position: relative;
-            padding: 4px;
+            padding: 6px;
             vertical-align: top;
         }
 
         .time-col {
-            width: 60px;
-            font-size: 0.85rem;
+            width: 70px;
+            font-size: .75rem;
             color: var(--text-muted);
             text-align: right;
-            padding-right: 0.5rem;
+            padding-right: 0.8rem;
             border-top: none;
             border-bottom: none;
             border-left: none;
             position: relative;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
         }
 
         .time-col span {
             position: absolute;
             top: -0.6em;
-            right: 0.5rem;
+            right: 0.8rem;
         }
 
         .past-day {
@@ -172,10 +252,11 @@
 
         .today-col {
             background-color: var(--today-bg);
+            border-bottom: 2px solid var(--gold);
         }
 
         .today-col .day-date {
-            color: var(--primary-color);
+            color: var(--gold-light);
         }
 
         .event-box {
@@ -183,27 +264,33 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-size: .75rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: transform 0.2s, background 0.2s;
+            border: 1px solid transparent;
         }
         
         .event-box:hover {
-            transform: scale(0.98);
+            transform: translateY(-2px);
         }
 
         .available {
             background-color: var(--avail-bg);
             color: var(--avail-color);
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(201,168,76,.2);
+        }
+        
+        .available:hover {
+            background-color: rgba(201,168,76,.2);
+            border-color: var(--gold);
         }
 
         .full {
             background-color: var(--full-bg);
             color: var(--full-color);
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(255,255,255,.05);
             cursor: not-allowed;
             transform: none !important;
         }
@@ -211,14 +298,15 @@
         .past-event {
             background-color: transparent;
             color: var(--text-muted);
-            border: 1px dashed var(--border-color);
+            border: 1px dashed rgba(255,255,255,.05);
             cursor: default;
             transform: none !important;
+            font-size: .7rem;
         }
 
         .week-container {
             display: none;
-            animation: fadeIn 0.3s ease-in-out;
+            animation: fadeIn 0.4s ease-in-out;
         }
         
         .week-container.active {
@@ -226,119 +314,141 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-style: italic;
+            border: 1px dashed rgba(201,168,76,.2);
+        }
+
+        @media (max-width: 768px) {
+            header.main-header, main { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .calendar-container { padding: 1.5rem; }
+            td { height: 50px; }
+            .event-box { font-size: 0.65rem; }
+            .time-col { width: 50px; }
+            .calendar-header { flex-direction: column; align-items: flex-start; }
+            .controls { justify-content: flex-start; }
         }
     </style>
 </head>
 <body>
 
-<div class="calendar-container">
-    <header>
-        <div>
-            <h1>Reservas de Pistas</h1>
-            <!-- Current month/year info -->
-            <p style="margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.95rem;">
-                Semana vista <span id="week-indicator"></span>
-            </p>
-        </div>
-        
-        <div class="controls">
-            <button class="nav-btn" id="prev-week-btn" onclick="changeWeek(-1)">← Anterior</button>
-            <button class="nav-btn" id="next-week-btn" onclick="changeWeek(1)">Siguiente →</button>
-            
-            <form method="get" action="/pistas" id="filter-form">
-                <!-- Keep year and month in the request -->
-                <input type="hidden" name="year" th:value="${year}">
-                <input type="hidden" name="month" th:value="${month}">
-                <select name="tipo" onchange="document.getElementById('filter-form').submit()">
-                    <option value="" th:selected="${tipo == null}">Todas las pistas</option>
-                    <option value="TENIS" th:selected="${tipo == 'TENIS'}">Tenis</option>
-                    <option value="PADEL" th:selected="${tipo == 'PADEL'}">Pádel</option>
-                    <option value="FUTBOL" th:selected="${tipo == 'FUTBOL'}">Fútbol</option>
-                    <option value="PISCINA" th:selected="${tipo == 'PISCINA'}">Piscina</option>
-                </select>
-            </form>
-            
-            <!-- Navigate to next/prev month completely via backend -->
-            <form method="get" action="/pistas" style="margin-left: 1rem;">
-                <input type="hidden" name="year" th:value="${month == 1 ? year - 1 : year}">
-                <input type="hidden" name="month" th:value="${month == 1 ? 12 : month - 1}">
-                <input type="hidden" name="tipo" th:value="${tipo}">
-                <button type="submit" class="nav-btn">Mes Anterior</button>
-            </form>
-            <form method="get" action="/pistas">
-                <input type="hidden" name="year" th:value="${month == 12 ? year + 1 : year}">
-                <input type="hidden" name="month" th:value="${month == 12 ? 1 : month + 1}">
-                <input type="hidden" name="tipo" th:value="${tipo}">
-                <button type="submit" class="nav-btn">Mes Siguiente</button>
-            </form>
-        </div>
-    </header>
+<!-- ── HEADER ── -->
+<header class="main-header">
+    <div class="logo">Deusto <span>Hotel</span></div>
+</header>
 
-    <div th:if="${disponibilidad != null}">
-        <!-- Looping through the weeks from the month. We use JS to show only one. -->
-        <div th:each="week, weekStat : ${disponibilidad}" 
-             class="week-container" 
-             th:id="'week-' + ${weekStat.index}"
-             th:data-has-today="${week.days.?[fecha.equals(#root.hoy)].size() > 0 ? 'true' : 'false'}">
+<!-- ── HERO ── -->
+<div class="hero">
+    <p class="hero-label">Instalaciones Deportivas</p>
+    <h1>Reserva tu <em>pista</em><br>favorita</h1>
+    <div class="divider"></div>
+</div>
+
+<main>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <div class="calendar-title-wrap">
+                <h2>Disponibilidad</h2>
+                <p>Semana vista <span id="week-indicator"></span></p>
+            </div>
             
-            <table class="calendar-grid">
-                <thead>
-                    <tr>
-                        <th class="time-col">Hora</th>
-                        <th th:each="dia : ${week.days}" 
-                            th:classappend="${dia.fecha.equals(hoy)} ? 'today-col' : (${dia.fecha.isBefore(hoy)} ? 'past-day' : '')">
-                            <!-- Try to format in Spanish if possible, but fallback to simple pattern -->
-                            <span class="day-name" th:text="${#temporals.format(dia.fecha, 'EEEE')}">Día</span>
-                            <span class="day-date" th:text="${#temporals.format(dia.fecha, 'd MMM')}">Fecha</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="hora : ${#numbers.sequence(8, 21)}">
-                        <td class="time-col">
-                            <span th:text="${hora + ':00'}">8:00</span>
-                        </td>
-                        
-                        <td th:each="dia : ${week.days}" 
-                            th:classappend="${dia.fecha.equals(hoy)} ? 'today-col' : (${dia.fecha.isBefore(hoy)} ? 'past-day' : '')">
+            <div class="controls">
+                <button class="nav-btn" id="prev-week-btn" onclick="changeWeek(-1)">Anterior</button>
+                <button class="nav-btn" id="next-week-btn" onclick="changeWeek(1)">Siguiente</button>
+                
+                <form method="get" action="/pistas" id="filter-form">
+                    <input type="hidden" name="year" th:value="${year}">
+                    <input type="hidden" name="month" th:value="${month}">
+                    <select name="tipo" onchange="document.getElementById('filter-form').submit()">
+                        <option value="" th:selected="${tipo == null}">Todas las pistas</option>
+                        <option value="TENIS" th:selected="${tipo == 'TENIS'}">Tenis</option>
+                        <option value="PADEL" th:selected="${tipo == 'PADEL'}">Pádel</option>
+                        <option value="FUTBOL" th:selected="${tipo == 'FUTBOL'}">Fútbol</option>
+                        <option value="PISCINA" th:selected="${tipo == 'PISCINA'}">Piscina</option>
+                    </select>
+                </form>
+                
+                <form method="get" action="/pistas">
+                    <input type="hidden" name="year" th:value="${month == 1 ? year - 1 : year}">
+                    <input type="hidden" name="month" th:value="${month == 1 ? 12 : month - 1}">
+                    <input type="hidden" name="tipo" th:value="${tipo}">
+                    <button type="submit" class="nav-btn">Mes Anterior</button>
+                </form>
+                <form method="get" action="/pistas">
+                    <input type="hidden" name="year" th:value="${month == 12 ? year + 1 : year}">
+                    <input type="hidden" name="month" th:value="${month == 12 ? 1 : month + 1}">
+                    <input type="hidden" name="tipo" th:value="${tipo}">
+                    <button type="submit" class="nav-btn">Mes Siguiente</button>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${disponibilidad != null}">
+            <div th:each="week, weekStat : ${disponibilidad}" 
+                 class="week-container" 
+                 th:id="'week-' + ${weekStat.index}"
+                 th:data-has-today="${week.days.?[fecha.equals(#root.hoy)].size() > 0 ? 'true' : 'false'}">
+                
+                <table class="calendar-grid">
+                    <thead>
+                        <tr>
+                            <th class="time-col"></th>
+                            <th th:each="dia : ${week.days}" 
+                                th:classappend="${dia.fecha.equals(hoy)} ? 'today-col' : (${dia.fecha.isBefore(hoy)} ? 'past-day' : '')">
+                                <span class="day-name" th:text="${#temporals.format(dia.fecha, 'EEE')}">Día</span>
+                                <span class="day-date" th:text="${#temporals.format(dia.fecha, 'd')}">Fecha</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="hora : ${#numbers.sequence(8, 21)}">
+                            <td class="time-col">
+                                <span th:text="${hora + ':00'}">8:00</span>
+                            </td>
                             
-                            <!-- Check if date is past or hours is past -->
-                            <div th:if="${dia.fecha.isBefore(hoy) || (dia.fecha.equals(hoy) && hora < T(java.time.LocalTime).now().getHour())}" 
-                                 class="event-box past-event">
-                                <span>-</span>
-                            </div>
-                            
-                            <div th:if="${!dia.fecha.isBefore(hoy) && (!dia.fecha.equals(hoy) || hora >= T(java.time.LocalTime).now().getHour())}">
-                                <!-- Find slot for current hour using matching -->
-                                <div th:with="matchingSlots=${dia.slots.?[start.hour == __${hora}__]}">
-                                    <div th:if="${matchingSlots.size() > 0}" th:with="slot=${matchingSlots[0]}">
-                                        <div th:if="${slot.availableCourts.size() > 0}" class="event-box available" th:title="'Pistas disponibles: ' + ${slot.availableCourts.size()}">
-                                            <span th:text="${slot.availableCourts.size()} + ' disp.'"></span>
+                            <td th:each="dia : ${week.days}" 
+                                th:classappend="${dia.fecha.equals(hoy)} ? 'today-col' : (${dia.fecha.isBefore(hoy)} ? 'past-day' : '')">
+                                
+                                <div th:if="${dia.fecha.isBefore(hoy) || (dia.fecha.equals(hoy) && hora < T(java.time.LocalTime).now().getHour())}" 
+                                     class="event-box past-event">
+                                    <span>-</span>
+                                </div>
+                                
+                                <div th:if="${!dia.fecha.isBefore(hoy) && (!dia.fecha.equals(hoy) || hora >= T(java.time.LocalTime).now().getHour())}">
+                                    <div th:with="matchingSlots=${dia.slots.?[start.hour == __${hora}__]}">
+                                        <div th:if="${matchingSlots.size() > 0}" th:with="slot=${matchingSlots[0]}">
+                                            <div th:if="${slot.availableCourts.size() > 0}" class="event-box available" th:title="'Pistas disponibles: ' + ${slot.availableCourts.size()}">
+                                                <span th:text="${slot.availableCourts.size()} + ' disp'"></span>
+                                            </div>
+                                            <div th:if="${slot.availableCourts.size() == 0}" class="event-box full">
+                                                <span>Ocupado</span>
+                                            </div>
                                         </div>
-                                        <div th:if="${slot.availableCourts.size() == 0}" class="event-box full">
-                                            <span>Ocupado</span>
+                                        <div th:if="${matchingSlots.size() == 0}" class="event-box past-event">
+                                            <span>N/A</span>
                                         </div>
-                                    </div>
-                                    <!-- Fallback if no slot data found -->
-                                    <div th:if="${matchingSlots.size() == 0}" class="event-box past-event">
-                                        <span>N/A</span>
                                     </div>
                                 </div>
-                            </div>
-                            
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div th:if="${disponibilidad == null || disponibilidad.size() == 0}" class="no-data">
+            No hay datos de disponibilidad para este mes.
         </div>
     </div>
-    
-    <div th:if="${disponibilidad == null || disponibilidad.size() == 0}" style="text-align: center; padding: 4rem; color: var(--text-muted);">
-        <p>No hay datos de disponibilidad para este mes.</p>
-    </div>
-</div>
+</main>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -347,7 +457,6 @@
         
         let currentWeekIndex = 0;
         
-        // Find week with 'today'
         for (let i = 0; i < weeks.length; i++) {
             if (weeks[i].getAttribute('data-has-today') === 'true') {
                 currentWeekIndex = i;
