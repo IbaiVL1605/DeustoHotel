@@ -35,7 +35,7 @@ public class CourtBookingController {
     // 🔹 CREATE
     @PostMapping
     public ResponseEntity<CourtBookingResponse> create(
-            @RequestBody @Valid CourtBookingRequest request, @RequestBody @Valid HttpSession session) {
+            @RequestBody @Valid CourtBookingRequest request, HttpSession session) {
 
         CourtBookingResponse response = courtBookingService.create(request, session);
 

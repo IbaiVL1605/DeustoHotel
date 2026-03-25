@@ -16,5 +16,7 @@ public record CourtBookingRequest(
     LocalTime horaInicio,
 
     @NotNull(message = "La hora de fin es obligatoria")
-    LocalTime horaFin
+    LocalTime horaFin,
+
+    Long clienteId
 ) {}

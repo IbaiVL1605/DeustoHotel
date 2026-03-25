@@ -536,49 +536,111 @@
             document.getElementById('week-indicator').textContent = (index + 1) + " de " + weeks.length;
         }
     });
-    function openModal(date, hour, courts) {
+    function openModal(date, hour, courtsParam) {
         document.getElementById("booking-modal").style.display = "block";
 
         document.getElementById("modal-date").textContent = date;
         document.getElementById("modal-hour").textContent = hour + ":00";
 
+        // Autocompletar horas
+        document.getElementById("start-time").value = hour + ":00";
+        const endHour = parseInt(hour) + 1;
+        document.getElementById("end-time").value = endHour + ":00";
+
         const list = document.getElementById("available-courts");
         list.innerHTML = "";
+        
+        let courts = [];
+        try {
+            courts = typeof courtsParam === 'string' ? JSON.parse(courtsParam) : courtsParam;
+        } catch (e) {
+            console.error("Error parsing courts JSON", e);
+        }
 
         if (courts && courts.length > 0) {
             courts.forEach(c => {
                 const li = document.createElement("li");
-                li.textContent = "Pista " + c.numero;
+                li.style.display = "flex";
+                li.style.justifyContent = "space-between";
+                li.style.alignItems = "center";
+                li.style.marginBottom = "0.5rem";
+                li.style.padding = "0.5rem";
+                li.style.border = "1px solid rgba(201,168,76,.2)";
+                li.style.borderRadius = "4px";
+
+                const textSpan = document.createElement("span");
+                textSpan.textContent = c.nombre + " (" + c.tipo + ") - " + c.precioPorHora + "€/h";
+
+                const btn = document.createElement("button");
+                btn.textContent = "Reservar";
+                btn.style.width = "auto";
+                btn.style.padding = "0.4rem 1rem";
+                btn.style.margin = "0";
+                btn.style.fontSize = "0.85rem";
+                btn.onclick = function() {
+                    makeReservation(c.id);
+                };
+
+                li.appendChild(textSpan);
+                li.appendChild(btn);
                 list.appendChild(li);
             });
+        } else {
+            const li = document.createElement("li");
+            li.textContent = "No hay pistas disponibles";
+            li.style.color = "var(--text-muted)";
+            li.style.fontStyle = "italic";
+            li.style.border = "none";
+            li.style.padding = "0.5rem 0";
+            list.appendChild(li);
         }
-
-        // Autocompletar horas
-        document.getElementById("start-time").value = hour + ":00";
-        document.getElementById("end-time").value = (hour + 1) + ":00";
     }
 
     function closeModal() {
         document.getElementById("booking-modal").style.display = "none";
     }
 
-    function makeReservation() {
+    function makeReservation(pistaId) {
         const date = document.getElementById("modal-date").textContent;
         const start = document.getElementById("start-time").value;
         const end = document.getElementById("end-time").value;
 
-        alert("Reserva realizada:\n" + date + "\n" + start + " - " + end);
+        if (!pistaId) {
+            alert("Id de pista no válido");
+            return;
+        }
 
-        // Aquí puedes hacer fetch al backend
-        /*
-        fetch('/reservas', {
+        const request = {
+            pistaId: pistaId,
+            fecha: date,
+            horaInicio: start,
+            horaFin: end
+        };
+
+        fetch('/api/v1/court-bookings', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date, start, end })
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Error al reservar");
+            return res.json();
+        })
+        .then(data => {
+            if (data.status === "ERROR") {
+                alert("No se pudo reservar: " + data.message);
+                return;
+            }
+            alert("Reserva realizada correctamente 🎾");
+            closeModal();
+            location.reload(); // refrescar disponibilidad
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Ruta no encontrada o error interno (" + err.message + ")");
         });
-        */
-
-        closeModal();
     }
 </script>
 
@@ -591,16 +653,11 @@
         <p><strong>Fecha:</strong> <span id="modal-date"></span></p>
         <p><strong>Hora seleccionada:</strong> <span id="modal-hour"></span></p>
 
-        <label>Pistas disponibles:</label>
-        <ul id="available-courts"></ul>
+        <input type="hidden" id="start-time">
+        <input type="hidden" id="end-time">
 
-        <label>Hora inicio:</label>
-        <input type="time" id="start-time">
-
-        <label>Hora fin:</label>
-        <input type="time" id="end-time">
-
-        <button onclick="makeReservation()">Reservar</button>
+        <label style="display:block; margin-top:1rem;">Pistas disponibles:</label>
+        <ul id="available-courts" style="list-style: none; padding: 0;"></ul>
     </div>
 </div>
 

@@ -59,9 +59,9 @@ public class CourtBookingService {
 
         booking.setFecha(request.fecha());
 
-        Long horas = ChronoUnit.HOURS.between(request.horaFin(), request.horaInicio());
+        Long horas = ChronoUnit.HOURS.between(request.horaInicio(), request.horaFin());
 
-        booking.setCliente(userRepository.getReferenceById(Long.parseLong(session.getId())));
+        booking.setCliente(userRepository.getReferenceById(request.clienteId()));
 
         booking.setPrecioTotal(courtRepository.getReferenceById(request.pistaId()).getPrecioPorHora() * horas);
 

@@ -26,7 +26,9 @@ public class Proxy {
 
     private final HttpClient httpClient =  HttpClient.newBuilder().build();
 
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     private ArrayList<RoomDisponibleResponse> parseRoomDisponibleResponse(String response) throws JsonProcessingException {
         JsonNode node = objectMapper.readTree(response);
@@ -167,7 +169,19 @@ public class Proxy {
         }
     }
 
-
+    public void createCourtBooking(CourtBookingRequest request) throws IOException, InterruptedException {
+        String url = "http://localhost:8080/api/v1/court-bookings";
+        String body = objectMapper.writeValueAsString(request);
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new RuntimeException("Error creando reserva de pista: " + response.body());
+        }
+    }
     public RoomBookingResponse updateRoomBooking(Long id, RoomBookingRequest request)
             throws IOException, InterruptedException {
 

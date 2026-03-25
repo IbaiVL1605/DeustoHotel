@@ -186,6 +186,28 @@ public class Controller {
      return "/admin";
  }
  */
+
+    @PostMapping("/api/v1/court-bookings")
+    @ResponseBody
+    public String createCourtBooking(@RequestBody com.example.deusto_hotel.dto.CourtBookingRequest request, HttpSession session) {
+        Long clienteId = (Long) session.getAttribute("userId");
+        if (clienteId == null) {
+            return "{\"status\":\"ERROR\", \"message\":\"Usuario no autenticado\"}";
+        }
+        try {
+            com.example.deusto_hotel.dto.CourtBookingRequest requestConCliente = new com.example.deusto_hotel.dto.CourtBookingRequest(
+                    request.pistaId(),
+                    request.fecha(),
+                    request.horaInicio(),
+                    request.horaFin(),
+                    clienteId
+            );
+            proxy.createCourtBooking(requestConCliente);
+            return "{\"status\":\"OK\"}";
+        } catch (Exception e) {
+            return "{\"status\":\"ERROR\", \"message\":\"" + e.getMessage() + "\"}";
+        }
+    }
     @GetMapping("/menu")
     public String showMenu(HttpSession session, Model model) {
 
