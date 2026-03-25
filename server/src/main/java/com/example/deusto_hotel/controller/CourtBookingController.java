@@ -2,7 +2,9 @@ package com.example.deusto_hotel.controller;
 
 import com.example.deusto_hotel.dto.CourtBookingRequest;
 import com.example.deusto_hotel.dto.CourtBookingResponse;
+import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.service.CourtBookingService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +35,9 @@ public class CourtBookingController {
     // 🔹 CREATE
     @PostMapping
     public ResponseEntity<CourtBookingResponse> create(
-            @RequestBody @Valid CourtBookingRequest request) {
+            @RequestBody @Valid CourtBookingRequest request, @RequestBody @Valid HttpSession session) {
 
-        CourtBookingResponse response = courtBookingService.create(request);
+        CourtBookingResponse response = courtBookingService.create(request, session);
 
         // 🔥 REST correcto → 201 CREATED
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

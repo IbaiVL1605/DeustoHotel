@@ -5,8 +5,11 @@ import com.example.deusto_hotel.dto.CourtBookingResponse;
 import com.example.deusto_hotel.mapper.CourtBookingMapper;
 import com.example.deusto_hotel.model.Court;
 import com.example.deusto_hotel.model.CourtBooking;
+import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
 import com.example.deusto_hotel.repository.CourtRepository;
+import com.example.deusto_hotel.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,7 @@ public class CourtBookingService {
 
     private final CourtBookingRepository courtBookingRepository;
     private final CourtRepository courtRepository;
+    private final UserRepository userRepository;
     private final CourtBookingMapper courtBookingMapper;
 
     // 🔹 GET ALL
@@ -44,13 +48,14 @@ public class CourtBookingService {
     }
 
     // 🔹 CREATE
-    public CourtBookingResponse create(CourtBookingRequest request) {
+    public CourtBookingResponse create(CourtBookingRequest request, HttpSession session) {
 
         CourtBooking booking = courtBookingMapper.toEntity(request);
 
         Long horas = ChronoUnit.HOURS.between(request.horaFin(), request.horaInicio());
 
-        //insertar el cliente
+        booking.setCliente(userRepository.getReferenceById(Long.parseLong(session.getId())));
+
         booking.setPrecioTotal(courtRepository.getReferenceById(request.pistaId()).getPrecioPorHora() * horas);
 
         courtBookingRepository.save(booking);
