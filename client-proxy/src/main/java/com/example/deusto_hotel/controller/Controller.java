@@ -1,16 +1,15 @@
 package com.example.deusto_hotel.controller;
 
-import com.example.deusto_hotel.dto.RoomDisponibleResponse;
-import com.example.deusto_hotel.dto.UserResponse;
-import com.example.deusto_hotel.dto.WeekAvailability;
+import com.example.deusto_hotel.dto.*;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.proxy.Proxy;
 import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Controller
-@RequiredArgsConstructor
+@RequiredArgsConstructor    
 public class Controller {
 
     private final Proxy proxy;
@@ -37,8 +36,8 @@ public class Controller {
         habitaciones.forEach(habitacion -> {
             String key = switch (habitacion.getTipo()) {
                 case INDIVIDUAL -> "habitacionSimple";
-                case DOBLE  -> "habitacionDoble";
-                case SUITE  -> "habitacionSuite";
+                case DOBLE -> "habitacionDoble";
+                case SUITE -> "habitacionSuite";
             };
             model.addAttribute(key, habitacion);
         });
@@ -92,20 +91,69 @@ public class Controller {
         session.setAttribute("userRole", usuario.rol().name());
 
 
-        if (usuario.rol() == Role.ADMIN) {
-            return "redirect:/admin";
-        } else {
-            return "redirect:/habitaciones/disponibles";
+
+            return "redirect:/menu";
+
+    }
+
+    @GetMapping("/signup")
+    public String showSignupForm() {
+        return "auth/signup";
+    }
+
+    @PostMapping("/signup")
+    public String signup(
+            @RequestParam String nombre,
+            @RequestParam String email,
+            @RequestParam String password,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            proxy.signup(nombre, email, password);
+            redirectAttributes.addFlashAttribute("success", "Cuenta creada correctamente. ¡Ya puedes iniciar sesión!");
+            return "redirect:/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al registrar: " + e.getMessage());
+            return "redirect:/signup";
         }
     }
 
+
     @GetMapping("/admin")
-    public String adminPage(HttpSession session) {
+    public String adminPage(HttpSession session) throws IOException, InterruptedException {
         String role = (String) session.getAttribute("userRole");
         System.out.println("ROL EN SESIÓN EN /admin: " + role);
         if (role == null || !role.equals("ADMIN")) {
             return "redirect:/login";
         }
+
         return "admin/admin";
     }
+
+    /*
+    @PostMapping("/admin/rooms")
+    public String crearHabitacionFromForm(@ModelAttribute RoomRequest request, Model model) {
+        try {
+            proxy.crearHabitacion(request);
+            model.addAttribute("success", "Habitación creada correctamente");
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "/admin";
+    }
+    */
+    @GetMapping("/menu")
+    public String showMenu(HttpSession session, Model model) {
+
+        String role = (String) session.getAttribute("userRole");
+
+        if (role == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("role", role);
+
+        return "auth/menu"; // ruta del HTML
+    }
+
 }

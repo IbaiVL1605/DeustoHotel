@@ -35,14 +35,6 @@ public class RoomController {
             @RequestBody @Valid RoomRequest request,
             jakarta.servlet.http.HttpSession session
     ) {
-
-        Object role = session.getAttribute("userRole");
-
-        // SOLO ADMIN
-        if (role == null || !role.equals(com.example.deusto_hotel.model.Role.ADMIN)) {
-            return ResponseEntity.status(403).build(); // Forbidden
-        }
-
         RoomResponse created = roomService.create(request);
         return ResponseEntity.status(201).body(created);
     }

@@ -1,220 +1,133 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Admin – Crear Habitación</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=DM+Sans&display=swap" rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin – Deusto Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --gold:#C9A84C;
-            --dark:#0F0E0C;
-            --dark2:#1A1916;
-            --cream:#F5F0E8;
-            --muted:#8A8070;
+            --gold: #C9A84C;
+            --gold-light: #E8C97A;
+            --dark: #0F0E0C;
+            --dark-2: #1A1916;
+            --dark-3: #252420;
+            --cream: #F5F0E8;
+            --text-muted: #8A8070;
         }
-
-        body {
-            background: var(--dark);
-            color: var(--cream);
-            font-family: 'DM Sans', sans-serif;
-            padding: 3rem;
-        }
-
-        /* CARD */
-        .card {
-            max-width: 500px;
-            margin: auto;
-            background: var(--dark2);
-            padding: 2.5rem;
-            border: 1px solid rgba(201,168,76,.2);
-        }
-
-        /* TITLE */
-        h2 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 2rem;
-        }
-
-        /* INPUTS */
-        .field {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            font-size: .7rem;
-            letter-spacing: .2em;
-            color: var(--gold);
-        }
-
-        input, select {
-            width: 100%;
-            padding: .8rem;
-            background: transparent;
-            border: 1px solid rgba(201,168,76,.2);
-            color: var(--cream);
-        }
-
-        /* BUTTON */
-        button {
-            width: 100%;
-            padding: 1rem;
-            background: var(--gold);
-            border: none;
-            cursor: pointer;
-        }
-
-        /* STATUS */
-        .status {
-            margin-top: 1rem;
-            font-size: .85rem;
-        }
-
-        .success { color: #6ee7a2; }
-        .error { color: #ff6b6b; }
-
-        /* PREVIEW */
-        .preview {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            border: 1px dashed rgba(201,168,76,.2);
-        }
+        * { box-sizing: border-box; margin:0; padding:0; }
+        body { font-family:'DM Sans',sans-serif; background:var(--dark); color:var(--cream); min-height:100vh; padding:2rem;}
+        .logo-header { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--gold); text-decoration:none; display:block; margin-bottom:2rem;}
+        .logo-header span { color:var(--cream); font-style:italic; }
+        .admin-container { display:flex; gap:2rem; flex-wrap:wrap; }
+        .card { background:var(--dark-2); padding:2rem; border:1px solid rgba(201,168,76,.2); flex:1; min-width:300px; }
+        h2 { font-family:'Playfair Display',serif; margin-bottom:1rem; }
+        form { display:flex; flex-direction:column; gap:1rem; }
+        input, select { padding:0.8rem; background:var(--dark-3); border:1px solid rgba(201,168,76,.2); color:var(--cream); }
+        input:disabled, select:disabled { background:#333; }
+        button { padding:1rem; background:var(--gold); border:none; color:var(--dark); cursor:pointer; text-transform:uppercase; }
+        button:hover { background:var(--gold-light); }
+        .alert { display:none; padding:0.8rem; border-radius:2px; margin-bottom:1rem; }
+        .alert.show { display:block; }
+        .alert-success { background:rgba(110,231,162,.1); border:1px solid #6ee7a2; color:#6ee7a2; }
+        .alert-error { background:rgba(224,85,85,.1); border:1px solid #e05555; color:#e05555; }
+        table { width:100%; border-collapse:collapse; margin-top:1rem; }
+        th, td { border:1px solid rgba(201,168,76,.2); padding:0.5rem; text-align:left; }
     </style>
 </head>
-
 <body>
 
-<div class="card">
-    <h2>Crear Habitación</h2>
+<a href="/" class="logo-header">Deusto <span>Hotel</span></a>
 
-    <form id="formRoom">
+<div class="admin-container">
 
-        <div class="field">
-            <label>NÚMERO</label>
-            <input type="text" id="numero" required>
-        </div>
+    <!-- ── HABITACIONES ── -->
+    <div class="card">
+        <h2>Habitaciones</h2>
 
-        <div class="field">
-            <label>TIPO</label>
-            <select id="tipo">
+        <!-- Mensajes -->
+        <div class="alert alert-success" th:classappend="${success != null} ? ' show'" th:text="${success}">¡Habitación creada correctamente!</div>
+        <div class="alert alert-error" th:classappend="${error != null} ? ' show'" th:text="${error}"></div>
+
+        <!-- Formulario -->
+        <form th:action="@{/admin/rooms}" method="post" id="roomForm">
+            <input type="text" name="numero" placeholder="Número" required />
+            <select name="tipo" id="tipo" required>
                 <option value="INDIVIDUAL">INDIVIDUAL</option>
                 <option value="DOBLE">DOBLE</option>
                 <option value="SUITE">SUITE</option>
             </select>
-        </div>
+            <input type="number" name="capacidad" placeholder="Capacidad" id="capacidad" disabled />
+            <input type="number" name="precioPorNoche" placeholder="Precio por noche" id="precioPorNoche" disabled />
+            <button type="submit">Crear Habitación</button>
+        </form>
 
-        <div class="field">
-            <label>CAPACIDAD</label>
-            <input type="number" id="capacidad" required>
-        </div>
-
-        <div class="field">
-            <label>PRECIO (€)</label>
-            <input type="number" id="precio" required>
-        </div>
-
-        <button type="submit" id="submitBtn">Crear habitación</button>
-
-        <div class="status" id="statusMsg"></div>
-
-    </form>
-
-    <div class="preview" id="preview">
-        <strong>Vista previa</strong><br>
-        <span id="previewText">Rellena el formulario...</span>
+        <!-- Tabla habitaciones existentes -->
+        <table>
+            <thead>
+            <tr><th>ID</th><th>Número</th><th>Tipo</th><th>Capacidad</th><th>Precio</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="room : ${rooms}">
+                <td th:text="${room.id}"></td>
+                <td th:text="${room.numero}"></td>
+                <td th:text="${room.tipo}"></td>
+                <td th:text="${room.capacidad}"></td>
+                <td th:text="${room.precioPorNoche}"></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
+
+    <!-- ── PISTAS ── -->
+    <div class="card">
+        <h2>Pistas</h2>
+
+        <!-- Mensajes -->
+        <div class="alert alert-success" th:classappend="${successPista != null} ? ' show'" th:text="${successPista}">¡Pista creada correctamente!</div>
+        <div class="alert alert-error" th:classappend="${errorPista != null} ? ' show'" th:text="${errorPista}"></div>
+
+        <!-- Formulario -->
+        <form th:action="@{/admin/courts}" method="post">
+            <input type="text" name="nombre" placeholder="Nombre de la pista" required />
+            <button type="submit">Crear Pista</button>
+        </form>
+
+        <!-- Tabla pistas existentes -->
+        <table>
+            <thead>
+            <tr><th>ID</th><th>Nombre</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="court : ${courts}">
+                <td th:text="${court.id}"></td>
+                <td th:text="${court.nombre}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 <script>
+    const tipoSelect = document.getElementById('tipo');
+    const capacidadInput = document.getElementById('capacidad');
+    const precioInput = document.getElementById('precioPorNoche');
 
-    // ── ELEMENTOS ──
-    const form = document.getElementById("formRoom");
-    const statusMsg = document.getElementById("statusMsg");
-    const previewText = document.getElementById("previewText");
-    const btn = document.getElementById("submitBtn");
-
-    // ── LIVE PREVIEW ──
-    form.addEventListener("input", updatePreview);
-
-    function updatePreview() {
-        const numero = numeroInput.value || "-";
-        const tipo = tipoInput.value;
-        const capacidad = capacidadInput.value || "-";
-        const precio = precioInput.value || "-";
-
-        previewText.innerHTML = `
-        Habitación <b>${numero}</b><br>
-        Tipo: ${tipo}<br>
-        Capacidad: ${capacidad}<br>
-        Precio: €${precio}/noche
-    `;
+    function actualizarCampos() {
+        if(tipoSelect.value === 'SUITE') {
+            capacidadInput.disabled = false;
+            precioInput.disabled = false;
+        } else {
+            capacidadInput.disabled = true;
+            precioInput.disabled = true;
+            capacidadInput.value = '';
+            precioInput.value = '';
+        }
     }
 
-    // refs
-    const numeroInput = document.getElementById("numero");
-    const tipoInput = document.getElementById("tipo");
-    const capacidadInput = document.getElementById("capacidad");
-    const precioInput = document.getElementById("precio");
-
-    // ── SUBMIT ──
-    form.addEventListener("submit", async function(e) {
-        e.preventDefault();
-
-        const numero = numeroInput.value.trim();
-        const tipo = tipoInput.value;
-        const capacidad = parseInt(capacidadInput.value);
-        const precio = parseFloat(precioInput.value);
-
-        // VALIDACIÓN
-        if (!numero || capacidad <= 0 || precio <= 0) {
-            showStatus("Datos inválidos ❌", "error");
-            return;
-        }
-
-        // LOADING
-        btn.disabled = true;
-        btn.textContent = "Creando...";
-        showStatus("Enviando datos...", "");
-
-        try {
-            const res = await fetch("/api/v1/rooms", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-
-                },
-                body: JSON.stringify({
-                    numero,
-                    tipo,
-                    capacidad,
-                    precioPorNoche: precio
-                })
-            });
-
-            if (res.ok) {
-                showStatus("Habitación creada correctamente ✅", "success");
-                form.reset();
-                updatePreview();
-            } else {
-                showStatus("Error del servidor ❌", "error");
-            }
-
-        } catch {
-            showStatus("Error de conexión ❌", "error");
-        }
-
-        btn.disabled = false;
-        btn.textContent = "Crear habitación";
-    });
-
-    // ── STATUS ──
-    function showStatus(msg, type) {
-        statusMsg.textContent = msg;
-        statusMsg.className = "status " + type;
-    }
-
-
+    tipoSelect.addEventListener('change', actualizarCampos);
+    window.addEventListener('load', actualizarCampos);
 </script>
 
 </body>
