@@ -171,4 +171,31 @@ public class Controller {
         }
         return "redirect:/habitaciones/disponibles";
     }
+
+    /*
+ @PostMapping("/admin/rooms")
+ public String crearHabitacionFromForm(@ModelAttribute RoomRequest request, Model model) {
+     try {
+         proxy.crearHabitacion(request);
+         model.addAttribute("success", "Habitación creada correctamente");
+     } catch (Exception e) {
+         model.addAttribute("error", e.getMessage());
+     }
+     return "/admin";
+ }
+ */
+    @GetMapping("/menu")
+    public String showMenu(HttpSession session, Model model) {
+
+        String role = (String) session.getAttribute("userRole");
+
+        if (role == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("role", role);
+
+        return "auth/menu"; // ruta del HTML
+    }
+
 }

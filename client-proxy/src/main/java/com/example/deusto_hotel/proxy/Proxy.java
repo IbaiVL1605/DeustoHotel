@@ -202,4 +202,94 @@ public class Proxy {
             throw new RuntimeException("Error al eliminar la reserva: " + response.body());
         }
     }
+
+    public void signup(String nombre, String email, String password) {
+        try {
+            String encodedNombre = URLEncoder.encode(nombre, StandardCharsets.UTF_8);
+            String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
+            String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(String.format(
+                            "http://localhost:8080/api/v1/users?email=%s&password=%s&nombre=%s",
+                            encodedEmail,
+                            encodedPassword,
+                            encodedNombre
+                    )))
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                String errorMessage = response.body() == null || response.body().isBlank()
+                        ? "No se pudo registrar el usuario"
+                        : response.body();
+                throw new IllegalArgumentException(errorMessage);
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Error al registrar el usuario", e);
+        }
+    }
+
+    // PARA LA PÁGINA DE ADMIN
+    /*
+    public void crearHabitacion(RoomRequest request) throws IOException, InterruptedException {
+        // Convertimos RoomRequest a JSON
+        String requestBody = objectMapper.writeValueAsString(request);
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/rooms"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            String errorMessage = response.body() == null || response.body().isBlank()
+                    ? "No se pudo crear la habitación"
+                    : response.body();
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
+    // Crear pista
+
+        // Ver pistas
+        public ArrayList<RoomResponse> getHabitaciones() throws IOException, InterruptedException, JsonProcessingException {
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(java.net.URI.create("http://localhost:8080/api/v1/rooms/"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            return objectMapper.readValue(
+                    response.body(),
+                    new TypeReference<ArrayList<RoomResponse>>() {}
+            );
+        }
+
+        // Ver habitaciones
+        public ArrayList<CourtResponse> getPistas() throws IOException, InterruptedException, JsonProcessingException {
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(java.net.URI.create("http://localhost:8080/api/v1/courts"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+
+            return objectMapper.readValue(
+                    response.body(),
+                    new TypeReference<ArrayList<CourtResponse>>() {}
+            );
+        }
+
+        // Ver usuarios
+
+         */
 }
