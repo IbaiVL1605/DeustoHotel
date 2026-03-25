@@ -50,11 +50,16 @@ public class Controller {
 
     @GetMapping("/pistas")
     public String getPistas(
+            HttpSession session,
             Model model,
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month
     ) throws IOException, InterruptedException, JsonProcessingException {
+        if (session.getAttribute("userRole") == null) {
+            return "redirect:/login";
+        }
+
         LocalDate today = LocalDate.now();
         int currentYear = (year != null) ? year : today.getYear();
         int currentMonth = (month != null) ? month : today.getMonthValue();
