@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Controller
-@RequiredArgsConstructor
+@RequiredArgsConstructor    
 public class Controller {
 
     private final Proxy proxy;
@@ -94,11 +94,9 @@ public class Controller {
         session.setAttribute("userRole", usuario.rol().name());
 
 
-        if (usuario.rol() == Role.ADMIN) {
-            return "redirect:/admin";
-        } else {
-            return "redirect:/habitaciones/disponibles";
-        }
+
+            return "redirect:/menu";
+
     }
 
     @GetMapping("/signup")
@@ -131,7 +129,21 @@ public class Controller {
         if (role == null || !role.equals("ADMIN")) {
             return "redirect:/login";
         }
-        return "admin/admin";
+        return "auth/admin";
     }
+    @GetMapping("/menu")
+    public String showMenu(HttpSession session, Model model) {
+
+        String role = (String) session.getAttribute("userRole");
+
+        if (role == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("role", role);
+
+        return "auth/menu"; // ruta del HTML
+    }
+
 
 }
