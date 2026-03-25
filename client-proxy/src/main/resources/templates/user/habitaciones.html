@@ -895,9 +895,54 @@
     }
 
     // ── RESERVAR ─────────────────────────────────────────
-    function reservar() {
-        alert('Reserva confirmada para ' + carrito.length + ' habitación(es). Redirigiendo al proceso de pago...');
+    async function reservar() {
+
+    if (carrito.length === 0) {
+        alert("Selecciona al menos una habitación");
+        return;
     }
+
+    const fechaEntrada = document.getElementById('fechaEntrada').value;
+    const fechaSalida  = document.getElementById('fechaSalida').value;
+
+    if (!fechaEntrada || !fechaSalida) {
+        alert("Selecciona fechas");
+        return;
+    }
+
+    // Convertir carrito → DTOs
+    const requests = carrito.map(item => ({
+        habitacionId: item.suiteId || 1, // ajustar según tipo real
+        checkIn: fechaEntrada,
+        checkOut: fechaSalida
+    }));
+
+    try {
+        const response = await fetch('/reservas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requests)
+        });
+
+        const text = await response.text();
+
+        if (response.ok && text === "OK") {
+            alert("Reserva realizada correctamente 🎉");
+
+            localStorage.removeItem('deusto_hotel_carrito');
+            location.reload();
+
+        } else {
+            alert("Error: " + text);
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Error de conexión");
+    }
+}
 
     // ── RESTORE FROM LOCALSTORAGE ON LOAD ─────────────────
     document.addEventListener('DOMContentLoaded', () => {

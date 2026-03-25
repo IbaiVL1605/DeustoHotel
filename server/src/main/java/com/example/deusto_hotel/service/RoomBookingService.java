@@ -7,6 +7,7 @@ import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.model.RoomBooking;
 import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.RoomBookingRepository;
+import com.example.deusto_hotel.repository.UserRepository;
 import com.example.deusto_hotel.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class RoomBookingService {
     private final RoomBookingRepository roomBookingRepository;
     private final RoomBookingMapper roomBookingMapper;
     private final RoomRepository roomRepository;
+    private  final UserRepository userRepository;
 
     //  Obtener todas las reservas
     @Transactional(readOnly = true)
@@ -48,12 +50,13 @@ public class RoomBookingService {
         Room room = roomRepository.findById(request.habitacionId())
                 .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
 
-
+        User cliente = userRepository.findById(request.clienteId())
+                .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
 
         RoomBooking booking = roomBookingMapper.toEntity(request);
 
         booking.setHabitacion(room);
-        // Preguntar como obtener el cliente que hace la reserva
+        booking.setCliente(cliente);
         booking.setPrecioTotal(calcularPrecio(room, request.checkIn(), request.checkOut()));
 
         roomBookingRepository.save(booking);
