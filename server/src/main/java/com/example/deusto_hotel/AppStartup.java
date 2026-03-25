@@ -58,7 +58,7 @@ public class AppStartup implements CommandLineRunner {
 
         User client1 = new User();
         client1.setNombre("Juan López");
-        client1.setEmail("juan@email.com");
+            client1.setEmail("juan@email.com");
         client1.setPassword("juan123");
         client1.setRol(Role.CLIENT);
         client1.setBloqueado(false);
