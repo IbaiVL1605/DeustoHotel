@@ -3,6 +3,7 @@ package com.example.deusto_hotel.controller;
 import com.example.deusto_hotel.dto.UserRequest;
 import com.example.deusto_hotel.dto.UserResponse;
 import com.example.deusto_hotel.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(
+        HttpSession session,
         @RequestParam String correo,
         @RequestParam String contrasena
     ) {
@@ -55,6 +57,12 @@ public class UserController {
         }
 
         UserResponse response = userService.login(correo, contrasena);
+
+        session.setAttribute("userId", response.id());
+        session.setAttribute("username", response.nombre());
+        session.setAttribute("userEmail", response.email());
+        session.setAttribute("userRole", response.rol());
+
         return ResponseEntity.ok(Map.of(
                 "mensaje", "Sesion iniciada correctamente",
                 "usuario", response

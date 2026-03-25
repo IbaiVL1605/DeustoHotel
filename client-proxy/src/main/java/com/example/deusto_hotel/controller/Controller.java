@@ -129,7 +129,7 @@ public class Controller {
         if (role == null || !role.equals("ADMIN")) {
             return "redirect:/login";
         }
-        return "auth/admin";
+        return "admin/admin";
     }
     @GetMapping("/menu")
     public String showMenu(HttpSession session, Model model) {
