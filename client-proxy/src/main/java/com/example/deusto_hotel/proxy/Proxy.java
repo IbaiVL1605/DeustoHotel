@@ -153,10 +153,10 @@ public class Proxy {
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(java.net.URI.create(String.format(
-                            "http://localhost:8080/api/v1/users/signup?nombre=%s&correo=%s&contrasena=%s",
-                            encodedNombre,
+                            "http://localhost:8080/api/v1/users?email=%s&password=%s&nombre=%s",
                             encodedEmail,
-                            encodedPassword
+                            encodedPassword,
+                            encodedNombre
                     )))
                     .POST(HttpRequest.BodyPublishers.noBody())
                     .build();
