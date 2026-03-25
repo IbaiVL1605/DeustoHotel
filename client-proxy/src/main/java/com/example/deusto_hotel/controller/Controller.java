@@ -1,5 +1,6 @@
 package com.example.deusto_hotel.controller;
 
+import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.dto.RoomDisponibleResponse;
 import com.example.deusto_hotel.dto.UserResponse;
 import com.example.deusto_hotel.dto.WeekAvailability;
@@ -8,9 +9,8 @@ import com.example.deusto_hotel.proxy.Proxy;
 import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -107,5 +107,68 @@ public class Controller {
             return "redirect:/login";
         }
         return "admin/admin";
+    }
+    @GetMapping("/reservas/nueva")
+    public String showCreateForm(Model model) {
+        model.addAttribute("booking", new RoomBookingRequest(null, null, null, null));
+        return "user/reserva-form";
+    }
+
+    @PostMapping("/reservas")
+    @ResponseBody
+    public String createBookings(@RequestBody List<RoomBookingRequest> requests,
+                                 HttpSession session) {
+
+        Long clienteId = (Long) session.getAttribute("userId");
+
+        if (clienteId == null) {
+            return "ERROR: Usuario no autenticado";
+        }
+
+        try {
+            List<RoomBookingRequest> requestsConCliente = requests.stream()
+                    .map(r -> new RoomBookingRequest(
+                            r.habitacionId(),
+                            r.checkIn(),
+                            r.checkOut(),
+                            clienteId
+                    ))
+                    .toList();
+
+            proxy.createBookings(requestsConCliente);
+
+            return "OK";
+
+        } catch (Exception e) {
+            return "ERROR: " + e.getMessage();
+        }
+    }
+
+    @GetMapping("/reservas/editar/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        model.addAttribute("bookingId", id);
+        model.addAttribute("booking", new RoomBookingRequest(null, null, null,null));
+        return "user/reserva-form";
+    }
+
+    @PostMapping("/reservas/{id}")
+    public String updateBooking(@PathVariable Long id, RoomBookingRequest request, Model model) {
+        try {
+            proxy.updateRoomBooking(id, request);
+            return "redirect:/habitaciones/disponibles";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "user/reserva-form";
+        }
+    }
+
+    @PostMapping("/reservas/eliminar/{id}")
+    public String deleteBooking(@PathVariable Long id) {
+        try {
+            proxy.deleteRoomBooking(id);
+        } catch (Exception e) {
+            System.out.println("Error al eliminar: " + e.getMessage());
+        }
+        return "redirect:/habitaciones/disponibles";
     }
 }
