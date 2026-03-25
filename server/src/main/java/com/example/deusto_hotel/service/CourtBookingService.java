@@ -5,15 +5,18 @@ import com.example.deusto_hotel.dto.CourtBookingResponse;
 import com.example.deusto_hotel.mapper.CourtBookingMapper;
 import com.example.deusto_hotel.model.Court;
 import com.example.deusto_hotel.model.CourtBooking;
+import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
 import com.example.deusto_hotel.repository.CourtRepository;
 import com.example.deusto_hotel.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -45,44 +48,19 @@ public class CourtBookingService {
     }
 
     // 🔹 CREATE
-    public CourtBookingResponse create(CourtBookingRequest request) {
-
-        // Validar horas
-        if (request.horaInicio().isAfter(request.horaFin()) ||
-                request.horaInicio().equals(request.horaFin())) {
-            throw new RuntimeException("La hora de inicio debe ser menor que la de fin");
-        }
-
-        // Validar disponibilidad
-        if (!isDisponible(
-                request.pistaId(),
-                request.fecha(),
-                request.horaInicio(),
-                request.horaFin())) {
-
-            throw new RuntimeException("La pista no está disponible");
-        }
+    public CourtBookingResponse create(CourtBookingRequest request, HttpSession session) {
 
         CourtBooking booking = courtBookingMapper.toEntity(request);
 
-        // Cliente obligatorio (cogemos uno por defecto o el primero)
-        booking.setCliente(userRepository.findAll().stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No hay usuarios disponibles")));
+        Long horas = ChronoUnit.HOURS.between(request.horaFin(), request.horaInicio());
 
-        // Pista
-        Court pista = courtRepository.findById(request.pistaId())
-                .orElseThrow(() -> new RuntimeException("Pista no encontrada"));
+        booking.setCliente(userRepository.getReferenceById(Long.parseLong(session.getId())));
 
-        booking.setPista(pista);
+        booking.setPrecioTotal(courtRepository.getReferenceById(request.pistaId()).getPrecioPorHora() * horas);
 
-        // Calcular precio
-        long horas = request.horaInicio().until(request.horaFin(), java.time.temporal.ChronoUnit.HOURS);
-        booking.setPrecioTotal(horas * pista.getPrecioPorHora());
+        courtBookingRepository.save(booking);
 
-        CourtBooking saved = courtBookingRepository.save(booking);
-
-        return courtBookingMapper.toResponse(saved);
+        return courtBookingMapper.toResponse(booking);
     }
 
     // 🔹 UPDATE
