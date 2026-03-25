@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -71,6 +72,7 @@ public class Controller {
         model.addAttribute("year", currentYear);
         model.addAttribute("month", currentMonth);
         model.addAttribute("hoy", today);
+        model.addAttribute("objectMapper", new ObjectMapper());
         return "user/pistas";
     }
 

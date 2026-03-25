@@ -335,6 +335,53 @@
             .calendar-header { flex-direction: column; align-items: flex-start; }
             .controls { justify-content: flex-start; }
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background: var(--dark-2);
+            margin: 10% auto;
+            padding: 2rem;
+            border: 1px solid var(--gold);
+            width: 400px;
+            color: var(--cream);
+            border-radius: 6px;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1rem;
+        }
+
+        .modal-content input {
+            width: 100%;
+            margin: 0.5rem 0 1rem;
+            padding: 0.5rem;
+            background: var(--dark-3);
+            border: 1px solid var(--gold);
+            color: var(--cream);
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--gold);
+            border: none;
+            cursor: pointer;
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -393,9 +440,8 @@
         <div th:if="${disponibilidad != null}">
             <div th:each="week, weekStat : ${disponibilidad}" 
                  class="week-container" 
-                 th:id="'week-' + ${weekStat.index}"
-                 th:data-has-today="${week.days.?[fecha.equals(#root.hoy)].size() > 0 ? 'true' : 'false'}">
-                
+                 th:id="'week-' + ${weekStat.index}">
+
                 <table class="calendar-grid">
                     <thead>
                         <tr>
@@ -422,16 +468,18 @@
                                 </div>
                                 
                                 <div th:if="${!dia.fecha.isBefore(hoy) && (!dia.fecha.equals(hoy) || hora >= T(java.time.LocalTime).now().getHour())}">
-                                    <div th:with="matchingSlots=${dia.slots.?[start.hour == __${hora}__]}">
-                                        <div th:if="${matchingSlots.size() > 0}" th:with="slot=${matchingSlots[0]}">
-                                            <div th:if="${slot.availableCourts.size() > 0}" class="event-box available" th:title="'Pistas disponibles: ' + ${slot.availableCourts.size()}">
+                                    <div th:with="slotIndex=${hora - 8}">
+                                        <div th:if="${dia.slots != null and dia.slots.size() > slotIndex}" th:with="slot=${dia.slots[slotIndex]}">
+                                            <div th:if="${slot.availableCourts.size() > 0}"
+                                                 class="event-box available"
+                                                 th:attr="onclick=|openModal('${dia.fecha}', '${hora}', '${objectMapper.writeValueAsString(slot.availableCourts)}')|">
                                                 <span th:text="${slot.availableCourts.size()} + ' disp'"></span>
                                             </div>
                                             <div th:if="${slot.availableCourts.size() == 0}" class="event-box full">
                                                 <span>Ocupado</span>
                                             </div>
                                         </div>
-                                        <div th:if="${matchingSlots.size() == 0}" class="event-box past-event">
+                                        <div th:if="${dia.slots == null or dia.slots.size() <= slotIndex}" class="event-box past-event">
                                             <span>N/A</span>
                                         </div>
                                     </div>
@@ -458,7 +506,7 @@
         let currentWeekIndex = 0;
         
         for (let i = 0; i < weeks.length; i++) {
-            if (weeks[i].getAttribute('data-has-today') === 'true') {
+            if (weeks[i].querySelector('th.today-col')) {
                 currentWeekIndex = i;
                 break;
             }
@@ -488,7 +536,73 @@
             document.getElementById('week-indicator').textContent = (index + 1) + " de " + weeks.length;
         }
     });
+    function openModal(date, hour, courts) {
+        document.getElementById("booking-modal").style.display = "block";
+
+        document.getElementById("modal-date").textContent = date;
+        document.getElementById("modal-hour").textContent = hour + ":00";
+
+        const list = document.getElementById("available-courts");
+        list.innerHTML = "";
+
+        if (courts && courts.length > 0) {
+            courts.forEach(c => {
+                const li = document.createElement("li");
+                li.textContent = "Pista " + c.numero;
+                list.appendChild(li);
+            });
+        }
+
+        // Autocompletar horas
+        document.getElementById("start-time").value = hour + ":00";
+        document.getElementById("end-time").value = (hour + 1) + ":00";
+    }
+
+    function closeModal() {
+        document.getElementById("booking-modal").style.display = "none";
+    }
+
+    function makeReservation() {
+        const date = document.getElementById("modal-date").textContent;
+        const start = document.getElementById("start-time").value;
+        const end = document.getElementById("end-time").value;
+
+        alert("Reserva realizada:\n" + date + "\n" + start + " - " + end);
+
+        // Aquí puedes hacer fetch al backend
+        /*
+        fetch('/reservas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date, start, end })
+        });
+        */
+
+        closeModal();
+    }
 </script>
+
+<div id="booking-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+
+        <h2>Reservar pista</h2>
+
+        <p><strong>Fecha:</strong> <span id="modal-date"></span></p>
+        <p><strong>Hora seleccionada:</strong> <span id="modal-hour"></span></p>
+
+        <label>Pistas disponibles:</label>
+        <ul id="available-courts"></ul>
+
+        <label>Hora inicio:</label>
+        <input type="time" id="start-time">
+
+        <label>Hora fin:</label>
+        <input type="time" id="end-time">
+
+        <button onclick="makeReservation()">Reservar</button>
+    </div>
+</div>
 
 </body>
 </html>
