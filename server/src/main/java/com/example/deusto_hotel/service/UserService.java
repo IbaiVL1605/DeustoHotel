@@ -2,6 +2,7 @@ package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.UserRequest;
 import com.example.deusto_hotel.dto.UserResponse;
+import com.example.deusto_hotel.exception.Excepciones;
 import com.example.deusto_hotel.mapper.UserMapper;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.model.User;
@@ -37,6 +38,10 @@ public class UserService {
 
     public UserResponse create(UserRequest request) {
         // Usar Mapper para convertir UserRequest a User, guardar en la base de datos y luego convertir a UserResponse
+        if(userRepository.existsByEmail(request.email())) {
+            throw new Excepciones.EmailYaRegistradoException("El correo ya está registrado");
+        }
+
         User usuario = userMapper.toEntity(request);
 
         usuario.setRol(Role.CLIENT);   // o USER según tu enum

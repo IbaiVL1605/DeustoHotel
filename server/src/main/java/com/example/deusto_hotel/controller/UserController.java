@@ -33,13 +33,11 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> create(
-        @RequestParam(required = true) String email,
-        @RequestParam(required = true) String password,
-        @RequestParam(required = true) String nombre
-    ) {
-        userService.create(new UserRequest(nombre, email, password));
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
+        UserResponse response = userService.create(request);
+
+        // Devuelve un 201 = CREATED
+        return ResponseEntity.status(201).body(response);
     }
 
     @PostMapping("/login")
