@@ -6,9 +6,10 @@ import com.example.deusto_hotel.dto.UserResponse;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureWebMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,10 +18,11 @@ import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest(UserController.class)
 public class UserControllerTest2 {
 
     @Autowired
@@ -29,8 +31,8 @@ public class UserControllerTest2 {
     @MockitoBean
     private UserService userService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
 
     @Test
     public void testRegistrarUsuario_Success() throws Exception {
