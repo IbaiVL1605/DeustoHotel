@@ -106,6 +106,58 @@ class HabitacionesControllerTest {
                 .andExpect(jsonPath("$[2].suites.length()").value(2));
     }
 
+    @Test
+    void createRoom_success() throws Exception {
+
+        RoomRequest request = new RoomRequest(
+                "101",
+                RoomType.SUITE,
+                4,
+                200.0
+        );
+
+        RoomResponse response = new RoomResponse(
+                1L,
+                "101",
+                RoomType.SUITE,
+                4,
+                200.0,
+                null
+        );
+
+        when(roomService.create(any(RoomRequest.class))).thenReturn(response);
+
+        mockMvc.perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/rooms")
+                                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.numero").value("101"))
+                .andExpect(jsonPath("$.tipo").value("SUITE"))
+                .andExpect(jsonPath("$.capacidad").value(4));
+    }
+    @Test
+    void createRoom_error_whenAlreadyExists() throws Exception {
+
+        RoomRequest request = new RoomRequest(
+                "101",
+                RoomType.SUITE,
+                4,
+                200.0
+        );
+
+        when(roomService.create(any(RoomRequest.class)))
+                .thenThrow(new IllegalArgumentException("Ya existe"));
+
+        mockMvc.perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/rooms")
+                                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest());
+    }
+
 
 
 }
