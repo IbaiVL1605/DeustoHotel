@@ -39,6 +39,16 @@ public class Room {
     @OneToMany(mappedBy = "habitacion", cascade = CascadeType.ALL)
     private List<RoomBooking> roomBookings = new ArrayList<>();
 
+    public Room(Long id, RoomType roomType) {
+        this.capacidad = 1;
+        this.precioPorNoche = 1;
+        this.id = id;
+        this.tipo = roomType;
+        this.numero = String.valueOf(id);
+        this.estado = RoomStatus.DISPONIBLE;
+
+    }
+
     public void setCapacidad(int capacidad) {
         if(!this.tipo.equals(RoomType.SUITE)){
             throw new IllegalArgumentException("No se puede establecer capacidad para habitaciones que no son SUITE");
