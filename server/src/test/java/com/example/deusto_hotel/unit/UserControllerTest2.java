@@ -3,40 +3,50 @@ package com.example.deusto_hotel.unit;
 import com.example.deusto_hotel.controller.UserController;
 import com.example.deusto_hotel.dto.UserRequest;
 import com.example.deusto_hotel.dto.UserResponse;
+import com.example.deusto_hotel.exception.Excepciones;
+import com.example.deusto_hotel.exception.GlobalExceptionHandler;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureWebMvc;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest(UserController.class)
+@ExtendWith(MockitoExtension.class)
 public class UserControllerTest2 {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @Mock
     private UserService userService;
 
-    private ObjectMapper objectMapper = new ObjectMapper()
+    private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule());
+
+    @BeforeEach
+    void setUp() {
+        UserController userController = new UserController(userService);
+        mockMvc = MockMvcBuilders.standaloneSetup(userController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+    }
 
     @Test
     public void testRegistrarUsuario_Success() throws Exception {
-        // Arrange
         UserRequest request = new UserRequest("Juan", "a@gmail.com", "12345678");
 
         UserResponse response = new UserResponse(
@@ -50,7 +60,6 @@ public class UserControllerTest2 {
 
         when(userService.create(any(UserRequest.class))).thenReturn(response);
 
-        // Act & Assert
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -67,7 +76,6 @@ public class UserControllerTest2 {
 
     @Test
     public void testLogin_Success() throws Exception {
-        // Arrange
         UserResponse response = new UserResponse(
                 1L,
                 "Juan",
@@ -79,7 +87,6 @@ public class UserControllerTest2 {
 
         when(userService.login("a@gmail.com", "12345678")).thenReturn(response);
 
-        // Act & Assert
         mockMvc.perform(post("/api/v1/users/login")
                         .param("correo", "a@gmail.com")
                         .param("contrasena", "12345678"))
@@ -89,5 +96,66 @@ public class UserControllerTest2 {
                 .andExpect(jsonPath("$.usuario.nombre").value("Juan"));
 
         verify(userService, times(1)).login("a@gmail.com", "12345678");
+    }
+
+    @Test
+    public void testLogin_CorreoVacio_BadRequest() throws Exception {
+        mockMvc.perform(post("/api/v1/users/login")
+                        .param("correo", "")
+                        .param("contrasena", "12345678"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("El correo es obligatorio."));
+
+        verify(userService, never()).login(anyString(), anyString());
+    }
+
+    @Test
+    public void testLogin_ContrasenaVacia_BadRequest() throws Exception {
+        mockMvc.perform(post("/api/v1/users/login")
+                        .param("correo", "a@gmail.com")
+                        .param("contrasena", ""))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("La contrasena es obligatoria."));
+
+        verify(userService, never()).login(anyString(), anyString());
+    }
+
+    @Test
+    public void testLogin_UsuarioNoEncontrado_NotFound() throws Exception {
+        when(userService.login("noexiste@gmail.com", "12345678"))
+                .thenThrow(new Excepciones.UsuarioNoEncontradoException("Usuario no encontrado"));
+
+        mockMvc.perform(post("/api/v1/users/login")
+                        .param("correo", "noexiste@gmail.com")
+                        .param("contrasena", "12345678"))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).login("noexiste@gmail.com", "12345678");
+    }
+
+    @Test
+    public void testLogin_CredencialesInvalidas_Unauthorized() throws Exception {
+        when(userService.login("a@gmail.com", "mal"))
+                .thenThrow(new Excepciones.CredencialesInvalidasException("Contrasena incorrecta"));
+
+        mockMvc.perform(post("/api/v1/users/login")
+                        .param("correo", "a@gmail.com")
+                        .param("contrasena", "mal"))
+                .andExpect(status().isUnauthorized());
+
+        verify(userService, times(1)).login("a@gmail.com", "mal");
+    }
+
+    @Test
+    public void testLogin_UsuarioBloqueado_Forbidden() throws Exception {
+        when(userService.login("bloqueado@gmail.com", "12345678"))
+                .thenThrow(new Excepciones.UsuarioBloqueadoException("Usuario bloqueado"));
+
+        mockMvc.perform(post("/api/v1/users/login")
+                        .param("correo", "bloqueado@gmail.com")
+                        .param("contrasena", "12345678"))
+                .andExpect(status().isForbidden());
+
+        verify(userService, times(1)).login("bloqueado@gmail.com", "12345678");
     }
 }
