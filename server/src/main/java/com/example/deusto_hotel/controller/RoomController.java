@@ -43,34 +43,17 @@ public class RoomController {
 
         return ResponseEntity.status(201).body(created);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<RoomResponse> update(
             @PathVariable Long id,
-            @RequestBody @Valid RoomRequest request,
-            jakarta.servlet.http.HttpSession session
-    ) {
-
-        Object role = session.getAttribute("userRole");
-
-        if (role == null || !role.equals(com.example.deusto_hotel.model.Role.ADMIN)) {
-            return ResponseEntity.status(403).build();
-        }
+            @RequestBody @Valid RoomRequest request) {
 
         return ResponseEntity.ok(roomService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable Long id,
-            jakarta.servlet.http.HttpSession session
-    ) {
-
-        Object role = session.getAttribute("userRole");
-
-        if (role == null || !role.equals(com.example.deusto_hotel.model.Role.ADMIN)) {
-            return ResponseEntity.status(403).build();
-        }
-
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         roomService.delete(id);
         return ResponseEntity.noContent().build();
     }

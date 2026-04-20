@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -98,4 +99,95 @@ public class UserServiceTest {
         verify(userMapper, never()).toEntity(any());
         verify(userMapper, never()).toResponse(any());
     }
+
+    @Test
+    public void testIniciarSesionUsuario_Success() {
+        UserRequest request = new UserRequest("Juan", "a@gmail.com", "12345678");
+
+        User usuario = new User();
+        usuario.setId(1L);
+        usuario.setNombre("Juan");
+        usuario.setEmail("a@gmail.com");
+        usuario.setPassword("12345678");
+        usuario.setRol(Role.CLIENT);
+        usuario.setBloqueado(false);
+        usuario.setCreadoEn(LocalDateTime.now());
+
+        when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(usuario));
+
+        UserResponse respuesta = userService.login(request.email(), request.password());
+
+        //Comprobar que la respuesta no es null
+        assertNotNull(respuesta);
+        assertEquals("Juan", respuesta.nombre());
+        assertEquals("a@gmail.com", respuesta.email());
+        assertEquals(Role.CLIENT, respuesta.rol());
+        assertFalse(respuesta.bloqueado());
+        verify(userRepository, times(1)).findByEmail(request.email());
+        verifyNoInteractions(userMapper);
+    }
+
+    @Test
+    public void testIniciarSesionUsuario_UsuarioNoEncontrado() {
+        UserRequest request = new UserRequest("Juan", "mal@gmail.com", "12345678");
+
+        when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
+
+        Excepciones.UsuarioNoEncontradoException ex = assertThrows(
+                Excepciones.UsuarioNoEncontradoException.class,
+                () -> userService.login(request.email(), request.password())
+        );
+
+        assertEquals("Usuario no encontrado", ex.getMessage());
+        verify(userRepository, times(1)).findByEmail(request.email());
+        verifyNoInteractions(userMapper);
+    }
+
+    @Test
+    public void testIniciarSesionUsuario_ContrasenaIncorrecta() {
+        UserRequest request = new UserRequest("Juan", "a@gmail.com", "correcta");
+
+        User usuario = new User();
+        usuario.setId(1L);
+        usuario.setNombre("Juan");
+        usuario.setEmail("a@gmail.com");
+        usuario.setPassword("incorrecta");
+        usuario.setRol(Role.CLIENT);
+        usuario.setBloqueado(false);
+        usuario.setCreadoEn(LocalDateTime.now());
+
+        when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(usuario));
+
+        Excepciones.CredencialesInvalidasException ex = assertThrows(
+                Excepciones.CredencialesInvalidasException.class,
+                () -> userService.login(request.email(), request.password())
+        );
+
+        assertEquals("Contrasena incorrecta", ex.getMessage());
+        verify(userRepository, times(1)).findByEmail(request.email());
+        verifyNoInteractions(userMapper);
+    }
+
+    @Test
+    public void testIniciarSesionUsuario_UsuarioBloqueado() {
+        UserRequest request = new UserRequest("Juan", "bloqueado@email.com", "12345678");
+
+        User usuario = new User();
+        usuario.setId(1L);
+        usuario.setNombre("Juan");
+        usuario.setEmail("bloqueado.email.com");
+        usuario.setPassword("12345678");
+        usuario.setBloqueado(true);
+
+        when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(usuario));
+
+        Excepciones.UsuarioBloqueadoException ex = assertThrows(
+                Excepciones.UsuarioBloqueadoException.class,
+                () -> userService.login(request.email(), request.password())
+        );
+        assertEquals("Usuario bloqueado", ex.getMessage());
+        verify(userRepository, times(1)).findByEmail(request.email());
+        verifyNoInteractions(userMapper);
+    }
+
 }

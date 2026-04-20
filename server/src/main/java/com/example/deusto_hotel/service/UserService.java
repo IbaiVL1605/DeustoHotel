@@ -55,14 +55,14 @@ public class UserService {
     public UserResponse login(String correo, String contrasena) {
 
         User usuario = userRepository.findByEmail(correo)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+                .orElseThrow(() -> new Excepciones.UsuarioNoEncontradoException("Usuario no encontrado"));
 
         if (!usuario.getPassword().equals(contrasena)) {
-            throw new IllegalArgumentException("Contrasena incorrecta");
+            throw new Excepciones.CredencialesInvalidasException("Contrasena incorrecta");
         }
 
         if (usuario.isBloqueado()) {
-            throw new IllegalArgumentException("Usuario bloqueado");
+            throw new Excepciones.UsuarioBloqueadoException("Usuario bloqueado");
         }
 
         return new UserResponse(
