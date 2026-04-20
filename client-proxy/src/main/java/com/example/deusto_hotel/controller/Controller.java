@@ -89,6 +89,7 @@ public class Controller {
         UserResponse usuario = proxy.login(email, password);
 
         session.setAttribute("userId", usuario.id());
+
         session.setAttribute("username", usuario.nombre());
         session.setAttribute("userEmail", usuario.email());
         session.setAttribute("userRole", usuario.rol().name());
