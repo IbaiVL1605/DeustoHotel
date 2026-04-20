@@ -7,9 +7,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.net.http.HttpClient;
@@ -24,6 +27,7 @@ import java.util.stream.StreamSupport;
 @Component
 public class Proxy {
 
+    private static final Logger log = LoggerFactory.getLogger(Proxy.class);
     private final HttpClient httpClient =  HttpClient.newBuilder().build();
 
     private final ObjectMapper objectMapper = new ObjectMapper()
@@ -246,64 +250,31 @@ public class Proxy {
         }
     }
 
-    // PARA LA PÁGINA DE ADMIN
-    /*
-    public void crearHabitacion(RoomRequest request) throws IOException, InterruptedException {
-        // Convertimos RoomRequest a JSON
-        String requestBody = objectMapper.writeValueAsString(request);
+    public void crearHabitacion(RoomRequest request) {
+        try {
+            System.out.println("REQUEST RECIBIDA DESDE CONTROLLER: " + request);
+            String requestBody = objectMapper.writeValueAsString(request);
 
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/api/v1/rooms"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .build();
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/api/v1/rooms"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
 
-        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() < 200 || response.statusCode() >= 300) {
-            String errorMessage = response.body() == null || response.body().isBlank()
-                    ? "No se pudo crear la habitación"
-                    : response.body();
-            throw new IllegalArgumentException(errorMessage);
+            System.out.println("RESPONSE DEL SERVIDOR: " + response.statusCode() + " - " + response.body());
+
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                String errorMessage = response.body() == null || response.body().isBlank()
+                        ? "No se pudo crear la habitación"
+                        : response.body();
+                throw new IllegalArgumentException(errorMessage);
+            }
+
+            log.info("Habitación creada exitosamente: " + response.body());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Error al crear la habitación", e);
         }
     }
-
-    // Crear pista
-
-        // Ver pistas
-        public ArrayList<RoomResponse> getHabitaciones() throws IOException, InterruptedException, JsonProcessingException {
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(java.net.URI.create("http://localhost:8080/api/v1/rooms/"))
-                    .GET()
-                    .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            return objectMapper.readValue(
-                    response.body(),
-                    new TypeReference<ArrayList<RoomResponse>>() {}
-            );
-        }
-
-        // Ver habitaciones
-        public ArrayList<CourtResponse> getPistas() throws IOException, InterruptedException, JsonProcessingException {
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(java.net.URI.create("http://localhost:8080/api/v1/courts"))
-                    .GET()
-                    .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-
-            return objectMapper.readValue(
-                    response.body(),
-                    new TypeReference<ArrayList<CourtResponse>>() {}
-            );
-        }
-
-        // Ver usuarios
-
-         */
 }

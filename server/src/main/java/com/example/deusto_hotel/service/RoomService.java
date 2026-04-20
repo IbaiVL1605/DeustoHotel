@@ -76,6 +76,12 @@ public class RoomService {
         if (request.tipo() == RoomType.SUITE) {
             room.setCapacidad(request.capacidad());
             room.setPrecioPorNoche(request.precioPorNoche().intValue());
+        }else if (request.tipo() == RoomType.INDIVIDUAL) {
+            room.setCapacidad(RoomType.INDIVIDUAL.getCapacidad());
+            room.setPrecioPorNoche(RoomType.INDIVIDUAL.getPrecioPorNoche());
+        } else if (request.tipo() == RoomType.DOBLE) {
+            room.setCapacidad(RoomType.DOBLE.getCapacidad());
+            room.setPrecioPorNoche(RoomType.DOBLE.getPrecioPorNoche());
         }
 
         Room saved = roomRepository.save(room);

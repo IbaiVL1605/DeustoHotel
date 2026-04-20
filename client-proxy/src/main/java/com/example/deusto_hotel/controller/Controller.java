@@ -1,9 +1,6 @@
 package com.example.deusto_hotel.controller;
 
-import com.example.deusto_hotel.dto.RoomBookingRequest;
-import com.example.deusto_hotel.dto.RoomDisponibleResponse;
-import com.example.deusto_hotel.dto.UserResponse;
-import com.example.deusto_hotel.dto.WeekAvailability;
+import com.example.deusto_hotel.dto.*;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.proxy.Proxy;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,8 +35,8 @@ public class Controller {
         habitaciones.forEach(habitacion -> {
             String key = switch (habitacion.getTipo()) {
                 case INDIVIDUAL -> "habitacionSimple";
-                case DOBLE  -> "habitacionDoble";
-                case SUITE  -> "habitacionSuite";
+                case DOBLE -> "habitacionDoble";
+                case SUITE -> "habitacionSuite";
             };
             model.addAttribute(key, habitacion);
         });
@@ -110,6 +107,7 @@ public class Controller {
         }
         return "admin/admin";
     }
+
     @GetMapping("/reservas/nueva")
     public String showCreateForm(Model model) {
         model.addAttribute("booking", new RoomBookingRequest(null, null, null, null));
@@ -149,7 +147,7 @@ public class Controller {
     @GetMapping("/reservas/editar/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("bookingId", id);
-        model.addAttribute("booking", new RoomBookingRequest(null, null, null,null));
+        model.addAttribute("booking", new RoomBookingRequest(null, null, null, null));
         return "user/reserva-form";
     }
 
@@ -208,6 +206,7 @@ public class Controller {
             return "{\"status\":\"ERROR\", \"message\":\"" + e.getMessage() + "\"}";
         }
     }
+
     @GetMapping("/menu")
     public String showMenu(HttpSession session, Model model) {
 
@@ -222,4 +221,17 @@ public class Controller {
         return "auth/menu"; // ruta del HTML
     }
 
+    @PostMapping("/admin")
+    public String crearHabitacion(@ModelAttribute RoomRequest request, Model model) {
+        System.out.println("REQUEST RECIBIDA: " + request);
+
+        try {
+            proxy.crearHabitacion(request);
+            model.addAttribute("success", "Habitación creada correctamente");
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
+
+        return "admin/admin";
+    }
 }

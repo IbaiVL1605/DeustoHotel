@@ -5,6 +5,8 @@ import com.example.deusto_hotel.dto.RoomRequest;
 import com.example.deusto_hotel.dto.RoomResponse;
 import com.example.deusto_hotel.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomController {
 
+    private static final Logger log = LoggerFactory.getLogger(RoomController.class);
     private final RoomService roomService;
 
     @GetMapping
@@ -36,6 +39,8 @@ public class RoomController {
             jakarta.servlet.http.HttpSession session
     ) {
         RoomResponse created = roomService.create(request);
+        log.info("Habitación creada: {}", created);
+
         return ResponseEntity.status(201).body(created);
     }
     @PutMapping("/{id}")

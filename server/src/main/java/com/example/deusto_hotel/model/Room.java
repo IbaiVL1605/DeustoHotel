@@ -40,10 +40,11 @@ public class Room {
     private List<RoomBooking> roomBookings = new ArrayList<>();
 
     public void setCapacidad(int capacidad) {
-        if(!this.tipo.equals(RoomType.SUITE)){
-            throw new IllegalArgumentException("No se puede establecer capacidad para habitaciones que no son SUITE");
-        }
         this.capacidad = capacidad;
+    }
+
+    public void setPrecioPorNoche(int precioPorNoche) {
+        this.precioPorNoche = precioPorNoche;
     }
 
     public int getCapacidad() {
@@ -60,14 +61,5 @@ public class Room {
         }
         return this.precioPorNoche;
     }
-
-    public void setPrecioPorNoche(int precioPorNoche) {
-        if(!this.tipo.equals(RoomType.SUITE)){
-            throw new IllegalArgumentException("No se puede establecer precio para habitaciones que no son SUITE");
-        }
-        
-        this.precioPorNoche = precioPorNoche;
-    }
-
 
 }

@@ -56,7 +56,9 @@ public class CourtBookingController {
     // 🔹 DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        // Borrar la reserva de pista
         courtBookingService.delete(id);
+
         return ResponseEntity.noContent().build(); // 204
     }
 
