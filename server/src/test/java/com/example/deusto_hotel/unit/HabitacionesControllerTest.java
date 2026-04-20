@@ -1,110 +1,83 @@
 package com.example.deusto_hotel.unit;
 
-import com.example.deusto_hotel.controller.Controller;
-import com.example.deusto_hotel.dto.RoomDisponibleResponse;
+import com.example.deusto_hotel.controller.RoomController;
+import com.example.deusto_hotel.dto.RoomRequest;
+import com.example.deusto_hotel.dto.RoomResponse;
 import com.example.deusto_hotel.model.RoomType;
-import com.example.deusto_hotel.proxy.Proxy;
+import com.example.deusto_hotel.service.RoomService;
+
+import jakarta.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
-
-import org.springframework.ui.Model;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HabitacionesControllerTest {
-    @Mock
-    private Proxy proxy;
 
     @Mock
-    private Model model;
+    private RoomService roomService;
+
+    @Mock
+    private HttpSession session;
 
     @InjectMocks
-    private Controller controller;
+    private RoomController controller;
+
 
     @Test
-    void shouldReturnHabitacionesWithData() throws Exception {
+    void shouldCreateRoomSuccessfully() {
 
-        LocalDate entrada = LocalDate.now();
-        LocalDate salida = entrada.plusDays(2);
+        RoomRequest request = new RoomRequest(
+                "101",
+                RoomType.SUITE,
+                4,
+                200.0
+        );
 
-        RoomDisponibleResponse room = mock(RoomDisponibleResponse.class);
-        when(room.getTipo()).thenReturn(RoomType.INDIVIDUAL);
+        RoomResponse responseMock = new RoomResponse(
+                1L,
+                "101",
+                RoomType.SUITE,
+                4,
+                200.0,
+                null
+        );
 
-        ArrayList<RoomDisponibleResponse> habitaciones = new ArrayList<>();
-        habitaciones.add(room);
+        when(roomService.create(request)).thenReturn(responseMock);
 
-        when(proxy.getHabitacionesDisponibles(entrada, salida))
-                .thenReturn(habitaciones);
+        ResponseEntity<RoomResponse> response = controller.create(request, session);
 
-        String view = controller.getHabitacionesDisponibles(model, entrada, salida);
+        assertEquals(201, response.getStatusCode().value()); // 🔥 IMPORTANTE
+        assertEquals(responseMock, response.getBody());
 
-        assertEquals("user/habitaciones", view);
-
-        verify(proxy).getHabitacionesDisponibles(entrada, salida);
-        verify(model).addAttribute(eq("habitacionSimple"), any());
+        verify(roomService).create(request);
     }
+
+
     @Test
-    void shouldReturnViewWithoutDates() throws Exception {
+    void shouldThrowExceptionIfRoomAlreadyExists() {
 
-        String view = controller.getHabitacionesDisponibles(model, null, null);
+        RoomRequest request = new RoomRequest(
+                "101",
+                RoomType.SUITE,
+                4,
+                200.0
+        );
 
-        assertEquals("user/habitaciones", view);
+        when(roomService.create(request))
+                .thenThrow(new IllegalArgumentException("Ya existe"));
 
-        verify(proxy, never()).getHabitacionesDisponibles(any(), any());
-    }
-    @Test
-    void shouldMapAllRoomTypesCorrectly() throws Exception {
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.create(request, session)
+        );
 
-        LocalDate entrada = LocalDate.now();
-        LocalDate salida = entrada.plusDays(1);
-
-        RoomDisponibleResponse room1 = mock(RoomDisponibleResponse.class);
-        when(room1.getTipo()).thenReturn(RoomType.INDIVIDUAL);
-
-        RoomDisponibleResponse room2 = mock(RoomDisponibleResponse.class);
-        when(room2.getTipo()).thenReturn(RoomType.SUITE);
-
-        RoomDisponibleResponse room3 = mock(RoomDisponibleResponse.class);
-        when(room3.getTipo()).thenReturn(RoomType.DOBLE);
-
-        ArrayList<RoomDisponibleResponse> habitaciones = new ArrayList<>();
-        habitaciones.add(room1);
-        habitaciones.add(room2);
-        habitaciones.add(room3);
-
-        when(proxy.getHabitacionesDisponibles(any(), any()))
-                .thenReturn(habitaciones);
-
-        controller.getHabitacionesDisponibles(model, entrada, salida);
-
-        verify(model).addAttribute(eq("habitacionSimple"), any());
-        verify(model).addAttribute(eq("habitacionSuite"), any());
-        verify(model).addAttribute(eq("habitacionDoble"), any());
-    }
-    @Test
-    void shouldHandleEmptyRoomList() throws Exception {
-
-        LocalDate entrada = LocalDate.now();
-        LocalDate salida = entrada.plusDays(1);
-
-        when(proxy.getHabitacionesDisponibles(any(), any()))
-                .thenReturn(new ArrayList<>());
-
-        String view = controller.getHabitacionesDisponibles(model, entrada, salida);
-
-        assertEquals("user/habitaciones", view);
-
-        verify(proxy).getHabitacionesDisponibles(any(), any());
-        verify(model, never()).addAttribute(any(), any());
+        verify(roomService).create(request);
     }
 }
