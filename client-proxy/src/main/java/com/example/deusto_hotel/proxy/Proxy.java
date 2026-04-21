@@ -277,4 +277,40 @@ public class Proxy {
             throw new RuntimeException("Error al crear la habitación", e);
         }
     }
+
+    // Obtener reservas de un cliente (pistas y habitaciones)
+    public List<CourtBookingResponse> getCourtBookingsByClienteId(Long clienteId) throws IOException, InterruptedException {
+        log.info("Obteniendo reservas de pistas para clienteId: " + clienteId);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/court-bookings/cliente/" + clienteId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            return objectMapper.readValue(response.body(), new TypeReference<List<CourtBookingResponse>>() {});
+        }
+
+        throw new RuntimeException("Error al obtener las reservas del cliente: " + response.body());
+    }
+
+    public List<RoomBookingResponse> getRoomBookingsByClienteId(Long clienteId) throws IOException, InterruptedException {
+        log.info("Obteniendo reservas de habitaciones para clienteId: " + clienteId);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/room-bookings/cliente/" + clienteId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            return objectMapper.readValue(response.body(), new TypeReference<List<RoomBookingResponse>>() {});
+        }
+
+        throw new RuntimeException("Error al obtener las reservas del cliente: " + response.body());
+    }
+
 }

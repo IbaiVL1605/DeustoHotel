@@ -82,6 +82,7 @@ public class RoomBookingService {
 
         return roomBookingMapper.toResponse(booking);
     }
+    
     //  Eliminar reserva
     public void delete(Long id) {
         if (!roomBookingRepository.existsById(id)) {
