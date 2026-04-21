@@ -153,6 +153,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .detail-item {
@@ -171,6 +172,53 @@
         .detail-value {
             font-size: .95rem;
             color: var(--cream);
+        }
+
+        /* ── BUTTONS ── */
+        .reserva-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(201, 168, 76, .1);
+        }
+
+        .btn {
+            padding: .8rem 1.2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .75rem;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .25s;
+            border: 1px solid;
+            background: transparent;
+            flex: 1;
+        }
+
+        .btn-modify {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .btn-modify:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        .btn-delete {
+            color: var(--error);
+            border-color: var(--error);
+        }
+
+        .btn-delete:hover {
+            background: var(--error);
+            color: var(--cream);
+        }
+
+        .btn:active {
+            transform: scale(.98);
         }
 
         /* ── EMPTY STATE ── */
@@ -216,11 +264,22 @@
                 padding: 1.5rem;
             }
 
+            .reserva-actions {
+                flex-direction: column;
+            }
+
             body {
                 padding: 1rem;
             }
         }
     </style>
+
+    <script>
+        function confirmarEliminacion() {
+            return confirm("¿Estás seguro de que quieres eliminar esta reserva?");
+        }
+    </script>
+
 </head>
 <body>
 
@@ -269,6 +328,10 @@
                         <span class="detail-value" th:text="${booking.precioTotal} + '€'"></span>
                     </div>
                 </div>
+                <div class="reserva-actions">
+                    <button class="btn btn-modify">Modificar</button>
+                    <button class="btn btn-delete">Eliminar</button>
+                </div>
             </div>
         </div>
 
@@ -304,6 +367,13 @@
                         <span class="detail-label">Precio</span>
                         <span class="detail-value" th:text="${booking.precioTotal} + '€'"></span>
                     </div>
+                </div>
+                <div class="reserva-actions">
+                    <button class="btn btn-modify">Modificar</button>
+                    <form th:action="@{'/reservas/eliminar/pista/' + ${booking.id}}" method="post"
+                          onsubmit="return confirmarEliminacion();">
+                        <button type="submit" class="btn btn-delete">Eliminar</button>
+                    </form>
                 </div>
             </div>
         </div>

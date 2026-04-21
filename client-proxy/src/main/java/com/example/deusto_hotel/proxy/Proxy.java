@@ -313,4 +313,19 @@ public class Proxy {
         throw new RuntimeException("Error al obtener las reservas del cliente: " + response.body());
     }
 
+    public void deleteCourtBooking(Long id)
+            throws IOException, InterruptedException {
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/api/v1/court-bookings/" + id))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new RuntimeException("Error al eliminar la reserva: " + response.body());
+        }
+    }
+
 }

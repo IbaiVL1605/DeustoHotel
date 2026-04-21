@@ -263,4 +263,16 @@ public class Controller {
             return "user/reservas";
         }
     }
+
+    @PostMapping("/reservas/eliminar/pista/{id}")
+    public String deleteCourtBooking(@PathVariable Long id) {
+        try {
+            proxy.deleteCourtBooking(id);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return "redirect:/reservas";
+    }
+
+
 }
