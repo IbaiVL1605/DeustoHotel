@@ -10,8 +10,10 @@ import com.example.deusto_hotel.repository.RoomBookingRepository;
 import com.example.deusto_hotel.repository.UserRepository;
 import com.example.deusto_hotel.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -83,15 +85,26 @@ public class RoomBookingService {
         return roomBookingMapper.toResponse(booking);
     }
     
-    //  Eliminar reserva
-    public void delete(Long id) {
-        if (!roomBookingRepository.existsById(id)) {
-            throw new RuntimeException("Reserva no encontrada");
-        }
 
-        roomBookingRepository.deleteById(id);
+//  Eliminar reserva
+public void delete(Long id, Long userId) {
+
+    RoomBooking booking = roomBookingRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Reserva no encontrada"));
+
+    if (userId == null) {
+        throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
     }
 
+    if (!booking.getCliente().getId().equals(userId)) {
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "No puedes cancelar esta reserva");
+    }
+
+    roomBookingRepository.deleteById(id);
+}
     //  Buscar por cliente
     @Transactional(readOnly = true)
     public List<RoomBookingResponse> findByClienteId(Long clienteId) {

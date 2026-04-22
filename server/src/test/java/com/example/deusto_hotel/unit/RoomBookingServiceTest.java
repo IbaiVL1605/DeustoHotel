@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -147,12 +149,20 @@ public class RoomBookingServiceTest {
     }
 
     // DELETE OK
+// DELETE OK
     @Test
     void shouldDeleteBooking() {
 
-        when(roomBookingRepository.existsById(1L)).thenReturn(true);
+        User owner = new User();
+        owner.setId(10L);
 
-        roomBookingService.delete(1L);
+        RoomBooking booking = new RoomBooking();
+        booking.setId(1L);
+        booking.setCliente(owner);
+
+        when(roomBookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+
+        roomBookingService.delete(1L, 10L);
 
         verify(roomBookingRepository).deleteById(1L);
     }
@@ -161,12 +171,55 @@ public class RoomBookingServiceTest {
     @Test
     void shouldThrowIfDeleteNonExistingBooking() {
 
-        when(roomBookingRepository.existsById(1L)).thenReturn(false);
+        when(roomBookingRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () ->
-                roomBookingService.delete(1L)
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () ->
+                roomBookingService.delete(1L, 10L)
         );
 
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        verify(roomBookingRepository, never()).deleteById(any());
+    }
+
+    // DELETE - sin usuario en sesión
+    @Test
+    void shouldThrowIfDeleteWithoutAuthenticatedUser() {
+
+        User owner = new User();
+        owner.setId(10L);
+
+        RoomBooking booking = new RoomBooking();
+        booking.setId(1L);
+        booking.setCliente(owner);
+
+        when(roomBookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () ->
+                roomBookingService.delete(1L, null)
+        );
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusCode());
+        verify(roomBookingRepository, never()).deleteById(any());
+    }
+
+    // DELETE - usuario distinto al dueño
+    @Test
+    void shouldThrowIfDeleteByNonOwnerUser() {
+
+        User owner = new User();
+        owner.setId(10L);
+
+        RoomBooking booking = new RoomBooking();
+        booking.setId(1L);
+        booking.setCliente(owner);
+
+        when(roomBookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () ->
+                roomBookingService.delete(1L, 99L)
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
         verify(roomBookingRepository, never()).deleteById(any());
     }
 

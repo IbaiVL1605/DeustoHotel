@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -174,22 +175,39 @@ class RoomBookingControllerTest {
     @Test
     void delete_success() throws Exception {
 
-        doNothing().when(roomBookingService).delete(1L);
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("userId", 10L);
 
-        mockMvc.perform(delete("/api/v1/room-bookings/1"))
+        doNothing().when(roomBookingService).delete(1L, 10L);
+
+        mockMvc.perform(delete("/api/v1/room-bookings/1").session(session))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void delete_notFound() throws Exception {
 
-        doThrow(new RuntimeException())
-                .when(roomBookingService).delete(1L);
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("userId", 10L);
 
-        mockMvc.perform(delete("/api/v1/room-bookings/1"))
-                .andExpect(status().isInternalServerError());
+        doThrow(new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.NOT_FOUND, "Reserva no encontrada"))
+                .when(roomBookingService).delete(1L, 10L);
+
+        mockMvc.perform(delete("/api/v1/room-bookings/1").session(session))
+                .andExpect(status().isNotFound());
     }
 
+    @Test
+    void delete_unauthorized_whenNoSessionUser() throws Exception {
+
+        doThrow(new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.UNAUTHORIZED, "Usuario no autenticado"))
+                .when(roomBookingService).delete(1L, null);
+
+        mockMvc.perform(delete("/api/v1/room-bookings/1"))
+                .andExpect(status().isUnauthorized());
+    }
     // =========================
     // FIND BY CLIENTE
     // =========================

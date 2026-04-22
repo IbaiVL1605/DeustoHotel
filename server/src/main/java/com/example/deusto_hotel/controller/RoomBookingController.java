@@ -4,10 +4,12 @@ import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.dto.RoomBookingResponse;
 import com.example.deusto_hotel.service.RoomBookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.util.List;
@@ -53,9 +55,12 @@ public class RoomBookingController {
 
     //  Eliminar
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @RequestParam Long userId
+    ) {
 
-        roomBookingService.delete(id);
+        roomBookingService.delete(id, userId);
 
         return ResponseEntity.noContent().build();
     }
