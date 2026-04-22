@@ -62,7 +62,6 @@ public class RoomService {
     }
     public RoomResponse create(RoomRequest request) {
 
-
         if (roomRepository.existsByNumero(request.numero())) {
             throw new IllegalArgumentException("Ya existe una habitación con ese número");
         }
@@ -72,16 +71,13 @@ public class RoomService {
         room.setTipo(request.tipo());
         room.setNumero(request.numero());
 
-
         if (request.tipo() == RoomType.SUITE) {
             room.setCapacidad(request.capacidad());
             room.setPrecioPorNoche(request.precioPorNoche().intValue());
         }else if (request.tipo() == RoomType.INDIVIDUAL) {
-            room.setCapacidad(RoomType.INDIVIDUAL.getCapacidad());
-            room.setPrecioPorNoche(RoomType.INDIVIDUAL.getPrecioPorNoche());
         } else if (request.tipo() == RoomType.DOBLE) {
-            room.setCapacidad(RoomType.DOBLE.getCapacidad());
-            room.setPrecioPorNoche(RoomType.DOBLE.getPrecioPorNoche());
+        }else {
+            throw new IllegalArgumentException("Tipo de habitación no válido");
         }
 
         Room saved = roomRepository.save(room);
