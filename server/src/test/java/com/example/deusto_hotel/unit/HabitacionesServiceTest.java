@@ -32,10 +32,13 @@ public class HabitacionesServiceTest {
 
         when(roomRepository.existsByNumero("101")).thenReturn(false);
 
-        Room saved = new Room();
+        Room saved = new Room(1L, RoomType.SUITE);
+        /*
         saved.setId(1L);
         saved.setNumero("101");
         saved.setTipo(RoomType.SUITE);
+         */
+        saved.setNumero("101");
         saved.setCapacidad(4);
         saved.setPrecioPorNoche(200);
 
@@ -73,12 +76,15 @@ public class HabitacionesServiceTest {
 
         when(roomRepository.existsByNumero("102")).thenReturn(false);
 
-        Room saved = new Room();
+        Room saved = new Room(2L, RoomType.INDIVIDUAL);
+        /*
         saved.setId(2L);
         saved.setNumero("102");
         saved.setTipo(RoomType.INDIVIDUAL);
         saved.setCapacidad(RoomType.INDIVIDUAL.getCapacidad());
         saved.setPrecioPorNoche(RoomType.INDIVIDUAL.getPrecioPorNoche());
+         */
+        saved.setNumero("102");
 
         when(roomRepository.save(any(Room.class))).thenReturn(saved);
 
@@ -96,12 +102,16 @@ public class HabitacionesServiceTest {
 
         when(roomRepository.existsByNumero("103")).thenReturn(false);
 
-        Room saved = new Room();
+        Room saved = new Room(3L, RoomType.DOBLE);
+        /*
         saved.setId(3L);
         saved.setNumero("103");
         saved.setTipo(RoomType.DOBLE);
         saved.setCapacidad(RoomType.DOBLE.getCapacidad());
         saved.setPrecioPorNoche(RoomType.DOBLE.getPrecioPorNoche());
+         */
+
+        saved.setNumero("103");
 
         when(roomRepository.save(any(Room.class))).thenReturn(saved);
 
