@@ -280,6 +280,24 @@
         }
     </script>
 
+    <script>
+        function eliminarReserva(id, userId) {
+            if (!confirm("¿Estás seguro de que quieres eliminar esta reserva?")) return;
+
+            fetch(`/api/v1/room-bookings/${id}?userId=${userId}`, {
+                method: "DELETE"
+            })
+            .then(response => {
+                if (response.status === 204) {
+                    location.reload(); // recarga la página
+                } else {
+                    alert("Error al eliminar: " + response.status);
+                }
+            })
+            .catch(error => console.error(error));
+        }
+    </script>
+
 </head>
 <body>
 
@@ -330,7 +348,10 @@
                 </div>
                 <div class="reserva-actions">
                     <button class="btn btn-modify">Modificar</button>
-                    <button class="btn btn-delete">Eliminar</button>
+                    <button class="btn btn-delete"
+                            th:onclick="'eliminarReserva(' + ${booking.id} + ',' + ${booking.clienteId} + ')'">
+                        Eliminar
+                    </button>
                 </div>
             </div>
         </div>

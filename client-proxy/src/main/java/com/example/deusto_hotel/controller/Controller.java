@@ -111,13 +111,14 @@ public class Controller {
         }
         return "admin/admin";
     }
-
+/*
     @GetMapping("/reservas/nueva")
     public String showCreateForm(Model model) {
         model.addAttribute("booking", new RoomBookingRequest(null, null, null, null));
         return "user/reserva-form";
     }
-
+    */
+/*
     @PostMapping("/reservas")
     @ResponseBody
     public String createBookings(@RequestBody List<RoomBookingRequest> requests,
@@ -147,7 +148,8 @@ public class Controller {
             return "ERROR: " + e.getMessage();
         }
     }
-
+*/
+    /*
     @GetMapping("/reservas/editar/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("bookingId", id);
@@ -165,7 +167,7 @@ public class Controller {
             return "user/reserva-form";
         }
     }
-
+*/
     @PostMapping("/reservas/eliminar/{id}")
     public String deleteBooking(@PathVariable Long id) {
         try {
