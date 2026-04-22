@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class RoomBooking {
 
     @Id
@@ -31,7 +33,7 @@ public class RoomBooking {
     private RoomBookingStatus estado = RoomBookingStatus.PENDIENTE;
 
     @Column(nullable = false)
-    private Double precioTotal;
+    private Integer precioTotal;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

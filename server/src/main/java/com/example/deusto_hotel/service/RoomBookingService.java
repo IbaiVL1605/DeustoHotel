@@ -5,18 +5,18 @@ import com.example.deusto_hotel.dto.RoomBookingResponse;
 import com.example.deusto_hotel.mapper.RoomBookingMapper;
 import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.model.RoomBooking;
+import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.RoomBookingRepository;
 import com.example.deusto_hotel.repository.UserRepository;
 import com.example.deusto_hotel.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,25 +47,90 @@ public class RoomBookingService {
     }
 
     // Crear reserva
-    public RoomBookingResponse create(RoomBookingRequest request) {
+    @Transactional()
+    public void create(List<RoomBookingRequest> request) {
 
-        Room room = roomRepository.findById(request.habitacionId())
-                .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
+        for  (RoomBookingRequest roomBookingRequest : request) {
+            validarFechas(roomBookingRequest);
+            User cliente = userRepository.findById(roomBookingRequest.id_cliente())
+                    .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
-        User cliente = userRepository.findById(request.clienteId())
-                .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
+            if (roomBookingRequest.tipo().equals(RoomType.INDIVIDUAL) || roomBookingRequest.tipo().equals(RoomType.DOBLE)) {
+                reservarSimples(roomBookingRequest, cliente);
+            } else if(roomBookingRequest.tipo().equals(RoomType.SUITE)) {
+                reservarSuits(roomBookingRequest, cliente);
+            } else {
+                throw new IllegalArgumentException("Tipo de Reserva no encontrada");
+            }
+        }
 
-        RoomBooking booking = roomBookingMapper.toEntity(request);
 
-        booking.setHabitacion(room);
-        booking.setCliente(cliente);
-        booking.setPrecioTotal(calcularPrecio(room, request.checkIn(), request.checkOut()));
-
-        roomBookingRepository.save(booking);
-
-        return roomBookingMapper.toResponse(booking);
     }
 
+    private void reservarSuits(RoomBookingRequest roomBookingRequest, User cliente) {
+        System.out.printf("Reserva SUITE: %s\n", roomBookingRequest.id_habitacion());
+        Optional<Room> habitacion = roomRepository.findByIdAndTipo(roomBookingRequest.id_habitacion(), RoomType.SUITE);
+        if(habitacion.isEmpty()) {throw new IllegalArgumentException("Habitacion no encontrada para tipo SUITE");}
+
+        RoomBooking reserva = new RoomBooking();
+        reserva.setCliente(cliente);
+        reserva.setHabitacion(habitacion.get());
+        reserva.setCheckIn(roomBookingRequest.fechaEntrada());
+        reserva.setCheckOut(roomBookingRequest.fechaSalida());
+        reserva.setPrecioTotal(habitacion.get().getPrecioPorNoche());
+
+        roomBookingRepository.save(reserva);
+    }
+
+    private void validarFechas(RoomBookingRequest roomBookingRequest) {
+        if(roomBookingRequest.fechaEntrada().isAfter(roomBookingRequest.fechaSalida()) || roomBookingRequest.fechaEntrada().isEqual(roomBookingRequest.fechaSalida())) {
+            throw new IllegalArgumentException("La fecha de salida debe de ser posterior a la fecha de entrada.");
+
+        } else if(roomBookingRequest.fechaEntrada().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("La fecha de entrada no puede ser anterior a la fecha actual.");
+
+        }
+
+    }
+
+    private void reservarSimples(RoomBookingRequest roomBookingRequest, User cliente) {
+
+        List<Room> disponiblesTotal = roomRepository.findRoomDisponibles(roomBookingRequest.fechaEntrada(), roomBookingRequest.fechaSalida());
+        if(disponiblesTotal.isEmpty()) {throw new IllegalArgumentException("No hay habitaciones disponibles para las fechas seleccionadas");}
+
+        List<Room> disponibles = disponiblesTotal.stream()
+                .filter(h -> h.getTipo().equals(roomBookingRequest.tipo()))
+                .toList();
+
+
+        if(disponibles.size() < roomBookingRequest.cantidad()) {throw new IllegalArgumentException(String.format("No hay habitaciones disponibles para las fechas seleccionadas con el tipo: %s", roomBookingRequest.tipo()));}
+
+        for (int i = 0; i < roomBookingRequest.cantidad(); i++) {
+            RoomBooking reserva = new RoomBooking();
+
+            reserva.setCliente(cliente);
+            reserva.setCheckIn(roomBookingRequest.fechaEntrada());
+            reserva.setCheckOut(roomBookingRequest.fechaSalida());
+
+
+            Room habitacion = disponibles.get(i);
+            reserva.setPrecioTotal(habitacion.getPrecioPorNoche());
+            reserva.setHabitacion(habitacion);
+
+
+            roomBookingRepository.save(reserva);
+        }
+
+
+
+
+
+
+    }
+
+
+
+    /*
     // Actualizar reserva
     public RoomBookingResponse update(Long id, RoomBookingRequest request) {
 
@@ -126,7 +191,7 @@ public void delete(Long id, Long userId) {
         long dias = ChronoUnit.DAYS.between(checkIn, checkOut);
         return (double) (dias * room.getPrecioPorNoche());
     }
-
+    */
 
 
 }

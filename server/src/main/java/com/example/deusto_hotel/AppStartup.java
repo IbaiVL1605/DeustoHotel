@@ -90,6 +90,13 @@ public class AppStartup implements CommandLineRunner {
         room1.setEstado(RoomStatus.DISPONIBLE);
         roomRepository.save(room1);
 
+        Room room5 = new Room();
+        room5.setNumero("100");
+        room5.setTipo(RoomType.INDIVIDUAL);
+        room5.setEstado(RoomStatus.DISPONIBLE);
+        roomRepository.save(room5);
+
+
         Room room2 = new Room();
         room2.setNumero("102");
         room2.setTipo(RoomType.DOBLE);
@@ -146,7 +153,7 @@ public class AppStartup implements CommandLineRunner {
         roomBooking1.setCheckIn(LocalDate.now().plusDays(1));
         roomBooking1.setCheckOut(LocalDate.now().plusDays(3));
         roomBooking1.setEstado(RoomBookingStatus.PENDIENTE);
-        roomBooking1.setPrecioTotal(160.0);
+        roomBooking1.setPrecioTotal(160);
         roomBookingRepository.save(roomBooking1);
 
         RoomBooking roomBooking2 = new RoomBooking();
@@ -155,7 +162,7 @@ public class AppStartup implements CommandLineRunner {
         roomBooking2.setCheckIn(LocalDate.now());
         roomBooking2.setCheckOut(LocalDate.now().plusDays(2));
         roomBooking2.setEstado(RoomBookingStatus.CONFIRMADA);
-        roomBooking2.setPrecioTotal(240.0);
+        roomBooking2.setPrecioTotal(240);
         roomBookingRepository.save(roomBooking2);
 
         RoomBooking roomBooking3 = new RoomBooking();
@@ -164,7 +171,7 @@ public class AppStartup implements CommandLineRunner {
         roomBooking3.setCheckIn(LocalDate.now().plusDays(5));
         roomBooking3.setCheckOut(LocalDate.now().plusDays(7));
         roomBooking3.setEstado(RoomBookingStatus.CANCELADA);
-        roomBooking3.setPrecioTotal(400.0);
+        roomBooking3.setPrecioTotal(400);
         roomBookingRepository.save(roomBooking3);
 
         // 5. Crear Reservas de Pistas con diferentes estados

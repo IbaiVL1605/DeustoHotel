@@ -3,6 +3,7 @@ package com.example.deusto_hotel.repository;
 import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.model.RoomStatus;
 import com.example.deusto_hotel.model.RoomType;
+import jakarta.validation.constraints.Positive;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,8 +23,11 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     @Query("SELECT r FROM Room r WHERE r.estado = 'DISPONIBLE' AND " +
            "r.id NOT IN (SELECT rb.habitacion.id FROM RoomBooking rb " +
-           "WHERE rb.estado != 'CANCELADA' AND rb.checkIn < :fechaSalida AND rb.checkOut > :fechaEntrada)")
+           "WHERE rb.estado != 'CANCELADA' AND rb.checkIn < :fechaSalida AND rb.checkOut > :fechaEntrada) " +
+           "ORDER BY r.numero")
     List<Room> findRoomDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida);
 
     boolean existsByNumero(String numero);
+
+    Optional<Room> findByIdAndTipo(@Positive Long aLong, RoomType roomType);
 }
