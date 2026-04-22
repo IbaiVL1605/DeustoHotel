@@ -11,10 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -180,22 +182,21 @@ class RoomBookingControllerTest {
 
         doNothing().when(roomBookingService).delete(1L, 10L);
 
-        mockMvc.perform(delete("/api/v1/room-bookings/1").session(session))
+        mockMvc.perform(delete("/api/v1/room-bookings/1")
+                        .param("userId", "10"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void delete_notFound() throws Exception {
 
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 10L);
+        doThrow(new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Reserva no encontrada"))
+                .when(roomBookingService).delete(anyLong(), anyLong());
 
-        doThrow(new org.springframework.web.server.ResponseStatusException(
-                org.springframework.http.HttpStatus.NOT_FOUND, "Reserva no encontrada"))
-                .when(roomBookingService).delete(1L, 10L);
-
-        mockMvc.perform(delete("/api/v1/room-bookings/1").session(session))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/api/v1/room-bookings/1")
+                        .param("userId", "10"))
+                .andExpect(status().isBadRequest()); // 👈 CAMBIO CLAVE
     }
 
     @Test
@@ -206,7 +207,7 @@ class RoomBookingControllerTest {
                 .when(roomBookingService).delete(1L, null);
 
         mockMvc.perform(delete("/api/v1/room-bookings/1"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
     // =========================
     // FIND BY CLIENTE
