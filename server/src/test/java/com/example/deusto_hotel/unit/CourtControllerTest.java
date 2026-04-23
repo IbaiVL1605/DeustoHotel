@@ -6,100 +6,184 @@ import com.example.deusto_hotel.dto.WeekAvailability;
 import com.example.deusto_hotel.model.CourtType;
 import com.example.deusto_hotel.service.CourtService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
-class CourtControllerTest {
+@WebMvcTest(CourtController.class)
+public class CourtControllerTest {
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
     private CourtService courtService;
 
-    @InjectMocks
-    private CourtController courtController;
+    // ===================================================================================
+    // TESTS PARA: GET /api/v1/courts/available
+    // ===================================================================================
 
     @Test
-    void shouldGetAvailableCourtsWithTipoAndFecha() {
+    public void testGetAvailableCourts_ConTipoYFecha() throws Exception {
+        // Arrange
         String tipo = "TENIS";
         String fecha = "2026-05-15";
-        List<CourtAvailabilityDTO> mockList = new ArrayList<>();
-        CourtAvailabilityDTO dto1 = new CourtAvailabilityDTO(CourtType.TENIS, new ArrayList<>());
-        mockList.add(dto1);
-        
-        when(courtService.findAvailableByDate(fecha)).thenReturn(mockList);
 
-        ResponseEntity<List<CourtAvailabilityDTO>> response = courtController.getAvailableCourts(tipo, fecha, null);
+        CourtAvailabilityDTO dtoTenis = new CourtAvailabilityDTO(CourtType.TENIS, new ArrayList<>());
+        CourtAvailabilityDTO dtoPadel = new CourtAvailabilityDTO(CourtType.PADEL, new ArrayList<>());
 
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals(1, response.getBody().size());
-        verify(courtService).findAvailableByDate(fecha);
+        // El mock devuelve ambos, pero el controlador filtrará por "TENIS"
+        when(courtService.findAvailableByDate(fecha)).thenReturn(List.of(dtoTenis, dtoPadel));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/courts/available")
+                        .param("tipo", tipo)
+                        .param("fecha", fecha)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].tipo").value("TENIS"));
+
+        verify(courtService, times(1)).findAvailableByDate(fecha);
     }
 
     @Test
-    void shouldGetAvailableCourtsWithTipoAndSemana() {
+    public void testGetAvailableCourts_SoloConTipoYSemana() throws Exception {
+        // Arrange
         String tipo = "PADEL";
         Integer semana = 2;
-        List<CourtAvailabilityDTO> mockList = new ArrayList<>();
-        
-        when(courtService.findAvailableByTypeAndWeek(tipo, semana)).thenReturn(mockList);
 
-        ResponseEntity<List<CourtAvailabilityDTO>> response = courtController.getAvailableCourts(tipo, null, semana);
+        CourtAvailabilityDTO dtoPadel = new CourtAvailabilityDTO(CourtType.PADEL, new ArrayList<>());
+        when(courtService.findAvailableByTypeAndWeek(tipo, semana)).thenReturn(List.of(dtoPadel));
 
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals(mockList, response.getBody());
-        verify(courtService).findAvailableByTypeAndWeek(tipo, semana);
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/courts/available")
+                        .param("tipo", tipo)
+                        .param("semana", String.valueOf(semana))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].tipo").value("PADEL"));
+
+        verify(courtService, times(1)).findAvailableByTypeAndWeek(tipo, semana);
     }
 
     @Test
-    void shouldGetAvailableCourtsNoParams() {
-        List<CourtAvailabilityDTO> mockList = new ArrayList<>();
-        
-        when(courtService.findAvailableByTypeAndWeek(null, null)).thenReturn(mockList);
+    public void testGetAvailableCourts_SoloConFecha() throws Exception {
+        // Arrange
+        String fecha = "2026-06-20";
 
-        ResponseEntity<List<CourtAvailabilityDTO>> response = courtController.getAvailableCourts(null, null, null);
+        // Cambiado a PADEL ya que FRONTON no existe en el enum
+        CourtAvailabilityDTO dtoPadel = new CourtAvailabilityDTO(CourtType.PADEL, new ArrayList<>());
+        when(courtService.findAvailableByDate(fecha)).thenReturn(List.of(dtoPadel));
 
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals(mockList, response.getBody());
-        verify(courtService).findAvailableByTypeAndWeek(null, null);
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/courts/available")
+                        .param("fecha", fecha)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].tipo").value("PADEL"));
+
+        verify(courtService, times(1)).findAvailableByDate(fecha);
     }
 
     @Test
-    void shouldGetWeeklyAvailability() {
+    public void testGetAvailableCourts_SinParametros() throws Exception {
+        // Arrange
+        CourtAvailabilityDTO dtoTenis = new CourtAvailabilityDTO(CourtType.TENIS, new ArrayList<>());
+        when(courtService.findAvailableByTypeAndWeek(null, null)).thenReturn(List.of(dtoTenis));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/courts/available")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].tipo").value("TENIS"));
+
+        verify(courtService, times(1)).findAvailableByTypeAndWeek(null, null);
+    }
+
+    // ===================================================================================
+    // TESTS PARA: GET /api/v1/courts/weekly-availability
+    // ===================================================================================
+
+    @Test
+    public void testGetWeeklyAvailability_ExitoConTipoValido() throws Exception {
+        // Arrange
         int year = 2026;
         int month = 6;
-        String tipo = "PADEL";
-        
-        List<WeekAvailability> mockList = new ArrayList<>();
-        when(courtService.findWeeklyAvailability(year, month, CourtType.PADEL)).thenReturn(mockList);
+        String tipo = "TENIS";
 
-        ResponseEntity<List<WeekAvailability>> response = courtController.getWeeklyAvailability(year, month, tipo);
+        WeekAvailability weekObj = new WeekAvailability(23, new ArrayList<>());
+        List<WeekAvailability> mockList = List.of(weekObj);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals(mockList, response.getBody());
-        verify(courtService).findWeeklyAvailability(year, month, CourtType.PADEL);
+        when(courtService.findWeeklyAvailability(year, month, CourtType.TENIS)).thenReturn(mockList);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/courts/weekly-availability")
+                        .param("year", String.valueOf(year))
+                        .param("month", String.valueOf(month))
+                        .param("tipo", tipo)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+
+        verify(courtService, times(1)).findWeeklyAvailability(year, month, CourtType.TENIS);
     }
 
     @Test
-    void shouldGetWeeklyAvailabilityWithInvalidType() {
+    public void testGetWeeklyAvailability_ConTipoInvalido() throws Exception {
+        // Arrange
         int year = 2026;
         int month = 6;
-        String invalidTipo = "INVALID";
-        
-        List<WeekAvailability> mockList = new ArrayList<>();
+        String invalidTipo = "TIPO_QUE_NO_EXISTE";
+
+        WeekAvailability weekObj = new WeekAvailability(23, new ArrayList<>());
+        List<WeekAvailability> mockList = List.of(weekObj);
+
         when(courtService.findWeeklyAvailability(year, month, null)).thenReturn(mockList);
 
-        ResponseEntity<List<WeekAvailability>> response = courtController.getWeeklyAvailability(year, month, invalidTipo);
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/courts/weekly-availability")
+                        .param("year", String.valueOf(year))
+                        .param("month", String.valueOf(month))
+                        .param("tipo", invalidTipo)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
 
-        assertEquals(200, response.getStatusCode().value());
-        verify(courtService).findWeeklyAvailability(year, month, null);
+        verify(courtService, times(1)).findWeeklyAvailability(year, month, null);
+    }
+
+    @Test
+    public void testGetWeeklyAvailability_SinTipo() throws Exception {
+        // Arrange
+        int year = 2026;
+        int month = 8;
+
+        WeekAvailability weekObj = new WeekAvailability(31, new ArrayList<>());
+        List<WeekAvailability> mockList = List.of(weekObj);
+
+        when(courtService.findWeeklyAvailability(year, month, null)).thenReturn(mockList);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/courts/weekly-availability")
+                        .param("year", String.valueOf(year))
+                        .param("month", String.valueOf(month))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+
+        verify(courtService, times(1)).findWeeklyAvailability(year, month, null);
     }
 }
