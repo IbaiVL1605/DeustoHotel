@@ -2,21 +2,14 @@ package com.example.deusto_hotel.unit;
 
 import com.example.deusto_hotel.controller.RoomController;
 import com.example.deusto_hotel.dto.*;
-import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.service.RoomService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,14 +17,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RoomController.class)
-class HabitacionesControllerTest {
+class RoomControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -74,9 +74,12 @@
         Pistas deportivas
     </a>
 
-    <a href="/reservas" class="menu-btn">
-        Mis reservas
-    </a>
+    <!-- SOLO CLIENTE -->
+    <div th:if="${role == 'CLIENT'}">
+        <a href="/reservas" class="menu-btn">
+            Mis reservas
+        </a>
+    </div>
 
     <!-- SOLO ADMIN -->
     <div th:if="${role == 'ADMIN'}">

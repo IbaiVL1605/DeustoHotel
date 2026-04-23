@@ -61,6 +61,7 @@ public class CourtController {
         return ResponseEntity.ok(availability);
     }
 
+    /*
     @GetMapping
     public ResponseEntity<List<CourtResponse>> getAll(@RequestParam(required = false) String tipo) {
         List<CourtResponse> courts = courtService.findAll();
@@ -70,15 +71,16 @@ public class CourtController {
         return ResponseEntity.ok(courts);
     }
 
-    @GetMapping("/{id}")
+
+        @GetMapping("/{id}")
     public ResponseEntity<CourtResponse> getById(@PathVariable Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @PostMapping
     public ResponseEntity<CourtResponse> create(@RequestBody @Valid CourtRequest request) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
@@ -86,13 +88,14 @@ public class CourtController {
     public ResponseEntity<CourtResponse> update(
             @PathVariable Long id,
             @RequestBody @Valid CourtRequest request) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
+     */
 }

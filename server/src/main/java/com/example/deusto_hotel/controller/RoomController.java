@@ -23,6 +23,7 @@ public class RoomController {
     private static final Logger log = LoggerFactory.getLogger(RoomController.class);
     private final RoomService roomService;
 
+    /*
     @GetMapping
     public ResponseEntity<List<RoomResponse>> getAll() {
         return ResponseEntity.ok(roomService.findAll());
@@ -32,11 +33,11 @@ public class RoomController {
     public ResponseEntity<RoomResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(roomService.findById(id));
     }
+     */
 
     @PostMapping
     public ResponseEntity<RoomResponse> create(
-            @RequestBody @Valid RoomRequest request,
-            jakarta.servlet.http.HttpSession session
+            @RequestBody @Valid RoomRequest request
     ) {
         RoomResponse created = roomService.create(request);
         log.info("Habitación creada: {}", created);
@@ -44,6 +45,7 @@ public class RoomController {
         return ResponseEntity.status(201).body(created);
     }
 
+    /*
     @PutMapping("/{id}")
     public ResponseEntity<RoomResponse> update(
             @PathVariable Long id,
@@ -51,12 +53,14 @@ public class RoomController {
 
         return ResponseEntity.ok(roomService.update(id, request));
     }
+    */
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         roomService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/disponibles")
     public ResponseEntity<List<RoomDisponibleResponse>> getByDisponibles(
             @RequestParam LocalDate fechaEntrada,

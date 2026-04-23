@@ -17,21 +17,22 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    /*
     @GetMapping
     public ResponseEntity<List<ReviewResponse>> getAll() {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ReviewResponse> getById(@PathVariable Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @PostMapping
     public ResponseEntity<ReviewResponse> create(@RequestBody @Valid ReviewRequest request) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
@@ -39,25 +40,27 @@ public class ReviewController {
     public ResponseEntity<ReviewResponse> update(
             @PathVariable Long id,
             @RequestBody @Valid ReviewRequest request) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<ReviewResponse>> getByClienteId(@PathVariable Long clienteId) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @GetMapping("/habitacion/{habitacionId}")
     public ResponseEntity<List<ReviewResponse>> getByHabitacionId(@PathVariable Long habitacionId) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
+    */
+
 }

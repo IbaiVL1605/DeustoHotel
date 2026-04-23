@@ -19,18 +19,20 @@ public class UserController {
 
     private final UserService userService;
 
-
+    /*
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAll() {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
+     */
+
 
     @PostMapping
     public ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
@@ -67,17 +69,19 @@ public class UserController {
         ));
     }
 
+    /*
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> update(
             @PathVariable Long id,
             @RequestBody @Valid UserRequest request) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
+     */
 }

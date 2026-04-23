@@ -20,30 +20,32 @@ public class CourtBookingController {
 
     private final CourtBookingService courtBookingService;
 
-    // 🔹 GET ALL
+    /*
+    // GET ALL
     @GetMapping
     public ResponseEntity<List<CourtBookingResponse>> getAll() {
         return ResponseEntity.ok(courtBookingService.findAll());
     }
 
-    // 🔹 GET BY ID
+    // GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<CourtBookingResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(courtBookingService.findById(id));
     }
+     */
 
-    // 🔹 CREATE
+    // CREATE
     @PostMapping
     public ResponseEntity<CourtBookingResponse> create(
             @RequestBody @Valid CourtBookingRequest request, HttpSession session) {
 
         CourtBookingResponse response = courtBookingService.create(request, session);
 
-        // 🔥 REST correcto → 201 CREATED
+        // REST correcto → 201 CREATED
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // 🔹 UPDATE
+    // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<CourtBookingResponse> update(
             @PathVariable Long id,
@@ -53,7 +55,7 @@ public class CourtBookingController {
         return ResponseEntity.ok(response);
     }
 
-    // 🔹 DELETE
+    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         // Borrar la reserva de pista
@@ -62,7 +64,7 @@ public class CourtBookingController {
         return ResponseEntity.noContent().build(); // 204
     }
 
-    // 🔹 GET BY CLIENTE
+    // GET BY CLIENTE
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<CourtBookingResponse>> getByClienteId(
             @PathVariable Long clienteId) {
@@ -72,7 +74,8 @@ public class CourtBookingController {
         );
     }
 
-    // 🔹 GET BY PISTA
+    /*
+    // GET BY PISTA
     @GetMapping("/pista/{pistaId}")
     public ResponseEntity<List<CourtBookingResponse>> getByPistaId(
             @PathVariable Long pistaId) {
@@ -81,4 +84,5 @@ public class CourtBookingController {
                 courtBookingService.findByPistaId(pistaId)
         );
     }
+     */
 }

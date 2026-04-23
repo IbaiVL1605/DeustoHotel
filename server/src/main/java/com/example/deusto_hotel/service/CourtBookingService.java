@@ -28,7 +28,8 @@ public class CourtBookingService {
     private final UserRepository userRepository;
     private final CourtBookingMapper courtBookingMapper;
 
-    // 🔹 GET ALL
+    /*
+    // GET ALL
     @Transactional(readOnly = true)
     public List<CourtBookingResponse> findAll() {
         return courtBookingRepository.findAll()
@@ -37,7 +38,7 @@ public class CourtBookingService {
                 .toList();
     }
 
-    // 🔹 GET BY ID
+    // GET BY ID
     @Transactional(readOnly = true)
     public CourtBookingResponse findById(Long id) {
         CourtBooking booking = courtBookingRepository.findById(id)
@@ -45,8 +46,9 @@ public class CourtBookingService {
 
         return courtBookingMapper.toResponse(booking);
     }
+     */
 
-    // 🔹 CREATE
+    // CREATE
     public CourtBookingResponse create(CourtBookingRequest request, HttpSession session) {
 
         CourtBooking booking = courtBookingMapper.toEntity(request);
@@ -70,7 +72,7 @@ public class CourtBookingService {
         return courtBookingMapper.toResponse(booking);
     }
 
-    // 🔹 UPDATE
+    // UPDATE
     public CourtBookingResponse update(Long id, CourtBookingRequest request) {
 
         CourtBooking booking = courtBookingRepository.findById(id)
@@ -111,7 +113,7 @@ public class CourtBookingService {
         return courtBookingMapper.toResponse(updated);
     }
 
-    // 🔹 DELETE
+    // DELETE
     public void delete(Long id) {
         if (!courtBookingRepository.existsById(id)) {
             throw new RuntimeException("Reserva no encontrada");
@@ -119,7 +121,7 @@ public class CourtBookingService {
         courtBookingRepository.deleteById(id);
     }
 
-    // 🔹 FIND BY CLIENTE
+    // FIND BY CLIENTE
     @Transactional(readOnly = true)
     public List<CourtBookingResponse> findByClienteId(Long clienteId) {
         return courtBookingRepository.findByClienteId(clienteId)
@@ -128,16 +130,16 @@ public class CourtBookingService {
                 .toList();
     }
 
-    // 🔹 FIND BY PISTA
+    /*
+    // FIND BY PISTA
     @Transactional(readOnly = true)
     public List<CourtBookingResponse> findByPistaId(Long pistaId) {
         return courtBookingRepository.findByPistaId(pistaId)
                 .stream()
                 .map(courtBookingMapper::toResponse)
                 .toList();
-    }
 
-    // 🔹 DISPONIBILIDAD
+    // DISPONIBILIDAD
     @Transactional(readOnly = true)
     public boolean isDisponible(Long pistaId, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
 
@@ -148,4 +150,10 @@ public class CourtBookingService {
                 horaFin
         ).isEmpty();
     }
+
+
+    }
+     */
+
+
 }

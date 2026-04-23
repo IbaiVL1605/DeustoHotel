@@ -22,10 +22,6 @@ public class RoomBookingController {
 
     private final RoomBookingService roomBookingService;
 
-
-
-
-
     // Crear
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody @Valid List<RoomBookingRequest> request) {
@@ -66,6 +62,7 @@ public class RoomBookingController {
 
         return ResponseEntity.ok(roomBookingService.update(id, request));
     }
+    */
 
     //  Eliminar
     @DeleteMapping("/{id}")
@@ -79,6 +76,7 @@ public class RoomBookingController {
         return ResponseEntity.noContent().build();
     }
 
+    /*
     // Buscar por cliente
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<RoomBookingResponse>> getByClienteId(@PathVariable Long clienteId) {
@@ -90,6 +88,5 @@ public class RoomBookingController {
     public ResponseEntity<List<RoomBookingResponse>> getByHabitacionId(@PathVariable Long habitacionId) {
         return ResponseEntity.ok(roomBookingService.findByHabitacionId(habitacionId));
     }
-
     */
 }
