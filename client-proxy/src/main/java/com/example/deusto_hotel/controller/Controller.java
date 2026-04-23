@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
@@ -45,6 +46,18 @@ public class Controller {
         });
         return "user/habitaciones";
 
+    }
+
+    @PostMapping("/reservas")
+    public ResponseEntity<String> crearReserva(HttpSession sesion, @RequestBody List<RoomBookingRequest> request) throws IOException, InterruptedException {
+        //if(sesion.getAttribute("userId") == null){ return ResponseEntity.badRequest().body("Usuario no logeado"); }
+
+        List<RoomBookingRequest> updatedRequests = request.stream()
+                .map(r -> new RoomBookingRequest(r.tipo(), r.id_cliente()/*(Long) sesion.getAttribute("userId")*/, r.cantidad(), r.id_habitacion(), r.fechaEntrada(), r.fechaSalida()))
+                .toList();
+
+
+        return proxy.crearReserva(updatedRequests);
     }
 
     @GetMapping("/pistas")

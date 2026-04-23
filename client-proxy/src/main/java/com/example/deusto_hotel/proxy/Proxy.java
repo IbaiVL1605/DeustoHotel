@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -331,4 +332,17 @@ public class Proxy {
         }
     }
 
+    public ResponseEntity<String> crearReserva(List<RoomBookingRequest> updatedRequests) throws IOException, InterruptedException {
+        String jsonBody = objectMapper.writeValueAsString(updatedRequests);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/api/v1/room-bookings"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return ResponseEntity.status(response.statusCode()).body(response.body());
+    }
 }
