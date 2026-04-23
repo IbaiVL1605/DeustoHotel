@@ -76,13 +76,13 @@ public class RoomBookingController {
         return ResponseEntity.noContent().build();
     }
 
-    /*
     // Buscar por cliente
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<RoomBookingResponse>> getByClienteId(@PathVariable Long clienteId) {
         return ResponseEntity.ok(roomBookingService.findByClienteId(clienteId));
     }
 
+    /*
     // Buscar por habitación
     @GetMapping("/habitacion/{habitacionId}")
     public ResponseEntity<List<RoomBookingResponse>> getByHabitacionId(@PathVariable Long habitacionId) {

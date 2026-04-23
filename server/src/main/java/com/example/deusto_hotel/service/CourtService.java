@@ -27,6 +27,7 @@ public class CourtService {
     private final CourtRepository courtRepository;
     private final CourtBookingRepository courtBookingRepository;
 
+    /*
     @Transactional(readOnly = true)
     public List<CourtResponse> findAll() {
         return courtRepository.findAll().stream()
@@ -39,6 +40,7 @@ public class CourtService {
         throw new UnsupportedOperationException();
     }
 
+
     public CourtResponse create(CourtRequest request) {
         throw new UnsupportedOperationException();
     }
@@ -50,6 +52,7 @@ public class CourtService {
     public void delete(Long id) {
         throw new UnsupportedOperationException();
     }
+
 
     @Transactional(readOnly = true)
     public List<CourtResponse> findAvailableCourts(String tipo, String fecha, String horaInicio, String horaFin) {
@@ -101,6 +104,7 @@ public class CourtService {
                 c.getEstado()
         )).toList();
     }
+     */
 
     @Transactional(readOnly = true)
     public List<WeekAvailability> findWeeklyAvailability(int year, int month, CourtType type) {
@@ -155,6 +159,7 @@ public class CourtService {
         return availableSlots;
     }
 
+    /*
     @Transactional(readOnly = true)
     public List<CourtDayAvailability> findCourtDayAvailability(String tipo, String fecha) {
         CourtType courtType = null;
@@ -238,7 +243,7 @@ public class CourtService {
         }
         return result;
     }
-
+        */
     @Transactional(readOnly = true)
     public List<CourtAvailabilityDTO> findAvailableByTypeAndWeek(String tipo, Integer semana) {
         LocalDate today = LocalDate.now();
@@ -320,10 +325,12 @@ public class CourtService {
         return result;
     }
 
+    /*
     @Transactional(readOnly = true)
     public List<CourtAvailabilityDTO> findAvailableByType(String tipo) {
         return findAvailableByTypeAndWeek(tipo, null);
     }
+    */
 
     @Transactional(readOnly = true)
     public List<CourtAvailabilityDTO> findAvailableByDate(String fecha) {

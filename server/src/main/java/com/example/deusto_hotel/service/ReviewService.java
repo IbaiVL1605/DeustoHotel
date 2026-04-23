@@ -17,48 +17,50 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     
+    /*
     @Transactional(readOnly = true)
     public List<ReviewResponse> findAll() {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
-    
+
     @Transactional(readOnly = true)
     public ReviewResponse findById(Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
-    
+
     public ReviewResponse create(ReviewRequest request) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
-    
+
     public ReviewResponse update(Long id, ReviewRequest request) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
-    
+
     public void delete(Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
-    
+
     @Transactional(readOnly = true)
     public List<ReviewResponse> findByClienteId(Long clienteId) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
-    
+
     @Transactional(readOnly = true)
     public List<ReviewResponse> findByHabitacionId(Long habitacionId) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
+     */
 }

@@ -11,8 +11,10 @@ import com.example.deusto_hotel.repository.RoomBookingRepository;
 import com.example.deusto_hotel.repository.UserRepository;
 import com.example.deusto_hotel.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,8 +29,6 @@ public class RoomBookingService {
     private final RoomBookingMapper roomBookingMapper;
     private final RoomRepository roomRepository;
     private  final UserRepository userRepository;
-
-
 
 
 
@@ -136,6 +136,7 @@ public class RoomBookingService {
         return roomBookingMapper.toResponse(booking);
     }
     
+*/
 
 //  Eliminar reserva
 public void delete(Long id, Long userId) {
@@ -156,6 +157,7 @@ public void delete(Long id, Long userId) {
 
     roomBookingRepository.deleteById(id);
 }
+
     //  Buscar por cliente
     @Transactional(readOnly = true)
     public List<RoomBookingResponse> findByClienteId(Long clienteId) {
@@ -165,6 +167,7 @@ public void delete(Long id, Long userId) {
                 .toList();
     }
 
+    /*
     //  Buscar por habitación
     @Transactional(readOnly = true)
     public List<RoomBookingResponse> findByHabitacionId(Long habitacionId) {

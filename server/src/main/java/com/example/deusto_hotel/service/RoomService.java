@@ -23,7 +23,7 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final RoomMapper roomMapper;
 
-
+    /*
     @Transactional(readOnly = true)
     public List<RoomResponse> findAll() {
         return roomRepository.findAll()
@@ -53,6 +53,8 @@ public class RoomService {
                 room.getEstado()
         );
     }
+     */
+
     @Transactional(readOnly = true)
     public List<RoomDisponibleResponse> getDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {
 
@@ -92,6 +94,7 @@ public class RoomService {
         );
     }
 
+    /*
     public RoomResponse update(Long id, RoomRequest request) {
 
         Room room = roomRepository.findById(id)
@@ -116,6 +119,7 @@ public class RoomService {
                 updated.getEstado()
         );
     }
+    */
 
     public void delete(Long id) {
         if (!roomRepository.existsById(id)) {
@@ -123,6 +127,7 @@ public class RoomService {
         }
         roomRepository.deleteById(id);
     }
+
 }
 
 

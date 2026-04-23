@@ -21,20 +21,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-
+    /*
     @Transactional(readOnly = true)
     public List<UserResponse> findAll() {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
 
     @Transactional(readOnly = true)
     public UserResponse findById(Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
-
+    */
 
     public UserResponse create(UserRequest request) {
         // Usar Mapper para convertir UserRequest a User, guardar en la base de datos y luego convertir a UserResponse
@@ -75,15 +75,17 @@ public class UserService {
         );
     }
 
-
+    /*
     public UserResponse update(Long id, UserRequest request) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
 
 
     public void delete(Long id) {
-        // TODO: Implementar
+        // Implementar
         throw new UnsupportedOperationException();
     }
+
+     */
 }
