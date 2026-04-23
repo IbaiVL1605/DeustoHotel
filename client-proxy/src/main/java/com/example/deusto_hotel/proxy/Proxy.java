@@ -206,11 +206,14 @@ public class Proxy {
         throw new RuntimeException("Error al actualizar la reserva: " + response.body());
     }
 
-    public void deleteRoomBooking(Long id)
+    public void deleteRoomBooking(Long id, Long userId)
             throws IOException, InterruptedException {
 
+        String url = "http://localhost:8080/api/v1/room-bookings/"
+                + id + "?userId=" + userId;
+
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(java.net.URI.create("http://localhost:8080/api/v1/room-bookings/" + id))
+                .uri(URI.create(url))
                 .DELETE()
                 .build();
 

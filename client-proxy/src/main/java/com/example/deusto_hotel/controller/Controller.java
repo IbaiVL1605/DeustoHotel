@@ -168,15 +168,23 @@ public class Controller {
         }
     }
 */
-    @PostMapping("/reservas/eliminar/{id}")
-    public String deleteBooking(@PathVariable Long id) {
-        try {
-            proxy.deleteRoomBooking(id);
-        } catch (Exception e) {
-            System.out.println("Error al eliminar: " + e.getMessage());
-        }
-        return "redirect:/habitaciones/disponibles";
+@PostMapping("/reservas/eliminar/{id}")
+public String deleteBooking(@PathVariable Long id, HttpSession session) {
+
+    Long userId = (Long) session.getAttribute("userId");
+
+    if (userId == null) {
+        return "redirect:/login";
     }
+
+    try {
+        proxy.deleteRoomBooking(id, userId);
+    } catch (Exception e) {
+        System.out.println("Error al eliminar: " + e.getMessage());
+    }
+
+    return "redirect:/reservas";
+}
 
     /*
  @PostMapping("/admin/rooms")
