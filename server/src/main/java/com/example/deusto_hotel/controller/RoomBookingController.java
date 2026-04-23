@@ -22,17 +22,9 @@ public class RoomBookingController {
 
     private final RoomBookingService roomBookingService;
 
-    //  Obtener todas
-    @GetMapping
-    public ResponseEntity<List<RoomBookingResponse>> getAll() {
-        return ResponseEntity.ok(roomBookingService.findAll());
-    }
 
-    //  Obtener por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<RoomBookingResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(roomBookingService.findById(id));
-    }
+
+
 
     // Crear
     @PostMapping

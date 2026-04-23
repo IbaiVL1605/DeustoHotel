@@ -28,23 +28,9 @@ public class RoomBookingService {
     private final RoomRepository roomRepository;
     private  final UserRepository userRepository;
 
-    //  Obtener todas las reservas
-    @Transactional(readOnly = true)
-    public List<RoomBookingResponse> findAll() {
-        return roomBookingRepository.findAll()
-                .stream()
-                .map(roomBookingMapper::toResponse)
-                .toList();
-    }
 
-    //  Obtener por ID
-    @Transactional(readOnly = true)
-    public RoomBookingResponse findById(Long id) {
-        RoomBooking booking = roomBookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
-        return roomBookingMapper.toResponse(booking);
-    }
+
 
     // Crear reserva
     @Transactional()
