@@ -94,7 +94,7 @@ public class UserControllerTest2 {
     }
 
     @Test
-    public void testLogin_CorreoVacio_BadRequest() throws Exception {
+    public void testLogin_CorreoVacio() throws Exception {
         mockMvc.perform(post("/api/v1/users/login")
                         .param("correo", "")
                         .param("contrasena", "12345678"))
@@ -105,7 +105,7 @@ public class UserControllerTest2 {
     }
 
     @Test
-    public void testLogin_ContrasenaVacia_BadRequest() throws Exception {
+    public void testLogin_ContrasenaVacia() throws Exception {
         mockMvc.perform(post("/api/v1/users/login")
                         .param("correo", "a@gmail.com")
                         .param("contrasena", ""))
@@ -116,7 +116,7 @@ public class UserControllerTest2 {
     }
 
     @Test
-    public void testLogin_UsuarioNoEncontrado_NotFound() throws Exception {
+    public void testLogin_UsuarioNoEncontrado() throws Exception {
         when(userService.login("noexiste@gmail.com", "12345678"))
                 .thenThrow(new Excepciones.UsuarioNoEncontradoException("Usuario no encontrado"));
 
@@ -129,7 +129,7 @@ public class UserControllerTest2 {
     }
 
     @Test
-    public void testLogin_CredencialesInvalidas_Unauthorized() throws Exception {
+    public void testLogin_CredencialesInvalidas() throws Exception {
         when(userService.login("a@gmail.com", "mal"))
                 .thenThrow(new Excepciones.CredencialesInvalidasException("Contrasena incorrecta"));
 
@@ -142,7 +142,7 @@ public class UserControllerTest2 {
     }
 
     @Test
-    public void testLogin_UsuarioBloqueado_Forbidden() throws Exception {
+    public void testLogin_UsuarioBloqueado() throws Exception {
         when(userService.login("bloqueado@gmail.com", "12345678"))
                 .thenThrow(new Excepciones.UsuarioBloqueadoException("Usuario bloqueado"));
 
