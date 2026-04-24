@@ -38,15 +38,17 @@ public class RoomBookingService {
 
         for  (RoomBookingRequest roomBookingRequest : request) {
             validarFechas(roomBookingRequest);
+
+            if (roomBookingRequest.tipo() == null) {
+                throw new IllegalArgumentException("Tipo de habitación no válido");
+            }
+
             User cliente = userRepository.findById(roomBookingRequest.id_cliente())
                     .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
-            if (roomBookingRequest.tipo().equals(RoomType.INDIVIDUAL) || roomBookingRequest.tipo().equals(RoomType.DOBLE)) {
-                reservarSimples(roomBookingRequest, cliente);
-            } else if(roomBookingRequest.tipo().equals(RoomType.SUITE)) {
-                reservarSuits(roomBookingRequest, cliente);
-            } else {
-                throw new IllegalArgumentException("Tipo de Reserva no encontrada");
+            switch (roomBookingRequest.tipo()) {
+                case INDIVIDUAL, DOBLE -> reservarSimples(roomBookingRequest, cliente);
+                case SUITE -> reservarSuits(roomBookingRequest, cliente);
             }
         }
 
@@ -69,10 +71,10 @@ public class RoomBookingService {
     }
 
     private void validarFechas(RoomBookingRequest roomBookingRequest) {
-        if(roomBookingRequest.fechaEntrada().isAfter(roomBookingRequest.fechaSalida()) || roomBookingRequest.fechaEntrada().isEqual(roomBookingRequest.fechaSalida())) {
+        if(!roomBookingRequest.fechaSalida().isAfter(roomBookingRequest.fechaEntrada())) {
             throw new IllegalArgumentException("La fecha de salida debe de ser posterior a la fecha de entrada.");
 
-        } else if(roomBookingRequest.fechaEntrada().isBefore(LocalDate.now())) {
+        } if(roomBookingRequest.fechaEntrada().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("La fecha de entrada no puede ser anterior a la fecha actual.");
 
         }

@@ -17,4 +17,27 @@ public record RoomBookingRequest(
         @Positive Long id_habitacion,
         @NotNull LocalDate fechaEntrada,
         @NotNull LocalDate fechaSalida
-) {}
+) {
+        public void validate() {
+                if (tipo == null) throw new IllegalArgumentException("El tipo no puede ser nulo");
+
+                switch (tipo) {
+                        case INDIVIDUAL, DOBLE -> validarSimple();
+                        case SUITE -> validarSuite();
+                }
+        }
+
+        private void validarSimple() {
+                if (id_habitacion() != null)
+                        throw new IllegalArgumentException("No se permite especificar habitación para tipos INDIVIDUAL o DOBLE");
+                if (cantidad() == null)
+                        throw new IllegalArgumentException("Se requiere especificar cantidad para tipos INDIVIDUAL o DOBLE");
+        }
+
+        private void validarSuite() {
+                if (id_habitacion() == null)
+                        throw new IllegalArgumentException("Se requiere especificar habitación para tipo SUITE");
+                if (cantidad() != null)
+                        throw new IllegalArgumentException("No se permite especificar cantidad para tipo SUITE");
+        }
+}

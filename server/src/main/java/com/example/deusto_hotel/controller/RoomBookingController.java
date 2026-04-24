@@ -25,32 +25,14 @@ public class RoomBookingController {
     // Crear
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody @Valid List<RoomBookingRequest> request) {
-        validarInputCreate(request);
+        request.forEach(RoomBookingRequest::validate);
 
         roomBookingService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    private void validarInputCreate(List<RoomBookingRequest> request) {
-        for  (RoomBookingRequest roomBookingRequest : request) {
-            if(roomBookingRequest.tipo().equals(RoomType.INDIVIDUAL) || roomBookingRequest.tipo().equals(RoomType.DOBLE)) {
 
-                if(roomBookingRequest.id_habitacion() != null) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se permite especificar habitación para tipos INDIVIDUAL o DOBLE");
-                } if(roomBookingRequest.cantidad() == null) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Se requiere especificar cantidad para tipos INDIVIDUAL o DOBLE");
-                }
-            } if(roomBookingRequest.tipo().equals(RoomType.SUITE)) {
-                if(roomBookingRequest.id_habitacion() == null) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Se requiere especificar habitación para tipo SUITE");
-
-                } if(roomBookingRequest.cantidad() != null) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se permite especificar cantidad para tipo SUITE");
-                }
-            }
-        }
-    }
 
     /*
 

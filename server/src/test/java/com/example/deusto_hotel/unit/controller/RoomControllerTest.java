@@ -1,4 +1,4 @@
-package com.example.deusto_hotel.unit;
+package com.example.deusto_hotel.unit.controller;
 
 import com.example.deusto_hotel.controller.RoomController;
 import com.example.deusto_hotel.dto.*;

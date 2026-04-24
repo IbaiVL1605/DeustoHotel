@@ -1,4 +1,4 @@
-package com.example.deusto_hotel.unit;
+package com.example.deusto_hotel.unit.service;
 
 import com.example.deusto_hotel.dto.UserRequest;
 import com.example.deusto_hotel.dto.UserResponse;
