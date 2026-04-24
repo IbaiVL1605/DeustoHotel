@@ -59,4 +59,38 @@ class ProxyTest {
         // Verificamos que, aun fallando, se intentó hacer la petición una vez
         verify(httpClient, times(1)).send(any(HttpRequest.class), any());
     }
+
+    @Test
+    void deleteCourtBooking_exito() throws Exception {
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn("");
+
+        when(httpClient.send(any(HttpRequest.class), any()))
+                .thenReturn((HttpResponse) response);
+
+        proxy.deleteCourtBooking(1L);
+
+        verify(httpClient).send(any(HttpRequest.class), any());
+    }
+
+    @Test
+    void deleteCourtBooking_error() throws Exception {
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(500);
+        when(response.body()).thenReturn("Error backend");
+
+        when(httpClient.send(any(HttpRequest.class), any()))
+                .thenReturn((HttpResponse) response);
+
+        assertThrows(RuntimeException.class, () ->
+                proxy.deleteCourtBooking(1L)
+        );
+
+        verify(httpClient).send(any(HttpRequest.class), any());
+    }
 }
