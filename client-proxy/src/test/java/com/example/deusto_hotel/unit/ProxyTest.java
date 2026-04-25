@@ -34,6 +34,62 @@ class ProxyTest {
     Proxy proxy;
 
     @Test
+    void login_exito() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn("{\"mensaje\":\"Sesion iniciada correctamente\",\"usuario\":{\"id\":1,\"nombre\":\"Juan\",\"email\":\"juan@email.com\",\"rol\":\"CLIENT\",\"bloqueado\":false,\"creadoEn\":\"2026-04-25T10:00:00\"}}");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse) response);
+
+        var result = proxy.login("juan@email.com", "1234");
+
+        assertEquals(1L, result.id());
+        assertEquals("Juan", result.nombre());
+        assertEquals("juan@email.com", result.email());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
+
+    @Test
+    void login_error_contrasenaIncorrecta() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(401);
+        when(response.body()).thenReturn("Contrasena incorrecta");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse) response);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> proxy.login("juan@email.com", "mal")
+        );
+
+        assertEquals("Contrasena incorrecta", ex.getMessage());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
+
+    @Test
+    void login_error_correoIncorrecto() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(404);
+        when(response.body()).thenReturn("Usuario no encontrado");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse) response);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> proxy.login("noexiste@email.com", "1234")
+        );
+
+        assertEquals("Usuario no encontrado", ex.getMessage());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
+
+    @Test
     void shouldRegisterUserSuccessfully() throws Exception {
 
         HttpResponse<String> response = mock(HttpResponse.class);

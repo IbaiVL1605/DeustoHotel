@@ -2,8 +2,13 @@ package com.example.deusto_hotel.unit;
 
 import com.example.deusto_hotel.controller.Controller;
 import com.example.deusto_hotel.dto.RoomBookingRequest;
+import com.example.deusto_hotel.dto.UserResponse;
+import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.proxy.Proxy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -12,12 +17,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,7 +40,7 @@ class ControllerTest {
     private Proxy proxy;
 
     private ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+            .registerModule(new JavaTimeModule());
 
 
     @Test
@@ -105,6 +114,68 @@ class ControllerTest {
                 .andExpect(content().string("OK"));
 
         verify(proxy).crearReserva(any());
+    }
+
+    @Test
+    void login_exito() throws Exception {
+        UserResponse usuario = new UserResponse(
+                1L,
+                "Juan",
+                "juan@email.com",
+                Role.CLIENT,
+                false,
+                LocalDateTime.now()
+        );
+
+        when(proxy.login("juan@email.com", "1234")).thenReturn(usuario);
+
+        mockMvc.perform(get("/api/v1/login")
+                        .param("email", "juan@email.com")
+                        .param("password", "1234"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/habitaciones/disponibles"))
+                .andExpect(request().sessionAttribute("userId", 1L))
+                .andExpect(request().sessionAttribute("username", "Juan"))
+                .andExpect(request().sessionAttribute("userEmail", "juan@email.com"))
+                .andExpect(request().sessionAttribute("userRole", "CLIENT"));
+
+        verify(proxy).login("juan@email.com", "1234");
+    }
+
+    @Test
+    void login_error_contrasenaIncorrecta() throws Exception {
+        when(proxy.login("juan@email.com", "mal"))
+                .thenThrow(new IllegalArgumentException("Contrasena incorrecta"));
+
+        ServletException ex = assertThrows(
+                ServletException.class,
+                () -> mockMvc.perform(get("/api/v1/login")
+                        .param("email", "juan@email.com")
+                        .param("password", "mal"))
+        );
+
+        assertNotNull(ex.getCause());
+        assertEquals("Contrasena incorrecta", ex.getCause().getMessage());
+
+        verify(proxy).login("juan@email.com", "mal");
+    }
+
+    @Test
+    void login_error_correoIncorrecto() throws Exception {
+        when(proxy.login("noexiste@email.com", "1234"))
+                .thenThrow(new IllegalArgumentException("Usuario no encontrado"));
+
+        ServletException ex = assertThrows(
+                ServletException.class,
+                () -> mockMvc.perform(get("/api/v1/login")
+                        .param("email", "noexiste@email.com")
+                        .param("password", "1234"))
+        );
+
+        assertNotNull(ex.getCause());
+        assertEquals("Usuario no encontrado", ex.getCause().getMessage());
+
+        verify(proxy).login("noexiste@email.com", "1234");
     }
 
 
