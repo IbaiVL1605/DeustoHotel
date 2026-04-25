@@ -232,21 +232,18 @@ public class Proxy {
 
     public void signup(String nombre, String email, String password) {
         try {
-            String encodedNombre = URLEncoder.encode(nombre, StandardCharsets.UTF_8);
-            String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
-            String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
+            UserRequest user = new UserRequest(nombre, email, password);
+
+            String json = objectMapper.writeValueAsString(user);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(java.net.URI.create(String.format(
-                            "http://localhost:8080/api/v1/users?email=%s&password=%s&nombre=%s",
-                            encodedEmail,
-                            encodedPassword,
-                            encodedNombre
-                    )))
-                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .uri(URI.create("http://localhost:8080/api/v1/users"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 String errorMessage = response.body() == null || response.body().isBlank()
@@ -254,6 +251,7 @@ public class Proxy {
                         : response.body();
                 throw new IllegalArgumentException(errorMessage);
             }
+
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error al registrar el usuario", e);
         }
