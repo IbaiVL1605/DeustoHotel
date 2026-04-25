@@ -18,11 +18,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,6 +52,9 @@ public class CourtBookingServiceTest {
 
     @InjectMocks
     private CourtBookingService courtBookingService;
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate; // O la clase exacta de tu messagingTemplate
 /*
     @Test
     void testFindAll() {
@@ -91,25 +96,38 @@ public class CourtBookingServiceTest {
 */
     @Test
     void testCreate() {
+        // 1. Arrange (Preparación)
         CourtBookingRequest request = new CourtBookingRequest(1L, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(12, 0), 1L);
-        CourtBooking booking = new CourtBooking();
-        User user = new User();
+
         Court court = new Court();
+        court.setId(1L); // Importante para el payload del mensaje
         court.setPrecioPorHora(10.0);
+
+        CourtBooking booking = new CourtBooking();
+        booking.setPista(court);
+        booking.setFecha(request.fecha());
 
         CourtBookingResponse response = new CourtBookingResponse(1L, 1L, "User", 1L, "Court", LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(12, 0), CourtBookingStatus.CONFIRMADA, 20.0, LocalDateTime.now());
 
         when(courtBookingMapper.toEntity(request)).thenReturn(booking);
         when(courtRepository.getReferenceById(1L)).thenReturn(court);
-        when(userRepository.getReferenceById(1L)).thenReturn(user);
+        when(userRepository.getReferenceById(1L)).thenReturn(new User());
         when(courtBookingRepository.save(booking)).thenReturn(booking);
         when(courtBookingMapper.toResponse(booking)).thenReturn(response);
 
+        // 2. Act (Acción)
         CourtBookingResponse result = courtBookingService.create(request, session);
 
+        // 3. Assert (Verificación)
         assertNotNull(result);
         assertEquals(20.0, result.precioTotal());
         verify(courtBookingRepository).save(booking);
+
+        // Verificamos que se envió el mensaje de WebSocket
+        verify(messagingTemplate).convertAndSend(
+                any(String.class),
+                any(Object.class)
+        );
     }
 
     @Test
@@ -138,12 +156,24 @@ public class CourtBookingServiceTest {
 
     @Test
     void testDelete() {
+        // 1. Arrange
         Long id = 1L;
         when(courtBookingRepository.existsById(id)).thenReturn(true);
 
+        // 2. Act
         courtBookingService.delete(id);
 
+        // 3. Assert
         verify(courtBookingRepository).deleteById(id);
+
+        // Preparamos el payload esperado
+        Map<String, Object> expectedPayload = Map.of("action", "DELETED", "bookingId", id);
+
+        // CORRECCIÓN: Ambos argumentos deben usar matchers
+        verify(messagingTemplate).convertAndSend(
+                eq("/topic/court-updates"),
+                eq((Object) expectedPayload) // Usamos eq() Y el cast a Object
+        );
     }
 
     @Test
