@@ -23,6 +23,8 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test:4.1.0-M4'
 }
 
 test {
