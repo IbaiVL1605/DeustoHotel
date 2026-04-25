@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @org.springframework.stereotype.Controller
 @RequiredArgsConstructor
@@ -297,5 +298,26 @@ public String deleteBooking(@PathVariable Long id, HttpSession session) {
         return "redirect:/reservas";
     }
 
+    @GetMapping("/signup")
+    public String showSignupForm() {
+        return "auth/signup";
+    }
+
+    @PostMapping("/signup")
+    public String signup(
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String nombre,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            proxy.signup(nombre, email, password);
+            redirectAttributes.addFlashAttribute("success", "Cuenta creada correctamente. ¡Ya puedes iniciar sesión!");
+            return "redirect:/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al registrar: " + e.getMessage());
+            return "redirect:/signup";
+        }
+    }
 
 }

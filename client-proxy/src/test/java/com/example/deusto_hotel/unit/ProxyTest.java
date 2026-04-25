@@ -93,6 +93,7 @@ class ProxyTest {
 
         verify(httpClient).send(any(HttpRequest.class), any());
     }
+
     //Test delete room
     @Test
     void deleteRoomBooking_exito() throws Exception {

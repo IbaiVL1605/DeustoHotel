@@ -97,6 +97,33 @@ class ControllerTest {
             verify(proxy).deleteRoomBooking(1L, 10L);
         }
 
+        // Test usuario registrado
+        @Test
+        void shouldRegisterUserSuccessfully() throws Exception {
+            mockMvc.perform(post("/signup")
+                            .param("email", "juan@email.com")
+                            .param("password", "1234")
+                            .param("nombre", "Juan López"))
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrl("/login"));
 
+            verify(proxy).signup("Juan López", "juan@email.com", "1234");
+        }
+
+        // Test error al registrar usuario
+        @Test
+        void shouldNotRegisterUserIfEmailAlreadyExists() throws Exception {
+            doThrow(new RuntimeException("Error backend"))
+                    .when(proxy).signup(anyString(), anyString(), anyString());
+
+            mockMvc.perform(post("/signup")
+                            .param("email", "juan@email.com")
+                            .param("password", "1234")
+                            .param("nombre", "Juan López"))
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrl("/signup"));
+
+            verify(proxy).signup("Juan López", "juan@email.com", "1234");
+        }
     }
 
