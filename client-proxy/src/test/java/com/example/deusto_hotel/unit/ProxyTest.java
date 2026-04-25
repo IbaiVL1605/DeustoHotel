@@ -66,7 +66,7 @@ class ProxyTest {
         HttpResponse<String> response = mock(HttpResponse.class);
 
         when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn("");
+
 
         when(httpClient.send(any(HttpRequest.class), any()))
                 .thenReturn((HttpResponse) response);
@@ -92,5 +92,41 @@ class ProxyTest {
         );
 
         verify(httpClient).send(any(HttpRequest.class), any());
+    }
+    //Test delete room
+    @Test
+    void deleteRoomBooking_exito() throws Exception {
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(204);
+
+
+        when(httpClient.send(any(HttpRequest.class), any()))
+                .thenReturn((HttpResponse) response);
+
+        proxy.deleteRoomBooking(1L, 10L);
+
+        verify(httpClient).send(any(HttpRequest.class), any());
+
+    }
+
+    @Test
+    void deleteRoomBooking_error() throws Exception {
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(500);
+        when(response.body()).thenReturn("Error backend");
+
+        when(httpClient.send(any(HttpRequest.class), any()))
+                .thenReturn((HttpResponse) response);
+
+        assertThrows(RuntimeException.class, () ->
+                proxy.deleteRoomBooking(1L, 10L)
+        );
+
+        verify(httpClient).send(any(HttpRequest.class), any());
+
     }
 }
