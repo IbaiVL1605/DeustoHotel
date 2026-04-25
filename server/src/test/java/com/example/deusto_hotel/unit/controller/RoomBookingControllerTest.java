@@ -4,6 +4,7 @@ import com.example.deusto_hotel.controller.RoomBookingController;
 import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.service.RoomBookingService;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -21,6 +22,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+@Tag("unit")
 
 @WebMvcTest(RoomBookingController.class)
 class RoomBookingControllerTest {
