@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
+    id 'jacoco'
 }
 
 
@@ -34,4 +35,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jacocoTestReport {
+    dependsOn test
 }
