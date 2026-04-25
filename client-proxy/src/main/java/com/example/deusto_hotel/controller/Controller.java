@@ -51,10 +51,10 @@ public class Controller {
 
     @PostMapping("/reservas")
     public ResponseEntity<String> crearReserva(HttpSession sesion, @RequestBody List<RoomBookingRequest> request) throws IOException, InterruptedException {
-        //if(sesion.getAttribute("userId") == null){ return ResponseEntity.badRequest().body("Usuario no logeado"); }
+        if(sesion.getAttribute("userId") == null){ return ResponseEntity.badRequest().body("Usuario no logeado"); }
 
         List<RoomBookingRequest> updatedRequests = request.stream()
-                .map(r -> new RoomBookingRequest(r.tipo(), r.id_cliente()/*(Long) sesion.getAttribute("userId")*/, r.cantidad(), r.id_habitacion(), r.fechaEntrada(), r.fechaSalida()))
+                .map(r -> new RoomBookingRequest(r.tipo(), (Long) sesion.getAttribute("userId"), r.cantidad(), r.id_habitacion(), r.fechaEntrada(), r.fechaSalida()))
                 .toList();
 
 
