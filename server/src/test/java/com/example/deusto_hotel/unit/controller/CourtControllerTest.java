@@ -5,6 +5,7 @@ import com.example.deusto_hotel.dto.CourtAvailabilityDTO;
 import com.example.deusto_hotel.dto.WeekAvailability;
 import com.example.deusto_hotel.model.CourtType;
 import com.example.deusto_hotel.service.CourtService;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+@Tag("unit")
 
 @WebMvcTest(CourtController.class)
 public class CourtControllerTest {

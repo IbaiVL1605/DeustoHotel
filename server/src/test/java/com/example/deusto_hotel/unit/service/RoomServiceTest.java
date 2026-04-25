@@ -6,6 +6,7 @@ import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.repository.RoomRepository;
 import com.example.deusto_hotel.service.RoomService;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+@Tag("unit")
 
 @ExtendWith(MockitoExtension.class)
 public class RoomServiceTest {

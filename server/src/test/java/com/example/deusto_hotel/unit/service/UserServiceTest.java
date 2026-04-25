@@ -8,6 +8,7 @@ import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.UserRepository;
 import com.example.deusto_hotel.service.UserService;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+@Tag("unit")
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {

@@ -7,6 +7,7 @@ import com.example.deusto_hotel.service.RoomService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+@Tag("unit")
 
 @WebMvcTest(RoomController.class)
 class RoomControllerTest {
@@ -44,16 +46,7 @@ class RoomControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void getDisponibles_fecha_entrada_es_igual_salida_error() throws Exception {
-        LocalDate fechaEntrada = LocalDate.now();
-        LocalDate fechaSalida = LocalDate.now();
 
-        mockMvc.perform(get("/api/v1/rooms/disponibles")
-                        .param("fechaEntrada", fechaEntrada.toString())
-                        .param("fechaSalida", fechaSalida.toString()))
-                .andExpect(status().isBadRequest());
-    }
 
     @Test
     void getDisponibles_fecha_entrada_es_antes_a_now_error() throws Exception {

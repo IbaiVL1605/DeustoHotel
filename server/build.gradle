@@ -21,6 +21,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.44")
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    implementation 'org.springframework.boot:spring-boot-starter-restclient:4.1.0-M4'
+
 
     testCompileOnly("org.projectlombok:lombok:1.18.44")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.44")
@@ -41,15 +43,31 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter:5.+'
 
 
+
+
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeTags 'unit'
+    }
     finalizedBy jacocoTestReport // report is always generated after tests run
 }
 
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform {
+        includeTags('integration')
+    }
 }
 
 /*
