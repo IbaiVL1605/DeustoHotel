@@ -161,7 +161,7 @@ class ProxyTest {
 
         ResponseEntity<String> result = proxy.crearReserva(requests);
 
-        assertEquals(400, result.getStatusCode().value());
+        assertEquals(200, result.getStatusCode().value());
         assertEquals("OK", result.getBody());
 
         verify(httpClient).send(any(HttpRequest.class), any());

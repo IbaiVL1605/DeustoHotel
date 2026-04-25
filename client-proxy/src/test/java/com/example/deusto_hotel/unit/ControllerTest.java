@@ -30,8 +30,8 @@ class ControllerTest {
     @MockitoBean
     private Proxy proxy;
 
-    @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
 
     @Test
