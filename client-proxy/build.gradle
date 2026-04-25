@@ -9,6 +9,11 @@ dependencies {
     implementation(project(':common'))
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // opcional pero recomendable explícito para fechas
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-core'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'

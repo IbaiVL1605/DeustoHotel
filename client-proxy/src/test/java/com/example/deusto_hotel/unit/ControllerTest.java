@@ -1,18 +1,25 @@
 package com.example.deusto_hotel.unit;
 
 import com.example.deusto_hotel.controller.Controller;
+import com.example.deusto_hotel.dto.RoomBookingRequest;
+import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.proxy.Proxy;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(Controller.class)
 class ControllerTest {
@@ -22,6 +29,9 @@ class ControllerTest {
 
     @MockitoBean
     private Proxy proxy;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
 
     @Test
@@ -44,6 +54,57 @@ class ControllerTest {
                 .andExpect(redirectedUrl("/reservas"));
 
         verify(proxy).deleteCourtBooking(1L);
+    }
+
+    @Test
+    void crearReserva_error() throws Exception {
+
+        List<RoomBookingRequest> request = List.of(
+                new RoomBookingRequest(
+                        RoomType.INDIVIDUAL,
+                        999L,
+                        1,
+                        1L,
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(2)
+                )
+        );
+
+        mockMvc.perform(post("/reservas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Usuario no logeado"));
+
+        verify(proxy, never()).crearReserva(any());
+    }
+
+    @Test
+    void crearReserva_exito() throws Exception {
+
+        List<RoomBookingRequest> request = List.of(
+                new RoomBookingRequest(
+                        RoomType.INDIVIDUAL,
+                        999L,
+                        1,
+                        1L,
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(2)
+                )
+        );
+
+        ResponseEntity<String> response = ResponseEntity.ok("OK");
+
+        when(proxy.crearReserva(any())).thenReturn(response);
+
+        mockMvc.perform(post("/reservas")
+                        .sessionAttr("userId", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("OK"));
+
+        verify(proxy).crearReserva(any());
     }
 
 
