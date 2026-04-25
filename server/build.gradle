@@ -42,7 +42,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.+'
 
-
+    //actualizacion instantanea de pistas
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 
 }

@@ -383,6 +383,8 @@
             font-size: 1.5rem;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 </head>
 <body>
 
@@ -642,6 +644,34 @@
             alert("Ruta no encontrada o error interno (" + err.message + ")");
         });
     }
+    // ── CONEXIÓN WEBSOCKET PARA ACTUALIZACIONES EN TIEMPO REAL ──
+    (function() {
+        // Conectar al endpoint WebSocket del servidor (puerto 8080)
+        const socket = new SockJS('http://localhost:8080/ws');
+        const stompClient = Stomp.over(socket);
+
+        // Desactivar logs de debug de STOMP (opcional)
+        stompClient.debug = null;
+
+        stompClient.connect({}, function(frame) {
+            console.log('✅ Conectado a WebSocket para actualizaciones en tiempo real');
+
+            // Suscribirse al canal de actualizaciones de pistas
+            stompClient.subscribe('/topic/court-updates', function(message) {
+                const update = JSON.parse(message.body);
+                console.log('📡 Actualización recibida:', update);
+
+                // Recargar la página para mostrar la disponibilidad actualizada
+                location.reload();
+            });
+        }, function(error) {
+            console.error('❌ Error WebSocket:', error);
+            // Fallback: si WebSocket falla, usar polling cada 15 segundos
+            setInterval(function() {
+                location.reload();
+            }, 15000);
+        });
+    })();
 </script>
 
 <div id="booking-modal" class="modal">

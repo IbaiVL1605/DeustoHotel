@@ -12,11 +12,13 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class CourtBookingService {
     private final CourtRepository courtRepository;
     private final UserRepository userRepository;
     private final CourtBookingMapper courtBookingMapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /*
     // GET ALL
@@ -68,6 +71,10 @@ public class CourtBookingService {
         booking.setPrecioTotal(courtRepository.getReferenceById(request.pistaId()).getPrecioPorHora() * horas);
 
         courtBookingRepository.save(booking);
+
+        // Notificar a todos los clientes conectados que hubo un cambio
+        Object payload = Map.of("action", "CREATED", "courtId", booking.getPista().getId(), "fecha", booking.getFecha().toString());
+        messagingTemplate.convertAndSend("/topic/court-updates", payload);
 
         return courtBookingMapper.toResponse(booking);
     }
@@ -119,6 +126,8 @@ public class CourtBookingService {
             throw new RuntimeException("Reserva no encontrada");
         }
         courtBookingRepository.deleteById(id);
+        Object payload = Map.of("action", "DELETED", "bookingId", id);
+        messagingTemplate.convertAndSend("/topic/court-updates", payload);
     }
 
     // FIND BY CLIENTE
