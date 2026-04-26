@@ -28,7 +28,7 @@ public class UserIntegrationTest {
     @Test
     void shouldRegisterUserSuccessfully() {
 
-        UserRequest request = new UserRequest("Juan López", "juan@email.com", "juan123");
+        UserRequest request = new UserRequest("Paco Gerte", "paco@email.com", "paco123");
 
         ResponseEntity<UserResponse> response = restTemplate.postForEntity(
                 "/api/v1/users",
@@ -36,15 +36,17 @@ public class UserIntegrationTest {
                 UserResponse.class
         );
 
-        assertEquals(200, response.getStatusCode().value());
+        assertEquals(201, response.getStatusCode().value());
         assertNotNull(response.getBody());
-        assertEquals("juan@email.com", response.getBody().email());
+        assertEquals("paco@email.com", response.getBody().email());
     }
 
     @Test
     void shouldFailWhenEmailAlreadyExists() {
+        // Asi siempre es diferente y no da problemas de duplicados con otros tests
+        String email = "juan" + System.currentTimeMillis() + "@email.com";
 
-        UserRequest request = new UserRequest("Juan López", "juan@email.com", "juan123");
+        UserRequest request = new UserRequest("Juan López", email, "juan123");
 
         // primer registro OK
         restTemplate.postForEntity("/api/v1/users", request, UserResponse.class);
@@ -56,7 +58,7 @@ public class UserIntegrationTest {
                 String.class
         );
 
-        assertEquals(400, response.getStatusCode().value());
+        assertEquals(409, response.getStatusCode().value());
     }
 
 
