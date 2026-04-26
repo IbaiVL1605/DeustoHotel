@@ -1,8 +1,7 @@
 package com.example.deusto_hotel.unit;
 
 import com.example.deusto_hotel.controller.Controller;
-import com.example.deusto_hotel.dto.RoomBookingRequest;
-import com.example.deusto_hotel.dto.UserResponse;
+import com.example.deusto_hotel.dto.*;
 import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.proxy.Proxy;
@@ -20,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -257,5 +257,64 @@ class ControllerTest {
 
             verify(proxy).signup("Juan López", "juan@email.com", "1234");
         }
+
+    @Test
+    void testGetHabitacionesDisponibles_Exito() throws Exception {
+        // GIVEN: Una lista que contiene los 3 tipos para cubrir todo el SWITCH
+        ArrayList<RoomDisponibleResponse> habitaciones = new ArrayList<>();
+        habitaciones.add(new RoomDisponiblesSimplesResponse(RoomType.INDIVIDUAL, 5));
+        habitaciones.add(new RoomDisponiblesSimplesResponse(RoomType.DOBLE, 2));
+        habitaciones.add(new RoomDisponiblesSuitResponse(RoomType.SUITE, new ArrayList<>()));
+
+        when(proxy.getHabitacionesDisponibles(any(), any())).thenReturn(habitaciones);
+
+        // WHEN & THEN
+        mockMvc.perform(get("/habitaciones/disponibles")
+                        .param("fechaEntrada", "2026-05-01")
+                        .param("fechaSalida", "2026-05-10"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("user/habitaciones"))
+                .andExpect(model().attributeExists("habitacionSimple"))
+                .andExpect(model().attributeExists("habitacionDoble"))
+                .andExpect(model().attributeExists("habitacionSuite")); // Rama SUITE probada
     }
+
+    @Test
+    void testGetHabitacionesDisponibles_ErrorProxy() throws Exception {
+        // GIVEN: El proxy lanza una excepción (como la que configuramos antes)
+        when(proxy.getHabitacionesDisponibles(any(LocalDate.class), any(LocalDate.class)))
+                .thenThrow(new RuntimeException("Error al obtener habitaciones disponibles: Server Error"));
+
+        // WHEN & THEN
+        mockMvc.perform(get("/habitaciones/disponibles")
+                        .param("fechaEntrada", "2026-05-01")
+                        .param("fechaSalida", "2026-05-10"))
+                .andExpect(status().isOk()) // El controlador captura el error y devuelve 200 con la vista
+                .andExpect(view().name("user/habitaciones"))
+                .andExpect(model().attributeExists("error")) // Verificamos que se añadió el mensaje de error
+                .andExpect(model().attribute("error", "No se han podido cargar las habitaciones en este momento. Inténtelo más tarde."));
+    }
+
+    @Test
+    void testGetHabitacionesDisponibles_FechaEntradaNull() throws Exception {
+        // Para cubrir el "1 de 4" de JaCoCo, probamos explícitamente cuando una es null
+        mockMvc.perform(get("/habitaciones/disponibles")
+                        .param("fechaSalida", "2026-05-10")) // fechaEntrada es null
+                .andExpect(status().isOk())
+                .andExpect(view().name("user/habitaciones"));
+
+        verifyNoInteractions(proxy);
+    }
+
+    @Test
+    void testGetHabitacionesDisponibles_FechaSalidaNull() throws Exception {
+        // Probamos la otra condición del OR
+        mockMvc.perform(get("/habitaciones/disponibles")
+                        .param("fechaEntrada", "2026-05-01")) // fechaSalida es null
+                .andExpect(status().isOk())
+                .andExpect(view().name("user/habitaciones"));
+
+        verifyNoInteractions(proxy);
+    }
+}
 

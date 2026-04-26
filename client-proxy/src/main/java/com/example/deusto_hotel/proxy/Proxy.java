@@ -84,6 +84,10 @@ public class Proxy {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        if ((response.statusCode() != 200)) {
+            throw new RuntimeException("Error al obtener habitaciones disponibles: " + response.body());
+        }
+
 
         return parseRoomDisponibleResponse(response.body());
     }

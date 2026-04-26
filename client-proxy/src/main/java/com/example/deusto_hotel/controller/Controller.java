@@ -27,26 +27,36 @@ public class Controller {
     private final Proxy proxy;
 
     @GetMapping("/habitaciones/disponibles")
-    public String getHabitacionesDisponibles(Model model, LocalDate fechaEntrada, LocalDate fechaSalida) throws IOException, InterruptedException, JsonProcessingException {
+    public String getHabitacionesDisponibles(Model model,
+                                             @RequestParam(required = false) LocalDate fechaEntrada,
+                                             @RequestParam(required = false) LocalDate fechaSalida) {
 
         if (fechaEntrada == null || fechaSalida == null) {
             return "user/habitaciones";
         }
 
-        ArrayList<RoomDisponibleResponse> habitaciones = proxy.getHabitacionesDisponibles(fechaEntrada, fechaSalida);
+        try {
+            ArrayList<RoomDisponibleResponse> habitaciones = proxy.getHabitacionesDisponibles(fechaEntrada, fechaSalida);
 
-        System.out.printf(habitaciones.toString());
+            habitaciones.forEach(habitacion -> {
+                String key = switch (habitacion.getTipo()) {
+                    case INDIVIDUAL -> "habitacionSimple";
+                    case DOBLE -> "habitacionDoble";
+                    case SUITE -> "habitacionSuite";
+                };
+                model.addAttribute(key, habitacion);
+            });
 
-        habitaciones.forEach(habitacion -> {
-            String key = switch (habitacion.getTipo()) {
-                case INDIVIDUAL -> "habitacionSimple";
-                case DOBLE -> "habitacionDoble";
-                case SUITE -> "habitacionSuite";
-            };
-            model.addAttribute(key, habitacion);
-        });
+        } catch (Exception e) {
+
+            // Enviamos un mensaje de error a la vista (Thymeleaf/JSP)
+            model.addAttribute("error", "No se han podido cargar las habitaciones en este momento. Inténtelo más tarde.");
+
+            // Opcional: Podrías devolver una vista específica de error o la misma vista con el mensaje
+            return "user/habitaciones";
+        }
+
         return "user/habitaciones";
-
     }
 
     @PostMapping("/reservas")

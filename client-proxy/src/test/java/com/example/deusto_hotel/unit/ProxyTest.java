@@ -1,6 +1,9 @@
 package com.example.deusto_hotel.unit;
 
 import com.example.deusto_hotel.dto.RoomBookingRequest;
+import com.example.deusto_hotel.dto.RoomDisponibleResponse;
+import com.example.deusto_hotel.dto.RoomDisponiblesSimplesResponse;
+import com.example.deusto_hotel.dto.RoomDisponiblesSuitResponse;
 import com.example.deusto_hotel.model.RoomType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +17,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -249,5 +252,52 @@ class ProxyTest {
 
         assertEquals(400, result.getStatusCode().value());
         assertEquals("Error en la petición", result.getBody());
+    }
+
+    @Test
+    void testGetHabitacionesDisponibles_Exito() throws Exception {
+        // GIVEN: JSON con SUITE, INDIVIDUAL y DOBLE
+        String jsonResponse = "[" +
+                "  {\"tipo\": \"SUITE\", \"suites\": [{\"capacidad\": 2, \"precioPorNoche\": 200, \"id\": 1}]}," +
+                "  {\"tipo\": \"INDIVIDUAL\", \"numero_disponibles\": 5}," +
+                "  {\"tipo\": \"DOBLE\", \"numero_disponibles\": 3}" +
+                "]";
+
+        // Configuramos el mock para que devuelva 200 OK
+        HttpResponse<String> mockResponse = mock(HttpResponse.class);
+        when(mockResponse.statusCode()).thenReturn(200);
+        when(mockResponse.body()).thenReturn(jsonResponse);
+
+        when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(mockResponse);
+
+        // WHEN
+        ArrayList<RoomDisponibleResponse> resultado = proxy.getHabitacionesDisponibles(
+                LocalDate.now(), LocalDate.now().plusDays(1)
+        );
+
+        // THEN
+        assertNotNull(resultado);
+        assertEquals(3, resultado.size());
+        assertEquals(RoomType.SUITE, resultado.get(0).getTipo());
+        assertEquals(RoomType.INDIVIDUAL, resultado.get(1).getTipo());
+        assertEquals(RoomType.DOBLE, resultado.get(2).getTipo());
+    }
+
+    @Test
+    void testGetHabitacionesDisponibles_ErrorServidor() throws Exception {
+        // GIVEN: El servidor devuelve un error 500
+        HttpResponse<String> mockResponse = mock(HttpResponse.class);
+        when(mockResponse.statusCode()).thenReturn(500);
+        when(mockResponse.body()).thenReturn("Internal Server Error");
+
+        when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(mockResponse);
+
+        // WHEN & THEN: Verificamos que se lanza la RuntimeException con el mensaje esperado
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            proxy.getHabitacionesDisponibles(LocalDate.now(), LocalDate.now().plusDays(1));
+        });
+
+        assertTrue(exception.getMessage().contains("Error al obtener habitaciones disponibles"));
+        assertTrue(exception.getMessage().contains("Internal Server Error"));
     }
 }
