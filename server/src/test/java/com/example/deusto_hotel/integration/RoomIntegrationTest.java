@@ -74,6 +74,56 @@ public class RoomIntegrationTest {
 
         assertEquals(400, response.getStatusCode().value());
     }
+    @Test
+    public void createBooking_correcto() {
+
+        LocalDate fechaEntrada = LocalDate.now().plusDays(20);
+        LocalDate fechaSalida = LocalDate.now().plusDays(25);
+
+        // 1. Obtener habitaciones disponibles
+        ParameterizedTypeReference<List<RoomTestDTO>> responseType = new ParameterizedTypeReference<>() {};
+
+        ResponseEntity<List<RoomTestDTO>> response = restTemplate.exchange(
+                "/api/v1/rooms/disponibles?fechaEntrada={fechaEntrada}&fechaSalida={fechaSalida}",
+                HttpMethod.GET,
+                null,
+                responseType,
+                fechaEntrada.toString(),
+                fechaSalida.toString()
+        );
+
+        assertEquals(200, response.getStatusCode().value());
+
+        List<RoomTestDTO> disponibles = response.getBody();
+        assert disponibles != null;
+
+        // 2. Buscar una SUITE (más fácil de controlar)
+        RoomTestDTO suite = disponibles.stream()
+                .filter(r -> r.tipo() == RoomType.SUITE)
+                .findFirst()
+                .orElseThrow();
+
+        SuitResponse habitacion = suite.suites().get(0);
+
+        // 3. Crear request correcto
+        var request = new com.example.deusto_hotel.dto.RoomBookingRequest(
+                RoomType.SUITE,
+                1L,                // cliente existente
+                null,              // obligatorio null para SUITE
+                (long) habitacion.id(),
+                fechaEntrada,
+                fechaSalida
+        );
+
+        // 4. POST
+        ResponseEntity<Void> createResponse = restTemplate.postForEntity(
+                "/api/v1/room-bookings",
+                List.of(request),
+                Void.class
+        );
+
+        assertEquals(201, createResponse.getStatusCode().value());
+    }
 
 
 
