@@ -528,10 +528,6 @@ class ProxyTest {
                 verify(httpClient).send(any(HttpRequest.class), any());
         }
 
-        assertTrue(exception.getMessage().contains("Error al obtener habitaciones disponibles"));
-        assertTrue(exception.getMessage().contains("Internal Server Error"));
-    }
-
     @Test
     void crearHabitacionSuccessfully() throws Exception{
         RoomRequest request = new RoomRequest("777", RoomType.SUITE, 2, 200.0);
