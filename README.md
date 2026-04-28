@@ -1,17 +1,17 @@
 # DeustoHotel
 
-Este proyecto consiste en la gestion y administracion de un hotel, simulando historias de usuario reales que cualquier usuario podria encontrarse en la vida real.  
+Este proyecto consiste en la gestion y administracion de un hotel, simulando historias de usuario reales que cualquier usuario podria encontrarse en la vida real.
 La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.
 
 ---
 
 ## Tecnologias utilizadas
 
-- Java 21
-- Spring Boot
-- Gradle
-- JUnit 5
-- MySQL
+* Java 21
+* Spring Boot
+* Gradle
+* JUnit 5
+* MySQL
 
 ---
 
@@ -19,9 +19,9 @@ La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.
 
 Antes de construir y ejecutar el proyecto, asegurate de tener instalado:
 
-- Java 21 o superior
-- MySQL
-- Gradle (opcional, si no se usa el wrapper)
+* Java 21 o superior
+* MySQL
+* Gradle (opcional, si no se usa el wrapper)
 
 > Recomendado: usar el wrapper incluido en el proyecto (`gradlew` / `gradlew.bat`), asi no es necesario instalar Gradle manualmente.
 
@@ -72,6 +72,92 @@ java -version
 ./gradlew clean build
 ```
 
+---
+
+## Ejecucion de tests
+
+El proyecto incluye tests automatizados con JUnit 5.
+
+### Ejecutar todos los tests
+
+#### Windows
+
+```powershell
+.\gradlew.bat test
+```
+
+#### Linux/macOS
+
+```bash
+./gradlew test
+```
+
+### Ejecutar tests del server
+
+#### Windows
+
+```powershell
+.\gradlew.bat :server:test
+```
+
+#### Linux/macOS
+
+```bash
+./gradlew :server:test
+```
+
+### Ejecutar un test especifico
+
+```bash
+./gradlew :server:test --tests "com.tu.paquete.NombreDelTest"
+```
+
+---
+
+## Cobertura de codigo con JaCoCo
+
+El proyecto utiliza JaCoCo para medir la cobertura de los tests.
+
+### Ejecutar tests + generar reporte
+
+#### Windows
+
+```powershell
+.\gradlew.bat :server:test :server:jacocoTestReport
+```
+
+#### Linux/macOS
+
+```bash
+./gradlew :server:test :server:jacocoTestReport
+```
+
+### Acceder al reporte
+
+Una vez generado, buscar en la carpeta build/repots/jacoco/test: Seleccionar el html de los test para ver la cobertura de todas las ramas.
+
+El reporte muestra:
+
+* Cobertura de lineas
+* Cobertura de metodos
+* Clases no cubiertas
+
+---
+
+## Integracion continua
+
+El proyecto incluye integracion continua mediante GitHub Actions.
+
+### ¿Que hace?
+
+* Ejecuta automaticamente los tests en cada push y pull request
+* Verifica que el proyecto compila correctamente
+* Ayuda a detectar errores antes de integrar cambios
+
+---
+
+## Ejecucion del sistema
+
 7. Ejecutar server y cliente en terminales separadas.
 
 ### Terminal 1 - Server (puerto 8080)
@@ -106,15 +192,15 @@ java -version
 
 ## Funcionamiento del proyecto
 
-- El servidor se ejecuta en el puerto `8080`.
-- Documentacion de la API (Swagger): `http://localhost:8080/swagger-ui/index.html`
-- El cliente se ejecuta en el puerto `8090` y proporciona la interfaz frontend.
-- Acceso recomendado al frontend: `http://localhost:8090/login`
+* El servidor se ejecuta en el puerto `8080`.
+* Documentacion de la API (Swagger): `http://localhost:8080/swagger-ui/index.html`
+* El cliente se ejecuta en el puerto `8090` y proporciona la interfaz frontend.
+* Acceso recomendado al frontend: `http://localhost:8090/login`
 
 ---
 
 ## Notas utiles
 
-- Si no levanta Gradle, revisa que tu entorno este usando Java 21 (`JAVA_HOME` apuntando al JDK correcto).
-- El proyecto incluye datos de ejemplo al arrancar por primera vez en base de datos vacia.
-
+* Si no levanta Gradle, revisa que tu entorno este usando Java 21 (`JAVA_HOME` apuntando al JDK correcto).
+* El proyecto incluye datos de ejemplo al arrancar por primera vez en base de datos vacia.
+* Si no aparece el reporte de JaCoCo, asegúrate de ejecutar `jacocoTestReport`.
