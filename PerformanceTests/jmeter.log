@@ -1,0 +1,737 @@
+2026-04-28 18:08:29,031 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2026-04-28 18:08:29,041 INFO o.a.j.JMeter: Loading user properties from: /opt/jmeter/bin/user.properties
+2026-04-28 18:08:29,041 INFO o.a.j.JMeter: Loading system properties from: /opt/jmeter/bin/system.properties
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: Version 5.6.3
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: java.version=21.0.10
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: os.name=Linux
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: os.arch=amd64
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: os.version=6.17.0-20-generic
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: file.encoding=UTF-8
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: java.awt.headless=true
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: Max memory     =1073741824
+2026-04-28 18:08:29,044 INFO o.a.j.JMeter: Available Processors =16
+2026-04-28 18:08:29,049 INFO o.a.j.JMeter: Default Locale=English (EN)
+2026-04-28 18:08:29,050 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2026-04-28 18:08:29,050 INFO o.a.j.JMeter: JMeterHome=/opt/jmeter
+2026-04-28 18:08:29,050 INFO o.a.j.JMeter: user.dir  =/home/ibai/IdeaProjects/DeustoHotel/PerformanceTests
+2026-04-28 18:08:29,050 INFO o.a.j.JMeter: PWD       =/home/ibai/IdeaProjects/DeustoHotel/PerformanceTests
+2026-04-28 18:08:29,050 INFO o.a.j.JMeter: IP: 127.0.1.1 Name: ibai-B550M-K FullName: ibai-B550M-K
+2026-04-28 18:08:29,058 INFO o.a.j.JMeter: Setting property 'jmeter.reportgenerator.outputdir' to:'/home/ibai/IdeaProjects/DeustoHotel/PerformanceTests/reporte'
+2026-04-28 18:08:29,059 INFO o.a.j.s.FileServer: Default base='/home/ibai/IdeaProjects/DeustoHotel/PerformanceTests'
+2026-04-28 18:08:29,060 INFO o.a.j.s.FileServer: Set new base='/home/ibai/IdeaProjects/DeustoHotel/PerformanceTests'
+2026-04-28 18:08:29,159 INFO o.a.j.s.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2
+2026-04-28 18:08:29,174 INFO o.a.j.s.SaveService: Using SaveService properties version 5.0
+2026-04-28 18:08:29,176 INFO o.a.j.s.SaveService: Using SaveService properties file encoding UTF-8
+2026-04-28 18:08:29,177 INFO o.a.j.s.SaveService: Loading file: TestCompletos.jmx
+2026-04-28 18:08:29,207 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/html is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-04-28 18:08:29,207 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xhtml+xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-04-28 18:08:29,207 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-04-28 18:08:29,207 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-04-28 18:08:29,207 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/vnd.wap.wml is org.apache.jmeter.protocol.http.parser.RegexpHTMLParser
+2026-04-28 18:08:29,207 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/css is org.apache.jmeter.protocol.http.parser.CssParser
+2026-04-28 18:08:29,229 INFO o.a.j.JMeter: Creating summariser <summary>
+2026-04-28 18:08:29,235 INFO o.a.j.r.d.ReportGenerator: ReportGenerator will use for Parsing the separator: ','
+2026-04-28 18:08:29,235 INFO o.a.j.r.d.ReportGenerator: Will generate report at end of test from  results file: resultados.jtl
+2026-04-28 18:08:29,235 INFO o.a.j.r.d.ReportGenerator: Reading report generator properties from: /opt/jmeter/bin/reportgenerator.properties
+2026-04-28 18:08:29,236 INFO o.a.j.r.d.ReportGenerator: Merging with JMeter properties
+2026-04-28 18:08:29,238 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.temp_dir' not found, using default value 'temp' instead.
+2026-04-28 18:08:29,239 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.apdex_per_transaction' not found, using default value 'null' instead.
+2026-04-28 18:08:29,239 INFO o.a.j.r.c.ReportGeneratorConfiguration: apdex_per_transaction is empty, not APDEX per transaction customization
+2026-04-28 18:08:29,239 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.sample_filter' not found, using default value 'null' instead.
+2026-04-28 18:08:29,239 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.report_title' not found, using default value 'null' instead.
+2026-04-28 18:08:29,239 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.start_date' not found, using default value 'null' instead.
+2026-04-28 18:08:29,239 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.end_date' not found, using default value 'null' instead.
+2026-04-28 18:08:29,239 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.date_format' not found, using default value 'null' instead.
+2026-04-28 18:08:29,239 INFO o.a.j.r.c.ReportGeneratorConfiguration: Will use date range start date: null, end date: null
+2026-04-28 18:08:29,241 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.totalTPS.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,241 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.activeThreadsOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,241 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.timeVsThreads.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,241 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimeDistribution.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,241 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.transactionsPerSecond.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,242 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimePercentiles.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,242 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimePercentilesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,242 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,242 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.connectTimeOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,242 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.latenciesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-04-28 18:08:29,242 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.filters_only_sample_series' not found, using default value 'true' instead.
+2026-04-28 18:08:29,242 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.series_filter' not found, using default value '' instead.
+2026-04-28 18:08:29,242 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.show_controllers_only' not found, using default value 'false' instead.
+2026-04-28 18:08:29,243 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.filters_only_sample_series' not found, using default value 'true' instead.
+2026-04-28 18:08:29,243 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.series_filter' not found, using default value '' instead.
+2026-04-28 18:08:29,243 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.show_controllers_only' not found, using default value 'false' instead.
+2026-04-28 18:08:29,249 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2026-04-28 18:08:29,250 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2026-04-28 18:08:29,250 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2026-04-28 18:08:29,252 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must contain the string: '.functions.'
+2026-04-28 18:08:29,253 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must not contain the string: '.gui.'
+2026-04-28 18:08:29,383 INFO o.a.j.JMeter: Running test (1777392509383)
+2026-04-28 18:08:29,396 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Grupo de reservar pistas
+2026-04-28 18:08:29,396 INFO o.a.j.e.StandardJMeterEngine: Starting 50 threads for group Grupo de reservar pistas.
+2026-04-28 18:08:29,396 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2026-04-28 18:08:29,396 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=50 ramp-up=20 delayedStart=false
+2026-04-28 18:08:29,400 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-1
+2026-04-28 18:08:29,409 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2026-04-28 18:08:29,409 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 2 : Grupo de reservar habitaciones
+2026-04-28 18:08:29,409 INFO o.a.j.e.StandardJMeterEngine: Starting 50 threads for group Grupo de reservar habitaciones.
+2026-04-28 18:08:29,409 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2026-04-28 18:08:29,409 INFO o.a.j.t.ThreadGroup: Starting thread group... number=2 threads=50 ramp-up=20 delayedStart=false
+2026-04-28 18:08:29,409 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-1
+2026-04-28 18:08:29,410 INFO o.a.j.p.h.s.HTTPHCAbstractImpl: Local host = ibai-B550M-K
+2026-04-28 18:08:29,415 INFO o.a.j.p.h.s.HTTPHC4Impl: HTTP request retry count = 0
+2026-04-28 18:08:29,416 INFO o.a.j.t.ThreadGroup: Started thread group number 2
+2026-04-28 18:08:29,416 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 3 : Grupo de ver habitaciones
+2026-04-28 18:08:29,416 INFO o.a.j.e.StandardJMeterEngine: Starting 100 threads for group Grupo de ver habitaciones.
+2026-04-28 18:08:29,416 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2026-04-28 18:08:29,416 INFO o.a.j.t.ThreadGroup: Starting thread group... number=3 threads=100 ramp-up=30 delayedStart=false
+2026-04-28 18:08:29,416 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-1
+2026-04-28 18:08:29,418 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
+2026-04-28 18:08:29,418 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to UTF-8
+2026-04-28 18:08:29,418 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
+2026-04-28 18:08:29,418 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
+2026-04-28 18:08:29,431 INFO o.a.j.t.ThreadGroup: Started thread group number 3
+2026-04-28 18:08:29,431 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2026-04-28 18:08:29,640 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-1
+2026-04-28 18:08:29,640 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-1
+2026-04-28 18:08:29,680 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-1
+2026-04-28 18:08:29,681 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-1
+2026-04-28 18:08:29,717 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-2
+2026-04-28 18:08:29,766 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-2
+2026-04-28 18:08:29,766 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-2
+2026-04-28 18:08:29,798 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-2
+2026-04-28 18:08:29,810 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-2
+2026-04-28 18:08:29,865 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-2
+2026-04-28 18:08:29,865 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-2
+2026-04-28 18:08:29,932 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-2
+2026-04-28 18:08:29,932 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-2
+2026-04-28 18:08:29,949 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-1
+2026-04-28 18:08:29,949 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-1
+2026-04-28 18:08:30,017 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-3
+2026-04-28 18:08:30,025 INFO o.a.j.r.Summariser: summary +     41 in 00:00:01 =   64.1/s Avg:    16 Min:     3 Max:   174 Err:     1 (2.44%) Active: 1 Started: 7 Finished: 6
+2026-04-28 18:08:30,057 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-3
+2026-04-28 18:08:30,057 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-3
+2026-04-28 18:08:30,197 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-3
+2026-04-28 18:08:30,210 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-3
+2026-04-28 18:08:30,246 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-3
+2026-04-28 18:08:30,246 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-3
+2026-04-28 18:08:30,266 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-3
+2026-04-28 18:08:30,266 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-3
+2026-04-28 18:08:30,316 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-4
+2026-04-28 18:08:30,350 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-4
+2026-04-28 18:08:30,350 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-4
+2026-04-28 18:08:30,597 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-4
+2026-04-28 18:08:30,609 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-4
+2026-04-28 18:08:30,616 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-5
+2026-04-28 18:08:30,644 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-4
+2026-04-28 18:08:30,644 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-4
+2026-04-28 18:08:30,647 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-5
+2026-04-28 18:08:30,647 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-5
+2026-04-28 18:08:30,659 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-4
+2026-04-28 18:08:30,659 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-4
+2026-04-28 18:08:30,916 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-6
+2026-04-28 18:08:30,948 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-6
+2026-04-28 18:08:30,948 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-6
+2026-04-28 18:08:30,997 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-5
+2026-04-28 18:08:31,009 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-5
+2026-04-28 18:08:31,043 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-5
+2026-04-28 18:08:31,043 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-5
+2026-04-28 18:08:31,061 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-5
+2026-04-28 18:08:31,061 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-5
+2026-04-28 18:08:31,216 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-7
+2026-04-28 18:08:31,260 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-7
+2026-04-28 18:08:31,260 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-7
+2026-04-28 18:08:31,396 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-6
+2026-04-28 18:08:31,409 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-6
+2026-04-28 18:08:31,441 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-6
+2026-04-28 18:08:31,441 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-6
+2026-04-28 18:08:31,453 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-6
+2026-04-28 18:08:31,453 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-6
+2026-04-28 18:08:31,516 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-8
+2026-04-28 18:08:31,546 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-8
+2026-04-28 18:08:31,546 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-8
+2026-04-28 18:08:31,797 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-7
+2026-04-28 18:08:31,810 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-7
+2026-04-28 18:08:31,817 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-9
+2026-04-28 18:08:31,840 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-7
+2026-04-28 18:08:31,840 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-7
+2026-04-28 18:08:31,842 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-9
+2026-04-28 18:08:31,843 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-9
+2026-04-28 18:08:31,859 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-7
+2026-04-28 18:08:31,859 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-7
+2026-04-28 18:08:32,117 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-10
+2026-04-28 18:08:32,145 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-10
+2026-04-28 18:08:32,145 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-10
+2026-04-28 18:08:32,196 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-8
+2026-04-28 18:08:32,209 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-8
+2026-04-28 18:08:32,237 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-8
+2026-04-28 18:08:32,237 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-8
+2026-04-28 18:08:32,250 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-8
+2026-04-28 18:08:32,250 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-8
+2026-04-28 18:08:32,417 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-11
+2026-04-28 18:08:32,445 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-11
+2026-04-28 18:08:32,445 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-11
+2026-04-28 18:08:32,597 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-9
+2026-04-28 18:08:32,610 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-9
+2026-04-28 18:08:32,644 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-9
+2026-04-28 18:08:32,644 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-9
+2026-04-28 18:08:32,655 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-9
+2026-04-28 18:08:32,655 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-9
+2026-04-28 18:08:32,716 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-12
+2026-04-28 18:08:32,741 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-12
+2026-04-28 18:08:32,741 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-12
+2026-04-28 18:08:32,996 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-10
+2026-04-28 18:08:33,010 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-10
+2026-04-28 18:08:33,016 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-13
+2026-04-28 18:08:33,040 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-10
+2026-04-28 18:08:33,040 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-13
+2026-04-28 18:08:33,040 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-10
+2026-04-28 18:08:33,040 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-13
+2026-04-28 18:08:33,054 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-10
+2026-04-28 18:08:33,054 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-10
+2026-04-28 18:08:33,316 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-14
+2026-04-28 18:08:33,340 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-14
+2026-04-28 18:08:33,340 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-14
+2026-04-28 18:08:33,396 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-11
+2026-04-28 18:08:33,409 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-11
+2026-04-28 18:08:33,441 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-11
+2026-04-28 18:08:33,441 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-11
+2026-04-28 18:08:33,451 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-11
+2026-04-28 18:08:33,451 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-11
+2026-04-28 18:08:33,616 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-15
+2026-04-28 18:08:33,643 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-15
+2026-04-28 18:08:33,644 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-15
+2026-04-28 18:08:33,796 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-12
+2026-04-28 18:08:33,809 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-12
+2026-04-28 18:08:33,835 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-12
+2026-04-28 18:08:33,835 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-12
+2026-04-28 18:08:33,848 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-12
+2026-04-28 18:08:33,848 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-12
+2026-04-28 18:08:33,917 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-16
+2026-04-28 18:08:33,938 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-16
+2026-04-28 18:08:33,938 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-16
+2026-04-28 18:08:34,197 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-13
+2026-04-28 18:08:34,210 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-13
+2026-04-28 18:08:34,216 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-17
+2026-04-28 18:08:34,237 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-17
+2026-04-28 18:08:34,237 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-17
+2026-04-28 18:08:34,244 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-13
+2026-04-28 18:08:34,244 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-13
+2026-04-28 18:08:34,254 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-13
+2026-04-28 18:08:34,254 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-13
+2026-04-28 18:08:34,516 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-18
+2026-04-28 18:08:34,538 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-18
+2026-04-28 18:08:34,538 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-18
+2026-04-28 18:08:34,596 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-14
+2026-04-28 18:08:34,609 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-14
+2026-04-28 18:08:34,636 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-14
+2026-04-28 18:08:34,636 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-14
+2026-04-28 18:08:34,646 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-14
+2026-04-28 18:08:34,646 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-14
+2026-04-28 18:08:34,817 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-19
+2026-04-28 18:08:34,840 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-19
+2026-04-28 18:08:34,840 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-19
+2026-04-28 18:08:34,997 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-15
+2026-04-28 18:08:35,010 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-15
+2026-04-28 18:08:35,036 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-15
+2026-04-28 18:08:35,036 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-15
+2026-04-28 18:08:35,050 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-15
+2026-04-28 18:08:35,050 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-15
+2026-04-28 18:08:35,116 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-20
+2026-04-28 18:08:35,137 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-20
+2026-04-28 18:08:35,137 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-20
+2026-04-28 18:08:35,396 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-16
+2026-04-28 18:08:35,410 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-16
+2026-04-28 18:08:35,416 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-21
+2026-04-28 18:08:35,436 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-21
+2026-04-28 18:08:35,436 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-21
+2026-04-28 18:08:35,437 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-16
+2026-04-28 18:08:35,437 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-16
+2026-04-28 18:08:35,444 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-16
+2026-04-28 18:08:35,444 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-16
+2026-04-28 18:08:35,717 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-22
+2026-04-28 18:08:35,739 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-22
+2026-04-28 18:08:35,739 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-22
+2026-04-28 18:08:35,796 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-17
+2026-04-28 18:08:35,809 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-17
+2026-04-28 18:08:35,835 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-17
+2026-04-28 18:08:35,835 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-17
+2026-04-28 18:08:35,848 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-17
+2026-04-28 18:08:35,849 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-17
+2026-04-28 18:08:36,017 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-23
+2026-04-28 18:08:36,035 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-23
+2026-04-28 18:08:36,036 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-23
+2026-04-28 18:08:36,197 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-18
+2026-04-28 18:08:36,209 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-18
+2026-04-28 18:08:36,232 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-18
+2026-04-28 18:08:36,232 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-18
+2026-04-28 18:08:36,240 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-18
+2026-04-28 18:08:36,240 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-18
+2026-04-28 18:08:36,317 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-24
+2026-04-28 18:08:36,336 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-24
+2026-04-28 18:08:36,336 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-24
+2026-04-28 18:08:36,596 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-19
+2026-04-28 18:08:36,609 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-19
+2026-04-28 18:08:36,616 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-25
+2026-04-28 18:08:36,634 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-25
+2026-04-28 18:08:36,634 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-25
+2026-04-28 18:08:36,635 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-19
+2026-04-28 18:08:36,635 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-19
+2026-04-28 18:08:36,645 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-19
+2026-04-28 18:08:36,646 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-19
+2026-04-28 18:08:36,916 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-26
+2026-04-28 18:08:36,936 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-26
+2026-04-28 18:08:36,936 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-26
+2026-04-28 18:08:36,996 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-20
+2026-04-28 18:08:37,009 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-20
+2026-04-28 18:08:37,043 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-20
+2026-04-28 18:08:37,043 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-20
+2026-04-28 18:08:37,051 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-20
+2026-04-28 18:08:37,051 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-20
+2026-04-28 18:08:37,217 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-27
+2026-04-28 18:08:37,235 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-27
+2026-04-28 18:08:37,235 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-27
+2026-04-28 18:08:37,397 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-21
+2026-04-28 18:08:37,409 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-21
+2026-04-28 18:08:37,435 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-21
+2026-04-28 18:08:37,435 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-21
+2026-04-28 18:08:37,441 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-21
+2026-04-28 18:08:37,441 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-21
+2026-04-28 18:08:37,517 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-28
+2026-04-28 18:08:37,537 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-28
+2026-04-28 18:08:37,537 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-28
+2026-04-28 18:08:37,796 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-22
+2026-04-28 18:08:37,809 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-22
+2026-04-28 18:08:37,816 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-29
+2026-04-28 18:08:37,833 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-22
+2026-04-28 18:08:37,833 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-29
+2026-04-28 18:08:37,834 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-22
+2026-04-28 18:08:37,834 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-29
+2026-04-28 18:08:37,843 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-22
+2026-04-28 18:08:37,843 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-22
+2026-04-28 18:08:38,117 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-30
+2026-04-28 18:08:38,140 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-30
+2026-04-28 18:08:38,141 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-30
+2026-04-28 18:08:38,196 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-23
+2026-04-28 18:08:38,210 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-23
+2026-04-28 18:08:38,229 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-23
+2026-04-28 18:08:38,230 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-23
+2026-04-28 18:08:38,249 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-23
+2026-04-28 18:08:38,249 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-23
+2026-04-28 18:08:38,416 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-31
+2026-04-28 18:08:38,433 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-31
+2026-04-28 18:08:38,433 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-31
+2026-04-28 18:08:38,596 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-24
+2026-04-28 18:08:38,609 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-24
+2026-04-28 18:08:38,630 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-24
+2026-04-28 18:08:38,630 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-24
+2026-04-28 18:08:38,647 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-24
+2026-04-28 18:08:38,647 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-24
+2026-04-28 18:08:38,716 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-32
+2026-04-28 18:08:38,734 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-32
+2026-04-28 18:08:38,734 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-32
+2026-04-28 18:08:38,996 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-25
+2026-04-28 18:08:39,009 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-25
+2026-04-28 18:08:39,016 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-33
+2026-04-28 18:08:39,032 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-25
+2026-04-28 18:08:39,032 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-25
+2026-04-28 18:08:39,034 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-33
+2026-04-28 18:08:39,034 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-33
+2026-04-28 18:08:39,048 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-25
+2026-04-28 18:08:39,048 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-25
+2026-04-28 18:08:39,317 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-34
+2026-04-28 18:08:39,335 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-34
+2026-04-28 18:08:39,335 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-34
+2026-04-28 18:08:39,397 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-26
+2026-04-28 18:08:39,410 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-26
+2026-04-28 18:08:39,439 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-26
+2026-04-28 18:08:39,439 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-26
+2026-04-28 18:08:39,450 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-26
+2026-04-28 18:08:39,451 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-26
+2026-04-28 18:08:39,617 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-35
+2026-04-28 18:08:39,635 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-35
+2026-04-28 18:08:39,635 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-35
+2026-04-28 18:08:39,797 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-27
+2026-04-28 18:08:39,809 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-27
+2026-04-28 18:08:39,834 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-27
+2026-04-28 18:08:39,834 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-27
+2026-04-28 18:08:39,841 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-27
+2026-04-28 18:08:39,841 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-27
+2026-04-28 18:08:39,917 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-36
+2026-04-28 18:08:39,936 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-36
+2026-04-28 18:08:39,936 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-36
+2026-04-28 18:08:40,196 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-28
+2026-04-28 18:08:40,209 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-28
+2026-04-28 18:08:40,216 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-37
+2026-04-28 18:08:40,235 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-37
+2026-04-28 18:08:40,235 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-37
+2026-04-28 18:08:40,237 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-28
+2026-04-28 18:08:40,237 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-28
+2026-04-28 18:08:40,248 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-28
+2026-04-28 18:08:40,248 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-28
+2026-04-28 18:08:40,516 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-38
+2026-04-28 18:08:40,533 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-38
+2026-04-28 18:08:40,533 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-38
+2026-04-28 18:08:40,596 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-29
+2026-04-28 18:08:40,609 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-29
+2026-04-28 18:08:40,632 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-29
+2026-04-28 18:08:40,632 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-29
+2026-04-28 18:08:40,642 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-29
+2026-04-28 18:08:40,642 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-29
+2026-04-28 18:08:40,816 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-39
+2026-04-28 18:08:40,834 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-39
+2026-04-28 18:08:40,834 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-39
+2026-04-28 18:08:40,997 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-30
+2026-04-28 18:08:41,010 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-30
+2026-04-28 18:08:41,036 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-30
+2026-04-28 18:08:41,036 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-30
+2026-04-28 18:08:41,046 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-30
+2026-04-28 18:08:41,046 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-30
+2026-04-28 18:08:41,116 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-40
+2026-04-28 18:08:41,133 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-40
+2026-04-28 18:08:41,133 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-40
+2026-04-28 18:08:41,397 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-31
+2026-04-28 18:08:41,410 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-31
+2026-04-28 18:08:41,417 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-41
+2026-04-28 18:08:41,433 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-31
+2026-04-28 18:08:41,434 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-31
+2026-04-28 18:08:41,436 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-41
+2026-04-28 18:08:41,436 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-41
+2026-04-28 18:08:41,445 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-31
+2026-04-28 18:08:41,445 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-31
+2026-04-28 18:08:41,716 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-42
+2026-04-28 18:08:41,733 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-42
+2026-04-28 18:08:41,733 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-42
+2026-04-28 18:08:41,796 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-32
+2026-04-28 18:08:41,810 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-32
+2026-04-28 18:08:41,836 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-32
+2026-04-28 18:08:41,836 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-32
+2026-04-28 18:08:41,844 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-32
+2026-04-28 18:08:41,844 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-32
+2026-04-28 18:08:42,016 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-43
+2026-04-28 18:08:42,033 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-43
+2026-04-28 18:08:42,033 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-43
+2026-04-28 18:08:42,196 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-33
+2026-04-28 18:08:42,209 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-33
+2026-04-28 18:08:42,248 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-33
+2026-04-28 18:08:42,248 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-33
+2026-04-28 18:08:42,258 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-33
+2026-04-28 18:08:42,258 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-33
+2026-04-28 18:08:42,316 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-44
+2026-04-28 18:08:42,333 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-44
+2026-04-28 18:08:42,333 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-44
+2026-04-28 18:08:42,596 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-34
+2026-04-28 18:08:42,609 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-34
+2026-04-28 18:08:42,616 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-45
+2026-04-28 18:08:42,632 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-45
+2026-04-28 18:08:42,632 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-45
+2026-04-28 18:08:42,632 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-34
+2026-04-28 18:08:42,632 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-34
+2026-04-28 18:08:42,644 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-34
+2026-04-28 18:08:42,644 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-34
+2026-04-28 18:08:42,916 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-46
+2026-04-28 18:08:42,933 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-46
+2026-04-28 18:08:42,933 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-46
+2026-04-28 18:08:42,996 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-35
+2026-04-28 18:08:43,009 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-35
+2026-04-28 18:08:43,030 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-35
+2026-04-28 18:08:43,030 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-35
+2026-04-28 18:08:43,046 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-35
+2026-04-28 18:08:43,047 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-35
+2026-04-28 18:08:43,216 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-47
+2026-04-28 18:08:43,237 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-47
+2026-04-28 18:08:43,237 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-47
+2026-04-28 18:08:43,397 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-36
+2026-04-28 18:08:43,409 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-36
+2026-04-28 18:08:43,432 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-36
+2026-04-28 18:08:43,432 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-36
+2026-04-28 18:08:43,442 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-36
+2026-04-28 18:08:43,442 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-36
+2026-04-28 18:08:43,518 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-48
+2026-04-28 18:08:43,534 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-48
+2026-04-28 18:08:43,534 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-48
+2026-04-28 18:08:43,796 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-37
+2026-04-28 18:08:43,809 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-37
+2026-04-28 18:08:43,818 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-49
+2026-04-28 18:08:43,833 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-49
+2026-04-28 18:08:43,833 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-49
+2026-04-28 18:08:43,834 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-37
+2026-04-28 18:08:43,834 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-37
+2026-04-28 18:08:43,844 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-37
+2026-04-28 18:08:43,844 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-37
+2026-04-28 18:08:44,116 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-50
+2026-04-28 18:08:44,133 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-50
+2026-04-28 18:08:44,133 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-50
+2026-04-28 18:08:44,196 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-38
+2026-04-28 18:08:44,211 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-38
+2026-04-28 18:08:44,234 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-38
+2026-04-28 18:08:44,234 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-38
+2026-04-28 18:08:44,243 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-38
+2026-04-28 18:08:44,243 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-38
+2026-04-28 18:08:44,416 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-51
+2026-04-28 18:08:44,432 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-51
+2026-04-28 18:08:44,432 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-51
+2026-04-28 18:08:44,596 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-39
+2026-04-28 18:08:44,610 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-39
+2026-04-28 18:08:44,633 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-39
+2026-04-28 18:08:44,633 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-39
+2026-04-28 18:08:44,645 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-39
+2026-04-28 18:08:44,645 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-39
+2026-04-28 18:08:44,716 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-52
+2026-04-28 18:08:44,732 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-52
+2026-04-28 18:08:44,732 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-52
+2026-04-28 18:08:44,996 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-40
+2026-04-28 18:08:45,009 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-40
+2026-04-28 18:08:45,016 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-53
+2026-04-28 18:08:45,029 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-40
+2026-04-28 18:08:45,029 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-40
+2026-04-28 18:08:45,032 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-53
+2026-04-28 18:08:45,032 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-53
+2026-04-28 18:08:45,039 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-40
+2026-04-28 18:08:45,039 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-40
+2026-04-28 18:08:45,316 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-54
+2026-04-28 18:08:45,333 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-54
+2026-04-28 18:08:45,333 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-54
+2026-04-28 18:08:45,396 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-41
+2026-04-28 18:08:45,409 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-41
+2026-04-28 18:08:45,433 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-41
+2026-04-28 18:08:45,433 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-41
+2026-04-28 18:08:45,440 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-41
+2026-04-28 18:08:45,440 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-41
+2026-04-28 18:08:45,616 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-55
+2026-04-28 18:08:45,633 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-55
+2026-04-28 18:08:45,633 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-55
+2026-04-28 18:08:45,797 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-42
+2026-04-28 18:08:45,809 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-42
+2026-04-28 18:08:45,841 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-42
+2026-04-28 18:08:45,841 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-42
+2026-04-28 18:08:45,850 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-42
+2026-04-28 18:08:45,850 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-42
+2026-04-28 18:08:45,918 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-56
+2026-04-28 18:08:45,934 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-56
+2026-04-28 18:08:45,934 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-56
+2026-04-28 18:08:46,196 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-43
+2026-04-28 18:08:46,209 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-43
+2026-04-28 18:08:46,217 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-57
+2026-04-28 18:08:46,231 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-43
+2026-04-28 18:08:46,231 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-43
+2026-04-28 18:08:46,233 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-57
+2026-04-28 18:08:46,233 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-57
+2026-04-28 18:08:46,233 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-43
+2026-04-28 18:08:46,234 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-43
+2026-04-28 18:08:46,516 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-58
+2026-04-28 18:08:46,533 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-58
+2026-04-28 18:08:46,533 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-58
+2026-04-28 18:08:46,596 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-44
+2026-04-28 18:08:46,609 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-44
+2026-04-28 18:08:46,636 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-44
+2026-04-28 18:08:46,636 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-44
+2026-04-28 18:08:46,644 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-44
+2026-04-28 18:08:46,644 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-44
+2026-04-28 18:08:46,816 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-59
+2026-04-28 18:08:46,833 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-59
+2026-04-28 18:08:46,833 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-59
+2026-04-28 18:08:46,996 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-45
+2026-04-28 18:08:47,009 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-45
+2026-04-28 18:08:47,029 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-45
+2026-04-28 18:08:47,029 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-45
+2026-04-28 18:08:47,043 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-45
+2026-04-28 18:08:47,043 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-45
+2026-04-28 18:08:47,116 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-60
+2026-04-28 18:08:47,132 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-60
+2026-04-28 18:08:47,132 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-60
+2026-04-28 18:08:47,396 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-46
+2026-04-28 18:08:47,409 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-46
+2026-04-28 18:08:47,416 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-61
+2026-04-28 18:08:47,432 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-61
+2026-04-28 18:08:47,432 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-61
+2026-04-28 18:08:47,433 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-46
+2026-04-28 18:08:47,433 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-46
+2026-04-28 18:08:47,444 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-46
+2026-04-28 18:08:47,444 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-46
+2026-04-28 18:08:47,716 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-62
+2026-04-28 18:08:47,733 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-62
+2026-04-28 18:08:47,733 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-62
+2026-04-28 18:08:47,797 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-47
+2026-04-28 18:08:47,810 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-47
+2026-04-28 18:08:47,832 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-47
+2026-04-28 18:08:47,833 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-47
+2026-04-28 18:08:47,838 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-47
+2026-04-28 18:08:47,838 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-47
+2026-04-28 18:08:48,016 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-63
+2026-04-28 18:08:48,033 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-63
+2026-04-28 18:08:48,033 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-63
+2026-04-28 18:08:48,197 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-48
+2026-04-28 18:08:48,209 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-48
+2026-04-28 18:08:48,231 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-48
+2026-04-28 18:08:48,231 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-48
+2026-04-28 18:08:48,241 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-48
+2026-04-28 18:08:48,241 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-48
+2026-04-28 18:08:48,317 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-64
+2026-04-28 18:08:48,333 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-64
+2026-04-28 18:08:48,333 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-64
+2026-04-28 18:08:48,597 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-49
+2026-04-28 18:08:48,609 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-49
+2026-04-28 18:08:48,617 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-65
+2026-04-28 18:08:48,629 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-49
+2026-04-28 18:08:48,629 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-49
+2026-04-28 18:08:48,632 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-65
+2026-04-28 18:08:48,632 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-65
+2026-04-28 18:08:48,648 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-49
+2026-04-28 18:08:48,648 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-49
+2026-04-28 18:08:48,917 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-66
+2026-04-28 18:08:48,932 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-66
+2026-04-28 18:08:48,932 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-66
+2026-04-28 18:08:48,996 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar pistas 1-50
+2026-04-28 18:08:49,009 INFO o.a.j.t.JMeterThread: Thread started: Grupo de reservar habitaciones 2-50
+2026-04-28 18:08:49,027 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar pistas 1-50
+2026-04-28 18:08:49,027 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar pistas 1-50
+2026-04-28 18:08:49,043 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de reservar habitaciones 2-50
+2026-04-28 18:08:49,043 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de reservar habitaciones 2-50
+2026-04-28 18:08:49,216 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-67
+2026-04-28 18:08:49,232 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-67
+2026-04-28 18:08:49,232 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-67
+2026-04-28 18:08:49,516 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-68
+2026-04-28 18:08:49,533 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-68
+2026-04-28 18:08:49,533 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-68
+2026-04-28 18:08:49,816 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-69
+2026-04-28 18:08:49,834 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-69
+2026-04-28 18:08:49,834 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-69
+2026-04-28 18:08:50,116 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-70
+2026-04-28 18:08:50,133 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-70
+2026-04-28 18:08:50,133 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-70
+2026-04-28 18:08:50,416 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-71
+2026-04-28 18:08:50,433 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-71
+2026-04-28 18:08:50,433 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-71
+2026-04-28 18:08:50,716 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-72
+2026-04-28 18:08:50,733 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-72
+2026-04-28 18:08:50,733 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-72
+2026-04-28 18:08:51,016 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-73
+2026-04-28 18:08:51,032 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-73
+2026-04-28 18:08:51,032 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-73
+2026-04-28 18:08:51,317 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-74
+2026-04-28 18:08:51,333 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-74
+2026-04-28 18:08:51,333 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-74
+2026-04-28 18:08:51,617 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-75
+2026-04-28 18:08:51,635 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-75
+2026-04-28 18:08:51,635 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-75
+2026-04-28 18:08:51,916 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-76
+2026-04-28 18:08:51,933 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-76
+2026-04-28 18:08:51,933 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-76
+2026-04-28 18:08:52,216 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-77
+2026-04-28 18:08:52,234 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-77
+2026-04-28 18:08:52,234 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-77
+2026-04-28 18:08:52,516 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-78
+2026-04-28 18:08:52,532 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-78
+2026-04-28 18:08:52,532 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-78
+2026-04-28 18:08:52,816 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-79
+2026-04-28 18:08:52,833 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-79
+2026-04-28 18:08:52,833 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-79
+2026-04-28 18:08:53,116 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-80
+2026-04-28 18:08:53,133 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-80
+2026-04-28 18:08:53,133 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-80
+2026-04-28 18:08:53,416 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-81
+2026-04-28 18:08:53,435 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-81
+2026-04-28 18:08:53,435 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-81
+2026-04-28 18:08:53,717 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-82
+2026-04-28 18:08:53,734 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-82
+2026-04-28 18:08:53,734 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-82
+2026-04-28 18:08:54,017 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-83
+2026-04-28 18:08:54,033 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-83
+2026-04-28 18:08:54,033 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-83
+2026-04-28 18:08:54,316 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-84
+2026-04-28 18:08:54,333 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-84
+2026-04-28 18:08:54,333 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-84
+2026-04-28 18:08:54,617 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-85
+2026-04-28 18:08:54,634 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-85
+2026-04-28 18:08:54,634 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-85
+2026-04-28 18:08:54,917 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-86
+2026-04-28 18:08:54,934 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-86
+2026-04-28 18:08:54,934 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-86
+2026-04-28 18:08:55,217 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-87
+2026-04-28 18:08:55,233 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-87
+2026-04-28 18:08:55,233 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-87
+2026-04-28 18:08:55,517 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-88
+2026-04-28 18:08:55,534 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-88
+2026-04-28 18:08:55,534 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-88
+2026-04-28 18:08:55,816 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-89
+2026-04-28 18:08:55,832 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-89
+2026-04-28 18:08:55,832 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-89
+2026-04-28 18:08:56,116 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-90
+2026-04-28 18:08:56,132 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-90
+2026-04-28 18:08:56,132 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-90
+2026-04-28 18:08:56,416 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-91
+2026-04-28 18:08:56,432 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-91
+2026-04-28 18:08:56,432 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-91
+2026-04-28 18:08:56,716 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-92
+2026-04-28 18:08:56,732 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-92
+2026-04-28 18:08:56,732 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-92
+2026-04-28 18:08:57,016 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-93
+2026-04-28 18:08:57,033 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-93
+2026-04-28 18:08:57,033 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-93
+2026-04-28 18:08:57,316 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-94
+2026-04-28 18:08:57,332 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-94
+2026-04-28 18:08:57,332 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-94
+2026-04-28 18:08:57,617 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-95
+2026-04-28 18:08:57,633 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-95
+2026-04-28 18:08:57,633 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-95
+2026-04-28 18:08:57,917 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-96
+2026-04-28 18:08:57,934 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-96
+2026-04-28 18:08:57,935 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-96
+2026-04-28 18:08:58,217 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-97
+2026-04-28 18:08:58,236 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-97
+2026-04-28 18:08:58,236 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-97
+2026-04-28 18:08:58,516 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-98
+2026-04-28 18:08:58,532 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-98
+2026-04-28 18:08:58,532 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-98
+2026-04-28 18:08:58,816 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-99
+2026-04-28 18:08:58,832 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-99
+2026-04-28 18:08:58,832 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-99
+2026-04-28 18:08:59,116 INFO o.a.j.t.JMeterThread: Thread started: Grupo de ver habitaciones 3-100
+2026-04-28 18:08:59,133 INFO o.a.j.t.JMeterThread: Thread is done: Grupo de ver habitaciones 3-100
+2026-04-28 18:08:59,133 INFO o.a.j.t.JMeterThread: Thread finished: Grupo de ver habitaciones 3-100
+2026-04-28 18:08:59,133 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2026-04-28 18:08:59,135 INFO o.a.j.r.Summariser: summary +   1459 in 00:00:29 =   50.1/s Avg:     3 Min:     1 Max:    22 Err:    21 (1.44%) Active: 0 Started: 200 Finished: 200
+2026-04-28 18:08:59,135 INFO o.a.j.r.Summariser: summary =   1500 in 00:00:30 =   50.4/s Avg:     3 Min:     1 Max:   174 Err:    22 (1.47%)
+2026-04-28 18:08:59,136 INFO o.a.j.JMeter: Generating Dashboard
+2026-04-28 18:08:59,136 INFO o.a.j.r.d.ReportGenerator: Flushing result collector before report Generation
+2026-04-28 18:08:59,141 INFO o.a.j.r.p.NormalizerSampleConsumer: Using format, 'ms', to parse timeStamp field
+2026-04-28 18:08:59,211 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.AggregateConsumer#stopProducing(): beginDate produced 0 samples
+2026-04-28 18:08:59,211 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.AggregateConsumer#stopProducing(): endDate produced 0 samples
+2026-04-28 18:08:59,212 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.ApdexSummaryConsumer#stopProducing(): apdexSummary produced 0 samples
+2026-04-28 18:08:59,212 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.RequestsSummaryConsumer#stopProducing(): requestsSummary produced 0 samples
+2026-04-28 18:08:59,215 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.StatisticsSummaryConsumer#stopProducing(): statisticsSummary produced 0 samples
+2026-04-28 18:08:59,216 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.Top5ErrorsBySamplerConsumer#stopProducing(): top5ErrorsBySampler produced 0 samples
+2026-04-28 18:08:59,216 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.ErrorsSummaryConsumer#stopProducing(): errorsSummary produced 0 samples
+2026-04-28 18:08:59,216 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.HitsPerSecondGraphConsumer#stopProducing(): hitsPerSecond produced 0 samples
+2026-04-28 18:08:59,233 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.LatencyVSRequestGraphConsumer#stopProducing(): latencyVsRequest produced 0 samples
+2026-04-28 18:08:59,234 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.SyntheticResponseTimeDistributionGraphConsumer#stopProducing(): syntheticResponseTimeDistribution produced 0 samples
+2026-04-28 18:08:59,234 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.BytesThroughputGraphConsumer#stopProducing(): bytesThroughputOverTime produced 0 samples
+2026-04-28 18:08:59,234 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.CodesPerSecondGraphConsumer#stopProducing(): codesPerSecond produced 0 samples
+2026-04-28 18:08:59,249 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeVSRequestGraphConsumer#stopProducing(): responseTimeVsRequest produced 0 samples
+2026-04-28 18:08:59,249 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): startIntervalControlerFilter produced 10500 samples
+2026-04-28 18:08:59,249 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TotalTPSGraphConsumer#stopProducing(): totalTPS produced 0 samples
+2026-04-28 18:08:59,249 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ActiveThreadsGraphConsumer#stopProducing(): activeThreadsOverTime produced 0 samples
+2026-04-28 18:08:59,249 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TimeVSThreadGraphConsumer#stopProducing(): timeVsThreads produced 0 samples
+2026-04-28 18:08:59,249 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeDistributionGraphConsumer#stopProducing(): responseTimeDistribution produced 0 samples
+2026-04-28 18:08:59,249 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TransactionsPerSecondGraphConsumer#stopProducing(): transactionsPerSecond produced 0 samples
+2026-04-28 18:08:59,249 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimePercentilesGraphConsumer#stopProducing(): responseTimePercentiles produced 0 samples
+2026-04-28 18:08:59,250 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimePercentilesOverTimeGraphConsumer#stopProducing(): responseTimePercentilesOverTime produced 0 samples
+2026-04-28 18:08:59,251 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeOverTimeGraphConsumer#stopProducing(): responseTimesOverTime produced 0 samples
+2026-04-28 18:08:59,251 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ConnectTimeOverTimeGraphConsumer#stopProducing(): connectTimeOverTime produced 0 samples
+2026-04-28 18:08:59,251 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.LatencyOverTimeGraphConsumer#stopProducing(): latenciesOverTime produced 0 samples
+2026-04-28 18:08:59,251 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): nameFilter produced 22500 samples
+2026-04-28 18:08:59,251 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): dateRangeFilter produced 4500 samples
+2026-04-28 18:08:59,251 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.NormalizerSampleConsumer#stopProducing(): normalizer produced 1500 samples
+2026-04-28 18:08:59,251 INFO o.a.j.r.p.CsvFileSampleSource: produce(): 1500 samples produced in 97ms on channel 0
+2026-04-28 18:08:59,252 INFO o.a.j.r.d.ReportGenerator: Exporting data using exporter:'json' of className:'org.apache.jmeter.report.dashboard.JsonExporter'
+2026-04-28 18:08:59,330 INFO o.a.j.r.d.JsonExporter: Found data for consumer statisticsSummary in context
+2026-04-28 18:08:59,330 INFO o.a.j.r.d.JsonExporter: Creating statistics for overall
+2026-04-28 18:08:59,330 INFO o.a.j.r.d.JsonExporter: Creating statistics for other transactions
+2026-04-28 18:08:59,331 INFO o.a.j.r.d.JsonExporter: Checking output folder
+2026-04-28 18:08:59,331 INFO o.a.j.r.d.JsonExporter: Writing statistics JSON to /home/ibai/IdeaProjects/DeustoHotel/PerformanceTests/reporte/statistics.json
+2026-04-28 18:08:59,395 INFO o.a.j.r.d.ReportGenerator: Exporting data using exporter:'html' of className:'org.apache.jmeter.report.dashboard.HtmlTemplateExporter'
+2026-04-28 18:08:59,399 INFO o.a.j.r.d.HtmlTemplateExporter: Will generate dashboard in folder: /home/ibai/IdeaProjects/DeustoHotel/PerformanceTests/reporte
+2026-04-28 18:08:59,453 INFO o.a.j.r.d.HtmlTemplateExporter: Report will be generated in: /home/ibai/IdeaProjects/DeustoHotel/PerformanceTests/reporte, creating folder structure
+2026-04-28 18:08:59,454 INFO o.a.j.r.d.TemplateVisitor: Copying folder from '/opt/jmeter/bin/report-template' to '/home/ibai/IdeaProjects/DeustoHotel/PerformanceTests/reporte', got message: /home/ibai/IdeaProjects/DeustoHotel/PerformanceTests/reporte, found non empty folder with following content [/home/ibai/IdeaProjects/DeustoHotel/PerformanceTests/reporte/statistics.json], will be ignored
+2026-04-28 18:08:59,577 INFO o.a.j.JMeter: Dashboard generated

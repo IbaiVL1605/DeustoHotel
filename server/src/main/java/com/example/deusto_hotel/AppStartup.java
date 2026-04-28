@@ -114,7 +114,7 @@ public class AppStartup implements CommandLineRunner {
         Room room4 = new Room();
         room4.setNumero("202");
         room4.setTipo(RoomType.DOBLE);
-        room4.setEstado(RoomStatus.BLOQUEADA);
+        room4.setEstado(RoomStatus.DISPONIBLE);
         roomRepository.save(room4);
 
         // 3. Crear Pistas deportivas con diferentes tipos
