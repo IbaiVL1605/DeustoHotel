@@ -1,9 +1,6 @@
 package com.example.deusto_hotel.unit;
 
-import com.example.deusto_hotel.dto.RoomBookingRequest;
-import com.example.deusto_hotel.dto.RoomDisponibleResponse;
-import com.example.deusto_hotel.dto.RoomDisponiblesSimplesResponse;
-import com.example.deusto_hotel.dto.RoomDisponiblesSuitResponse;
+import com.example.deusto_hotel.dto.*;
 import com.example.deusto_hotel.model.RoomType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -394,5 +391,88 @@ class ProxyTest {
 
         assertTrue(exception.getMessage().contains("Error al obtener habitaciones disponibles"));
         assertTrue(exception.getMessage().contains("Internal Server Error"));
+    }
+
+    @Test
+    void crearHabitacionSuccessfully() throws Exception{
+        RoomRequest request = new RoomRequest("777", RoomType.SUITE, 2, 200.0);
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(201);
+        when(response.body()).thenReturn("OK");
+
+        when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(response);
+
+        proxy.crearHabitacion(request);
+
+        verify(httpClient, times(1))
+                .send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+    }
+
+    @Test
+    void crearHabitacionError() throws Exception{
+        RoomRequest request = new RoomRequest("777", RoomType.SUITE, 2, 200.0);
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(400);
+        when(response.body()).thenReturn("Error creando habitación");
+
+        when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(response);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            proxy.crearHabitacion(request);
+        });
+    }
+
+    @Test
+    void getRoomBookingByClientIdSuccessfully() throws Exception{
+        Long clienteId = 1L;
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        String json = """
+            [
+              {
+                "id": 1,
+                "clienteId": 1,
+                "clienteNombre": "Juan López",
+                "habitacionId": 101,
+                "habitacionNumero": "101A",
+                "checkIn": "2025-05-01",
+                "checkOut": "2025-05-05",
+                "estado": "CONFIRMADA",
+                "precioTotal": 500.0,
+                "creadaEn": "2025-04-01T10:00:00"
+              }
+            ]
+            """;
+
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn(json);
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        List<RoomBookingResponse> result = proxy.getRoomBookingsByClienteId(clienteId);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        verify(httpClient).send(any(), any());
+    }
+
+    @Test
+    void getRoomBookingByClientIdError() throws Exception{
+        Long clienteId = 1L;
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(500);
+        when(response.body()).thenReturn("Error interno");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        assertThrows(RuntimeException.class, () -> {
+            proxy.getRoomBookingsByClienteId(clienteId);
+        });
     }
 }

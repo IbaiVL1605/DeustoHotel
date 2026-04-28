@@ -196,25 +196,6 @@ public class Proxy {
             throw new RuntimeException("Error creando reserva de pista: " + response.body());
         }
     }
-    public RoomBookingResponse updateRoomBooking(Long id, RoomBookingRequest request)
-            throws IOException, InterruptedException {
-
-        String requestBody = objectMapper.writeValueAsString(request);
-
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(java.net.URI.create("http://localhost:8080/api/v1/room-bookings/" + id))
-                .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() >= 200 && response.statusCode() < 300) {
-            return objectMapper.readValue(response.body(), RoomBookingResponse.class);
-        }
-
-        throw new RuntimeException("Error al actualizar la reserva: " + response.body());
-    }
 
     public void deleteRoomBooking(Long id, Long userId)
             throws IOException, InterruptedException {
