@@ -554,7 +554,7 @@ class ProxyTest {
 
         when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(response);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(RuntimeException.class, () -> {
             proxy.crearHabitacion(request);
         });
     }
@@ -608,6 +608,53 @@ class ProxyTest {
 
         assertThrows(RuntimeException.class, () -> {
             proxy.getRoomBookingsByClienteId(clienteId);
+        });
+    }
+
+    @Test
+    void getCourtBookingsByClientIdSuccessfully() throws Exception{
+        Long clienteId = 1L;
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        String json = """
+            [
+              {
+                "pistaId": "10",
+                "fecha": "2025-05-01",
+                "horaInicio": "13:30:00",
+                "horaFin": "14:30:00",
+                "clienteId": "1"
+              }
+            ]
+            """;
+
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn(json);
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        List<CourtBookingResponse> result = proxy.getCourtBookingsByClienteId(clienteId);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        verify(httpClient).send(any(), any());
+    }
+
+    @Test
+    void getCourtBookingsByClientIdError() throws Exception{
+        Long clienteId = 1L;
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(500);
+        when(response.body()).thenReturn("Error interno");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        assertThrows(RuntimeException.class, () -> {
+            proxy.getCourtBookingsByClienteId(clienteId);
         });
     }
 }
