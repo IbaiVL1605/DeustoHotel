@@ -131,6 +131,63 @@ class ProxyTest {
     }
 
     @Test
+    void login_error_usuarioNullField() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn("{\"mensaje\":\"Sesion iniciada correctamente\", \"usuario\": null }");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse) response);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> proxy.login("juan@email.com", "1234")
+        );
+
+        assertEquals("Respuesta de login invalida", ex.getMessage());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
+
+    @Test
+    void login_error_bodyIsNull() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(500);
+        when(response.body()).thenReturn(null);
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse) response);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> proxy.login("juan@email.com", "1234")
+        );
+
+        assertEquals("No se pudo iniciar sesion", ex.getMessage());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
+
+    @Test
+    void login_error_statusBelow200() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(199); // < 200, first part of condition false
+        when(response.body()).thenReturn("Informational response");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse) response);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> proxy.login("juan@email.com", "1234")
+        );
+
+        assertEquals("Informational response", ex.getMessage());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
+
+    @Test
     void shouldRegisterUserSuccessfully() throws Exception {
 
         HttpResponse<String> response = mock(HttpResponse.class);
