@@ -13,10 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -29,6 +32,9 @@ public class UserControllerTest2 {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private UserController userController;
 
     @MockitoBean
     private UserService userService;
@@ -112,6 +118,28 @@ public class UserControllerTest2 {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("La contrasena es obligatoria."));
 
+        verify(userService, never()).login(anyString(), anyString());
+    }
+
+    @Test
+    public void testLogin_CorreoNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userController.login(new MockHttpSession(), null, "12345678")
+        );
+
+        assertEquals("El correo es obligatorio.", ex.getMessage());
+        verify(userService, never()).login(anyString(), anyString());
+    }
+
+    @Test
+    public void testLogin_ContrasenaNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userController.login(new MockHttpSession(), "a@gmail.com", null)
+        );
+
+        assertEquals("La contrasena es obligatoria.", ex.getMessage());
         verify(userService, never()).login(anyString(), anyString());
     }
 

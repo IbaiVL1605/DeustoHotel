@@ -312,6 +312,51 @@ public class RoomBookingServiceTest {
         assertEquals("Tipo de habitación no válido", ex.getMessage());
     }
 
+    // --- TEST: SOLAPAMIENTO EN SUITE ---
+    @Test
+    void shouldThrowExceptionWhenSuiteBookingOverlaps() {
+        // GIVEN: Una reserva SUITE que se solapa con otra existente
+        User cliente = new User();
+        cliente.setId(1L);
+
+        Room suite = new Room();
+        suite.setId(101L);
+        suite.setTipo(RoomType.SUITE);
+        suite.setPrecioPorNoche(200);
+
+        // Fechas de la nueva reserva
+        LocalDate checkIn = LocalDate.now().plusDays(1);
+        LocalDate checkOut = LocalDate.now().plusDays(3);
+
+        RoomBookingRequest request = new RoomBookingRequest(
+                RoomType.SUITE, 1L, 1, 101L,
+                checkIn, checkOut
+        );
+
+        // Simulamos una reserva existente que se solapa
+        RoomBooking existingReservation = new RoomBooking();
+        existingReservation.setId(5L);
+        existingReservation.setHabitacion(suite);
+        existingReservation.setCheckIn(LocalDate.now().plusDays(2));
+        existingReservation.setCheckOut(LocalDate.now().plusDays(4));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(roomRepository.findByIdAndTipo(101L, RoomType.SUITE)).thenReturn(Optional.of(suite));
+        // El repositorio devuelve un solapamiento
+        when(roomBookingRepository.findSolapamientos(101L, checkIn, checkOut))
+                .thenReturn(List.of(existingReservation));
+
+        // WHEN & THEN
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                roomBookingService.create(List.of(request))
+        );
+
+        assertEquals("La habitación ya está reservada para las fechas seleccionadas", ex.getMessage());
+
+        // EXPLICACIÓN: Verificamos que NO se llamó a save porque fue rechazada por solapamiento
+        verify(roomBookingRepository, never()).save(any(RoomBooking.class));
+    }
+
 
 
 
