@@ -75,4 +75,5 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.bloqueado").value(false))
                 .andExpect(jsonPath("$.creadoEn").exists());
     }
+
 }
