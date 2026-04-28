@@ -36,6 +36,9 @@ class ControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private Controller controller;
+
     @MockitoBean
     private Proxy proxy;
 
@@ -142,6 +145,73 @@ class ControllerTest {
                 .andExpect(request().sessionAttribute("userRole", "CLIENT"));
 
         verify(proxy).login("juan@email.com", "1234");
+    }
+
+    @Test
+    void login_exito_admin_redirigeAAdmin() throws Exception {
+        UserResponse usuario = new UserResponse(
+                1L,
+                "Admin",
+                "admin@email.com",
+                Role.ADMIN,
+                false,
+                LocalDateTime.now()
+        );
+
+        when(proxy.login("admin@email.com", "1234")).thenReturn(usuario);
+
+        mockMvc.perform(get("/api/v1/login")
+                        .param("email", "admin@email.com")
+                        .param("password", "1234"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin"))
+                .andExpect(request().sessionAttribute("userRole", "ADMIN"));
+
+        verify(proxy).login("admin@email.com", "1234");
+    }
+
+    @Test
+    void login_error_correoNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.login(new MockHttpSession(), null, "1234")
+        );
+
+        assertEquals("El correo es obligatorio", ex.getMessage());
+        verifyNoInteractions(proxy);
+    }
+
+    @Test
+    void login_error_correoVacio() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.login(new MockHttpSession(), "", "1234")
+        );
+
+        assertEquals("El correo es obligatorio", ex.getMessage());
+        verifyNoInteractions(proxy);
+    }
+
+    @Test
+    void login_error_passwordNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.login(new MockHttpSession(), "a@gmail.com", null)
+        );
+
+        assertEquals("La contraseña es obligatoria", ex.getMessage());
+        verifyNoInteractions(proxy);
+    }
+
+    @Test
+    void login_error_passwordVacio() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.login(new MockHttpSession(), "a@gmail.com", "")
+        );
+
+        assertEquals("La contraseña es obligatoria", ex.getMessage());
+        verifyNoInteractions(proxy);
     }
 
     @Test
