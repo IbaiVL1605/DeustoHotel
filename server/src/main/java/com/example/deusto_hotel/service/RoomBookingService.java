@@ -60,6 +60,17 @@ public class RoomBookingService {
         Optional<Room> habitacion = roomRepository.findByIdAndTipo(roomBookingRequest.id_habitacion(), RoomType.SUITE);
         if(habitacion.isEmpty()) {throw new IllegalArgumentException("Habitacion no encontrada para tipo SUITE");}
 
+        // Verificar solapamientos con otras reservas
+        List<RoomBooking> solapamientos = roomBookingRepository.findSolapamientos(
+                habitacion.get().getId(),
+                roomBookingRequest.fechaEntrada(),
+                roomBookingRequest.fechaSalida()
+        );
+
+        if (!solapamientos.isEmpty()) {
+            throw new IllegalArgumentException("La habitación ya está reservada para las fechas seleccionadas");
+        }
+
         RoomBooking reserva = new RoomBooking();
         reserva.setCliente(cliente);
         reserva.setHabitacion(habitacion.get());

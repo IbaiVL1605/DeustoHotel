@@ -584,6 +584,48 @@
             .search-form { flex-direction: column; }
             .suite-grid { grid-template-columns: 1fr; }
         }
+
+        /* ── POLL STATUS ── */
+        .poll-status {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: .72rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            min-height: 1.2rem;
+        }
+        .poll-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background .3s;
+        }
+        .poll-dot.syncing  { background: var(--gold); animation: pulse .8s ease-in-out infinite alternate; }
+        .poll-dot.ok       { background: var(--success); }
+        .poll-dot.error    { background: var(--error); }
+        @keyframes pulse { from { opacity: .4; } to { opacity: 1; } }
+
+        /* flash on live update */
+        @keyframes flashGold {
+            0%   { background: rgba(201,168,76,.18); }
+            100% { background: transparent; }
+        }
+        .updated { animation: flashGold .7s ease-out; }
+
+        /* suite marked unavailable by polling */
+        .suite-card.unavailable {
+            opacity: .4;
+            pointer-events: none;
+            position: relative;
+        }
+        .suite-card.unavailable .suite-toggle-btn::after {
+            content: ' · No disponible';
+        }
+
     </style>
 </head>
 <body>
@@ -681,7 +723,13 @@
 
         <!-- Fechas ocultas para JS -->
         <input type="hidden" id="hiddenFechaEntrada" th:value="${param.fechaEntrada != null ? param.fechaEntrada[0] : ''}">
-        <input type="hidden" id="hiddenFechaSalida" th:value="${param.fechaSalida != null ? param.fechaSalida[0] : ''}">
+        <input type="hidden" id="hiddenFechaSalida"  th:value="${param.fechaSalida  != null ? param.fechaSalida[0]  : ''}">
+
+        <!-- Poll status indicator -->
+        <div class="poll-status" id="pollStatus" style="display:none;">
+            <span class="poll-dot" id="pollDot"></span>
+            <span id="pollText"></span>
+        </div>
 
         <p class="section-label">Habitaciones disponibles para tu estancia</p>
 
@@ -692,7 +740,7 @@
                 <div class="room-row-name">Habitación Individual</div>
                 <div class="room-row-meta">
                     1 persona &nbsp;·&nbsp;
-                    <span th:text="${habitacionSimple.numero_disponibles}">0</span> disponibles
+                    <span id="countIndividual" th:text="${habitacionSimple.numero_disponibles}">0</span> disponibles
                 </div>
             </div>
             <div class="room-row-price">
@@ -714,7 +762,7 @@
                 <div class="room-row-name">Habitación Doble</div>
                 <div class="room-row-meta">
                     2 personas &nbsp;·&nbsp;
-                    <span th:text="${habitacionDoble.numero_disponibles}">0</span> disponibles
+                    <span id="countDoble" th:text="${habitacionDoble.numero_disponibles}">0</span> disponibles
                 </div>
             </div>
             <div class="room-row-price">
@@ -730,13 +778,15 @@
         </div>
 
         <!-- ── SUITES ── -->
-        <div th:if="${habitacionSuite != null}">
+        <div th:if="${habitacionSuite != null}" id="suitesWrapper">
             <p class="section-label" style="margin-top:2.5rem;">Suites premium</p>
-            <div class="suite-grid">
-                <div th:each="suite, stat : ${habitacionSuite.suites}"
+            <div class="suite-grid" id="suiteGrid">
+                <div th:each="suite : ${habitacionSuite.suites}"
                      class="suite-card"
                      th:id="'suite-' + ${suite.id}"
-                     th:onclick="'toggleSuite(' + ${suite.id} + ', ' + ${suite.capacidad} + ', ' + ${suite.precioPorNoche} + ')'">
+                     th:data-id="${suite.id}"
+                     th:data-capacidad="${suite.capacidad}"
+                     th:data-precio="${suite.precioPorNoche}">
                     <span class="suite-selected-badge">Seleccionada</span>
                     <div class="suite-icon">◈</div>
                     <div class="suite-id" th:text="'Suite #' + ${suite.id}">Suite #1</div>
@@ -1044,6 +1094,165 @@
         document.getElementById('reservaError').style.display = 'none';
         document.getElementById('reservaSuccess').style.display = 'none';
     }
+
+    // ═══════════════════════════════════════════════════════
+    // LIVE POLLING — actualiza datos desde /api/v1/rooms/disponibles cada 5s
+    // La renderización inicial la hace Thymeleaf; el polling
+    // solo actualiza los contadores y el estado de las suites.
+    // ═══════════════════════════════════════════════════════
+    const POLL_INTERVAL = 5000;
+    let pollTimer = null;
+
+    function setPollStatus(state, text) {
+        const statusEl = document.getElementById('pollStatus');
+        const dotEl    = document.getElementById('pollDot');
+        const textEl   = document.getElementById('pollText');
+        if (!statusEl) return;
+        statusEl.style.display = 'flex';
+        dotEl.className = 'poll-dot ' + state;   // syncing | ok | error
+        textEl.textContent = text;
+    }
+
+    function flashElement(el) {
+        if (!el) return;
+        el.classList.remove('updated');
+        // Force reflow so the animation restarts if triggered twice quickly
+        void el.offsetWidth;
+        el.classList.add('updated');
+    }
+
+    function applyLiveData(data) {
+        // data = List<RoomDisponibleResponse> from the API
+        data.forEach(item => {
+            const tipo = item.tipo; // "INDIVIDUAL" | "DOBLE" | "SUITE"
+
+            if (tipo === 'INDIVIDUAL') {
+                const countEl = document.getElementById('countIndividual');
+                const btnEl   = document.getElementById('btnAddIndividual');
+                const rowEl   = document.getElementById('rowIndividual');
+                const newVal  = item.numero_disponibles ?? 0;
+
+                if (countEl && String(countEl.textContent) !== String(newVal)) {
+                    countEl.textContent = newVal;
+                    flashElement(rowEl);
+                }
+                if (btnEl) btnEl.dataset.max = newVal;
+
+                // Clamp current qty selection if fewer rooms now available
+                if (quantities.individual > newVal) {
+                    quantities.individual = newVal;
+                    const qtyEl = document.getElementById('qtyIndividual');
+                    if (qtyEl) qtyEl.textContent = newVal;
+                }
+            }
+
+            if (tipo === 'DOBLE') {
+                const countEl = document.getElementById('countDoble');
+                const btnEl   = document.getElementById('btnAddDoble');
+                const rowEl   = document.getElementById('rowDoble');
+                const newVal  = item.numero_disponibles ?? 0;
+
+                if (countEl && String(countEl.textContent) !== String(newVal)) {
+                    countEl.textContent = newVal;
+                    flashElement(rowEl);
+                }
+                if (btnEl) btnEl.dataset.max = newVal;
+
+                if (quantities.doble > newVal) {
+                    quantities.doble = newVal;
+                    const qtyEl = document.getElementById('qtyDoble');
+                    if (qtyEl) qtyEl.textContent = newVal;
+                }
+            }
+
+            if (tipo === 'SUITE' && Array.isArray(item.suites)) {
+                // Build a Set of currently available suite ids from API
+                const availableIds = new Set(item.suites.map(s => String(s.id)));
+
+                // For each suite card rendered by Thymeleaf, mark available/unavailable
+                document.querySelectorAll('.suite-card[data-id]').forEach(card => {
+                    const cardId = card.dataset.id;
+                    const wasUnavailable = card.classList.contains('unavailable');
+                    const nowUnavailable = !availableIds.has(cardId);
+
+                    if (nowUnavailable && !wasUnavailable) {
+                        // Became unavailable — deselect from cart if selected
+                        card.classList.add('unavailable');
+                        if (selectedSuites.has(Number(cardId))) {
+                            const idx = cart.findIndex(c => String(c.id_habitacion) === cardId);
+                            if (idx !== -1) cart.splice(idx, 1);
+                            selectedSuites.delete(Number(cardId));
+                            card.classList.remove('selected');
+                            const btn = card.querySelector('.suite-toggle-btn');
+                            if (btn) btn.textContent = 'Seleccionar suite';
+                            updateCartUI();
+                        }
+                        flashElement(card);
+                    } else if (!nowUnavailable && wasUnavailable) {
+                        // Came back available
+                        card.classList.remove('unavailable');
+                        flashElement(card);
+                    }
+                });
+            }
+        });
+    }
+
+    async function pollHabitaciones() {
+        if (!fechaEntrada || !fechaSalida) return;   // no dates yet — nothing to poll
+
+        setPollStatus('syncing', 'Actualizando...');
+
+        try {
+            const url = `/api/habitaciones/disponibles?fechaEntrada=${fechaEntrada}&fechaSalida=${fechaSalida}`;
+            const res = await fetch(url, { credentials: 'include' });
+
+            if (!res.ok) {
+                const msg = await res.text().catch(() => '');
+                console.warn('[poll] API error', res.status, msg);
+                setPollStatus('error', 'Error al actualizar');
+                return;
+            }
+
+            const data = await res.json();
+            applyLiveData(data);
+            setPollStatus('ok', 'Actualizado · ' + new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+
+        } catch (err) {
+            console.error('[poll] fetch failed', err);
+            setPollStatus('error', 'Sin conexión');
+        }
+    }
+
+    function startPolling() {
+        if (pollTimer) return;                   // already running
+        pollTimer = setInterval(pollHabitaciones, POLL_INTERVAL);
+        console.info('[poll] started — every', POLL_INTERVAL / 1000, 's');
+    }
+
+    function stopPolling() {
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+
+    // Start polling only when dates are present (page loaded with them or user submits)
+    window.addEventListener('DOMContentLoaded', () => {
+        if (fechaEntrada && fechaSalida) {
+            // Small delay so initial Thymeleaf render settles first
+            setTimeout(startPolling, 1000);
+        }
+    });
+
+    // Stop polling when tab is hidden, resume when visible (battery/network friendly)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopPolling();
+        } else if (fechaEntrada && fechaSalida) {
+            pollHabitaciones();   // immediate refresh on return
+            startPolling();
+        }
+    });
+
 </script>
 </body>
 </html>

@@ -330,4 +330,17 @@ public String deleteBooking(@PathVariable Long id, HttpSession session) {
         }
     }
 
+    @GetMapping("/api/habitaciones/disponibles")
+    @ResponseBody
+    public ResponseEntity<List<RoomDisponibleResponse>> getHabitacionesDisponiblesJson(
+            @RequestParam LocalDate fechaEntrada,
+            @RequestParam LocalDate fechaSalida) {
+        try {
+            List<RoomDisponibleResponse> habitaciones = proxy.getHabitacionesDisponibles(fechaEntrada, fechaSalida);
+            return ResponseEntity.ok(habitaciones);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }
