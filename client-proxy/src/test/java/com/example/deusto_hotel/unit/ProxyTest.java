@@ -385,7 +385,74 @@ class ProxyTest {
                 assertTrue(exception.getMessage().contains("Internal Server Error"));
         }
 
-        @Test
+    @Test
+    void createCourtBooking_exito() throws Exception {
+
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+
+        when(response.statusCode()).thenReturn(201); // CREATED
+
+
+        when(httpClient.send(any(HttpRequest.class), any()))
+                .thenReturn((HttpResponse) response);
+
+
+        CourtBookingRequest request = new CourtBookingRequest(
+                1L,
+                LocalDate.now(),
+                java.time.LocalTime.of(10, 0),
+                java.time.LocalTime.of(12, 0),
+                1L
+        );
+
+
+        proxy.createCourtBooking(request);
+
+
+        verify(httpClient).send(any(HttpRequest.class), any());
+    }
+
+
+    @Test
+    void createCourtBooking_error() throws Exception {
+
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+
+        when(response.statusCode()).thenReturn(400);
+        when(response.body()).thenReturn("Error en la petición");
+
+
+        when(httpClient.send(any(HttpRequest.class), any()))
+                .thenReturn((HttpResponse) response);
+
+
+        CourtBookingRequest request = new CourtBookingRequest(
+                1L,
+                LocalDate.now(),
+                java.time.LocalTime.of(10, 0),
+                java.time.LocalTime.of(12, 0),
+                1L
+        );
+
+
+        RuntimeException ex = assertThrows(
+                RuntimeException.class,
+                () -> proxy.createCourtBooking(request)
+        );
+
+
+        assertEquals("Error creando reserva de pista: Error en la petición", ex.getMessage());
+
+
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
+
+
+@Test
         void getCourts_exito_sinFiltro() throws Exception {
                 // 1. Prepara el JSON que simula la respuesta del servidor
                 String jsonResponse = "[" +

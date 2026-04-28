@@ -383,6 +383,91 @@ class ControllerTest {
                 verifyNoInteractions(proxy);
         }
 
+    @Test
+    void createCourtBooking_noUser() throws Exception {
+
+
+        CourtBookingRequest request = new CourtBookingRequest(
+                1L,
+                LocalDate.now(),
+                java.time.LocalTime.of(10, 0),
+                java.time.LocalTime.of(12, 0),
+                null
+        );
+
+
+        mockMvc.perform(post("/api/v1/court-bookings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"status\":\"ERROR\", \"message\":\"Usuario no autenticado\"}"));
+
+
+        verify(proxy, never()).createCourtBooking(any());
+    }
+
+
+    @Test
+    void createCourtBooking_exito() throws Exception {
+
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("userId", 1L);
+
+
+        CourtBookingRequest request = new CourtBookingRequest(
+                1L,
+                LocalDate.now(),
+                java.time.LocalTime.of(10, 0),
+                java.time.LocalTime.of(12, 0),
+                null // el controller lo sustituye
+        );
+
+
+        mockMvc.perform(post("/api/v1/court-bookings")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"status\":\"OK\"}"));
+
+
+        verify(proxy).createCourtBooking(any());
+    }
+
+
+    @Test
+    void createCourtBooking_error() throws Exception {
+
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("userId", 1L);
+
+
+        doThrow(new RuntimeException("Error backend"))
+                .when(proxy).createCourtBooking(any());
+
+
+        CourtBookingRequest request = new CourtBookingRequest(
+                1L,
+                LocalDate.now(),
+                java.time.LocalTime.of(10, 0),
+                java.time.LocalTime.of(12, 0),
+                null
+        );
+
+
+        mockMvc.perform(post("/api/v1/court-bookings")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"status\":\"ERROR\", \"message\":\"Error backend\"}"));
+
+
+        verify(proxy).createCourtBooking(any());
+    }
+
         @Test
         void getPistas_exito_sinFiltro() throws Exception {
                 // Prepara datos de retorno del proxy
@@ -445,5 +530,6 @@ class ControllerTest {
 
                 verify(proxy).getCourtsWeeklyAvailability(anyInt(), anyInt(), isNull());
         }
+
 
 }

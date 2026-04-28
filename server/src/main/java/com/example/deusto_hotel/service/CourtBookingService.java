@@ -31,26 +31,6 @@ public class CourtBookingService {
     private final CourtBookingMapper courtBookingMapper;
     private final SimpMessagingTemplate messagingTemplate;
 
-    /*
-    // GET ALL
-    @Transactional(readOnly = true)
-    public List<CourtBookingResponse> findAll() {
-        return courtBookingRepository.findAll()
-                .stream()
-                .map(courtBookingMapper::toResponse)
-                .toList();
-    }
-
-    // GET BY ID
-    @Transactional(readOnly = true)
-    public CourtBookingResponse findById(Long id) {
-        CourtBooking booking = courtBookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-
-        return courtBookingMapper.toResponse(booking);
-    }
-     */
-
     // CREATE
     public CourtBookingResponse create(CourtBookingRequest request, HttpSession session) {
 
@@ -138,6 +118,27 @@ public class CourtBookingService {
                 .map(courtBookingMapper::toResponse)
                 .toList();
     }
+
+        /*
+    // GET ALL
+    @Transactional(readOnly = true)
+    public List<CourtBookingResponse> findAll() {
+        return courtBookingRepository.findAll()
+                .stream()
+                .map(courtBookingMapper::toResponse)
+                .toList();
+    }
+
+    // GET BY ID
+    @Transactional(readOnly = true)
+    public CourtBookingResponse findById(Long id) {
+        CourtBooking booking = courtBookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        return courtBookingMapper.toResponse(booking);
+    }
+     */
+
 
     /*
     // FIND BY PISTA
