@@ -16,6 +16,8 @@
             --cream-2: #EDE8DC;
             --text-muted: #8A8070;
             --accent: #7C5C2E;
+            --error: #e05555;
+            --success: #6ee7a2;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,51 +28,48 @@
             font-family: 'DM Sans', sans-serif;
             font-weight: 300;
             min-height: 100vh;
+            padding-top: 5rem;
         }
 
         /* ── HEADER ── */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2rem 4rem;
-            border-bottom: 1px solid rgba(201,168,76,.2);
-            position: sticky;
-            top: 0;
-            background: var(--dark);
-            z-index: 100;
-        }
-
-        .logo {
+        .logo-header {
+            position: fixed;
+            top: 2rem;
+            left: 4rem;
             font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
             letter-spacing: .08em;
             color: var(--gold);
+            text-decoration: none;
+            transition: color .25s;
+            z-index: 100;
         }
+        .logo-header:hover { color: var(--gold-light); }
+        .logo-header span { font-style: italic; color: var(--cream); }
 
-        .logo span { font-style: italic; color: var(--cream); }
-
-        /* ── CART BADGE ── */
-        .cart-btn {
-            position: relative;
-            background: transparent;
-            border: 1px solid var(--gold);
+        /* ── CART BUTTON (fixed top right) ── */
+        .cart-trigger {
+            position: fixed;
+            top: 1.8rem;
+            right: 4rem;
+            background: var(--dark-2);
+            border: 1px solid rgba(201,168,76,.3);
             color: var(--gold);
-            padding: .6rem 1.4rem;
+            padding: .6rem 1.2rem;
             font-family: 'DM Sans', sans-serif;
             font-size: .8rem;
+            font-weight: 500;
             letter-spacing: .12em;
             text-transform: uppercase;
             cursor: pointer;
-            transition: background .25s, color .25s;
             display: flex;
             align-items: center;
             gap: .6rem;
+            transition: background .25s, border-color .25s;
+            z-index: 100;
         }
-
-        .cart-btn:hover { background: var(--gold); color: var(--dark); }
-
-        .cart-count {
+        .cart-trigger:hover { background: var(--dark-3); border-color: var(--gold); }
+        .cart-badge {
             background: var(--gold);
             color: var(--dark);
             border-radius: 50%;
@@ -80,886 +79,1180 @@
             align-items: center;
             justify-content: center;
             font-size: .7rem;
-            font-weight: 500;
+            font-weight: 700;
+            display: none;
+        }
+        .cart-badge.visible { display: flex; }
+
+        /* ── MAIN LAYOUT ── */
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem 6rem;
         }
 
-        /* ── HERO ── */
-        .hero {
-            text-align: center;
-            padding: 5rem 2rem 3rem;
+        /* ── PAGE HEADER ── */
+        .page-header {
+            margin-bottom: 3rem;
         }
-
-        .hero-label {
-            font-size: .7rem;
-            letter-spacing: .25em;
-            text-transform: uppercase;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .hero h1 {
+        .page-title {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-size: 2.8rem;
             font-weight: 400;
-            line-height: 1.1;
             color: var(--cream);
+            margin-bottom: .5rem;
         }
-
-        .hero h1 em { font-style: italic; color: var(--gold-light); }
-
+        .page-subtitle {
+            font-size: .75rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
         .divider {
-            width: 60px;
+            width: 50px;
             height: 1px;
             background: var(--gold);
-            margin: 2rem auto;
+            margin: 1.2rem 0;
             opacity: .6;
         }
 
-        /* ── MAIN GRID ── */
-        main {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 2rem 4rem 6rem;
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
-            font-weight: 400;
-            color: var(--cream);
-            margin-bottom: .4rem;
-        }
-
-        .section-subtitle {
-            font-size: .8rem;
-            letter-spacing: .15em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 2.5rem;
-        }
-
-        /* ── HABITACIONES SIMPLES / DOBLES ── */
-        .rooms-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 5rem;
-        }
-
-        .room-card {
-            background: var(--dark-2);
-            border: 1px solid rgba(201,168,76,.15);
-            padding: 2rem;
-            cursor: pointer;
-            transition: border-color .3s, transform .3s, box-shadow .3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .room-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(201,168,76,.06) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity .3s;
-        }
-
-        .room-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,.5); }
-        .room-card:hover::before { opacity: 1; }
-
-        .room-card.selected {
-            border-color: var(--gold);
-            background: var(--dark-3);
-        }
-
-        .room-card.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 28px;
-            height: 28px;
-            background: var(--gold);
-            color: var(--dark);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .9rem;
-            font-weight: 700;
-        }
-
-        .room-type-tag {
-            font-size: .65rem;
-            letter-spacing: .2em;
-            text-transform: uppercase;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .room-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
-            color: var(--cream);
-            margin-bottom: 1.2rem;
-        }
-
-        .room-availability {
-            display: flex;
-            align-items: baseline;
-            gap: .5rem;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,.06);
-        }
-
-        .availability-number {
-            font-size: 2.8rem;
-            font-family: 'Playfair Display', serif;
-            color: var(--gold-light);
-            line-height: 1;
-        }
-
-        .availability-label { font-size: .75rem; color: var(--text-muted); letter-spacing: .08em; }
-
-        .room-icon { font-size: 2rem; margin-bottom: 1rem; opacity: .6; }
-
-        /* ── SUITES LIST ── */
-        .suite-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 5rem; }
-
-        .suite-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--dark-2);
-            border: 1px solid rgba(201,168,76,.12);
-            padding: 1.6rem 2rem;
-            cursor: pointer;
-            transition: border-color .3s, background .3s;
-            position: relative;
-        }
-
-        .suite-item:hover { border-color: var(--gold); background: var(--dark-3); }
-
-        .suite-item.selected {
-            border-color: var(--gold);
-            background: var(--dark-3);
-        }
-
-        .suite-item.selected::after {
-            content: '✓';
-            position: absolute;
-            right: 1.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 28px;
-            height: 28px;
-            background: var(--gold);
-            color: var(--dark);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .9rem;
-            font-weight: 700;
-        }
-
-        .suite-left { display: flex; align-items: center; gap: 1.5rem; }
-        .suite-index {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            color: var(--gold);
-            opacity: .5;
-            min-width: 2rem;
-        }
-
-        .suite-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            color: var(--cream);
-        }
-
-        .suite-capacity {
-            font-size: .75rem;
-            letter-spacing: .1em;
-            color: var(--text-muted);
-            margin-top: .2rem;
-        }
-
-        .suite-right { text-align: right; padding-right: 3rem; }
-
-        .suite-price {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--gold-light);
-        }
-
-        .suite-price-label { font-size: .7rem; color: var(--text-muted); letter-spacing: .1em; }
-
-        /* ── CARRITO PANEL ── */
-        .cart-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.7);
-            z-index: 200;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .3s;
-        }
-
-        .cart-overlay.open { opacity: 1; pointer-events: all; }
-
-        .cart-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: min(420px, 100vw);
-            height: 100vh;
-            background: var(--dark-2);
-            border-left: 1px solid rgba(201,168,76,.2);
-            z-index: 300;
-            padding: 2.5rem 2rem;
-            transform: translateX(100%);
-            transition: transform .35s cubic-bezier(.4,0,.2,1);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .cart-panel.open { transform: translateX(0); }
-
-        .cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(201,168,76,.2);
-        }
-
-        .cart-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--cream);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.4rem;
-            cursor: pointer;
-            transition: color .2s;
-        }
-
-        .close-btn:hover { color: var(--gold); }
-
-        .cart-empty {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            color: var(--text-muted);
-        }
-
-        .cart-empty-icon { font-size: 3rem; opacity: .3; }
-
-        .cart-items { flex: 1; display: flex; flex-direction: column; gap: .75rem; }
-
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.2rem;
-            background: var(--dark-3);
-            border: 1px solid rgba(201,168,76,.1);
-        }
-
-        .cart-item-name { font-size: .95rem; color: var(--cream); }
-        .cart-item-type { font-size: .7rem; color: var(--gold); letter-spacing: .1em; text-transform: uppercase; margin-top: .2rem; }
-
-        .cart-item-remove {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: color .2s;
-        }
-
-        .cart-item-remove:hover { color: #e05555; }
-
-        .cart-footer {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(201,168,76,.2);
-        }
-
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            color: var(--cream);
-            margin-bottom: 1.5rem;
-        }
-
-        .cart-total span { color: var(--gold-light); }
-
-        .reserve-btn {
-            width: 100%;
-            padding: 1rem;
-            background: var(--gold);
-            color: var(--dark);
-            border: none;
-            font-family: 'DM Sans', sans-serif;
-            font-size: .85rem;
-            font-weight: 500;
-            letter-spacing: .15em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background .25s;
-        }
-
-        .reserve-btn:hover { background: var(--gold-light); }
-
-        /* ── NO DATA STATE ── */
-        .no-data {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-            font-style: italic;
-            border: 1px dashed rgba(201,168,76,.2);
-        }
-
-        /* ── DATE SEARCH FORM ── */
-        .date-search {
-            max-width: 1300px;
-            margin: 0 auto 3rem;
-            padding: 0 4rem;
-        }
-
-        .date-form {
-            display: flex;
-            align-items: flex-end;
-            gap: 1.5rem;
+        /* ── SEARCH FORM CARD ── */
+        .search-card {
             background: var(--dark-2);
             border: 1px solid rgba(201,168,76,.2);
             padding: 2rem 2.5rem;
+            margin-bottom: 3rem;
+        }
+        .search-card-title {
+            font-size: .7rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        .search-form {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-end;
             flex-wrap: wrap;
         }
-
-        .date-field {
+        .form-group {
             display: flex;
             flex-direction: column;
             gap: .5rem;
             flex: 1;
             min-width: 180px;
         }
-
-        .date-field label {
-            font-size: .65rem;
+        .form-group label {
+            font-size: .7rem;
             letter-spacing: .2em;
             text-transform: uppercase;
             color: var(--gold);
+            font-weight: 500;
         }
-
-        .date-field input[type="date"] {
+        .form-group input[type="date"] {
             background: var(--dark-3);
             border: 1px solid rgba(201,168,76,.2);
             color: var(--cream);
-            padding: .85rem 1rem;
+            padding: .9rem 1.1rem;
             font-family: 'DM Sans', sans-serif;
             font-size: .95rem;
             font-weight: 300;
             outline: none;
-            transition: border-color .25s;
+            transition: border-color .25s, box-shadow .25s;
             width: 100%;
             color-scheme: dark;
         }
-
-        .date-field input[type="date"]:focus {
+        .form-group input[type="date"]:focus {
             border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(201,168,76,.1);
         }
-
-        .date-field input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(.5) sepia(1) saturate(2) hue-rotate(5deg);
-            cursor: pointer;
-            opacity: .7;
-        }
-
         .search-btn {
             background: var(--gold);
             color: var(--dark);
             border: none;
-            padding: .85rem 2.5rem;
+            padding: .9rem 2rem;
             font-family: 'DM Sans', sans-serif;
             font-size: .8rem;
             font-weight: 500;
             letter-spacing: .15em;
             text-transform: uppercase;
             cursor: pointer;
-            transition: background .25s;
+            transition: background .25s, transform .1s;
             white-space: nowrap;
-            align-self: flex-end;
             height: fit-content;
         }
-
         .search-btn:hover { background: var(--gold-light); }
+        .search-btn:active { transform: scale(.98); }
 
-        .date-error {
-            color: #e05555;
+        /* ── ALERTS ── */
+        .alert {
+            padding: 1rem 1.2rem;
+            font-size: .9rem;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            animation: slideDown .3s ease-out;
+        }
+        .alert-error { background: rgba(224,85,85,.1); border: 1px solid var(--error); color: var(--error); }
+        .alert-success { background: rgba(110,231,162,.1); border: 1px solid var(--success); color: var(--success); }
+        .alert-icon { font-size: 1.1rem; flex-shrink: 0; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── ROOMS SECTION ── */
+        .rooms-section {
+            animation: fadeIn .4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .section-label {
+            font-size: .65rem;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid rgba(201,168,76,.1);
+        }
+
+        /* ── SIMPLE / DOBLE ROW ── */
+        .room-row {
+            background: var(--dark-2);
+            border: 1px solid rgba(201,168,76,.15);
+            padding: 1.8rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1.2rem;
+            transition: border-color .25s;
+        }
+        .room-row:hover { border-color: rgba(201,168,76,.35); }
+        .room-row-icon {
+            font-size: 2rem;
+            opacity: .5;
+            flex-shrink: 0;
+        }
+        .room-row-info { flex: 1; }
+        .room-row-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: var(--cream);
+            margin-bottom: .3rem;
+        }
+        .room-row-meta {
             font-size: .8rem;
-            margin-top: .5rem;
+            color: var(--text-muted);
+            letter-spacing: .05em;
+        }
+        .room-row-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            flex-shrink: 0;
+        }
+        .room-row-price span {
+            font-family: 'DM Sans', sans-serif;
+            font-size: .75rem;
+            color: var(--text-muted);
+            display: block;
+            text-align: right;
+        }
+        .room-qty-control {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            flex-shrink: 0;
+        }
+        .qty-btn {
+            background: var(--dark-3);
+            border: 1px solid rgba(201,168,76,.25);
+            color: var(--gold);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 300;
+            transition: background .2s, border-color .2s;
+            user-select: none;
+        }
+        .qty-btn:hover { background: rgba(201,168,76,.1); border-color: var(--gold); }
+        .qty-value {
+            min-width: 28px;
+            text-align: center;
+            font-size: 1rem;
+            color: var(--cream);
+        }
+        .add-to-cart-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: .6rem 1.2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .75rem;
+            font-weight: 500;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s, color .25s;
+            white-space: nowrap;
+        }
+        .add-to-cart-btn:hover { background: var(--gold); color: var(--dark); }
+
+        /* ── SUITE GRID ── */
+        .suite-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .suite-card {
+            background: var(--dark-2);
+            border: 1px solid rgba(201,168,76,.15);
+            padding: 1.8rem;
+            transition: border-color .25s, transform .2s;
+            cursor: pointer;
+            position: relative;
+        }
+        .suite-card:hover { border-color: rgba(201,168,76,.4); transform: translateY(-2px); }
+        .suite-card.selected {
+            border-color: var(--gold);
+            background: rgba(201,168,76,.06);
+        }
+        .suite-selected-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--gold);
+            color: var(--dark);
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: .25rem .6rem;
             display: none;
         }
-
-        .date-error.show { display: block; }
-
-        .results-header {
-            padding: 0 4rem;
-            max-width: 1300px;
-            margin: 0 auto 1rem;
+        .suite-card.selected .suite-selected-badge { display: block; }
+        .suite-icon { font-size: 1.8rem; opacity: .5; margin-bottom: 1rem; }
+        .suite-id {
+            font-size: .65rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: .5rem;
         }
-
-        .results-dates {
-            font-size: .75rem;
+        .suite-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--cream);
+            margin-bottom: .8rem;
+        }
+        .suite-details {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.2rem;
+        }
+        .suite-detail {
+            display: flex;
+            flex-direction: column;
+            gap: .2rem;
+        }
+        .suite-detail-label {
+            font-size: .65rem;
             letter-spacing: .15em;
             text-transform: uppercase;
-            color: var(--gold);
-            margin-bottom: 2rem;
-            padding: .6rem 1rem;
-            border-left: 2px solid var(--gold);
-            background: rgba(201,168,76,.06);
-            display: inline-block;
+            color: var(--text-muted);
         }
+        .suite-detail-value {
+            font-size: 1rem;
+            color: var(--cream);
+        }
+        .suite-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--gold);
+        }
+        .suite-price-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: .75rem;
+            color: var(--text-muted);
+        }
+        .suite-toggle-btn {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(201,168,76,.3);
+            color: var(--gold);
+            padding: .7rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .75rem;
+            font-weight: 500;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s, color .25s, border-color .25s;
+            margin-top: 1rem;
+        }
+        .suite-toggle-btn:hover { background: rgba(201,168,76,.1); border-color: var(--gold); }
+        .suite-card.selected .suite-toggle-btn { background: rgba(224,85,85,.08); border-color: var(--error); color: var(--error); }
+        .suite-card.selected .suite-toggle-btn:hover { background: rgba(224,85,85,.15); }
 
-        /* ── ROOMS HIDDEN UNTIL SEARCH ── */
-        .rooms-section {
+        /* ── CART DRAWER ── */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.6);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s;
+        }
+        .cart-overlay.open { opacity: 1; pointer-events: all; }
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 420px;
+            max-width: 95vw;
+            background: var(--dark-2);
+            border-left: 1px solid rgba(201,168,76,.2);
+            z-index: 201;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform .35s cubic-bezier(.4,0,.2,1);
+        }
+        .cart-drawer.open { transform: translateX(0); }
+        .cart-header {
+            padding: 2rem 2rem 1.5rem;
+            border-bottom: 1px solid rgba(201,168,76,.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .cart-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--cream);
+        }
+        .cart-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: .2rem;
+            transition: color .2s;
+            line-height: 1;
+        }
+        .cart-close:hover { color: var(--cream); }
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 2rem;
+        }
+        .cart-empty {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            font-size: .9rem;
+        }
+        .cart-empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: .4; }
+        .cart-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.2rem 0;
+            border-bottom: 1px solid rgba(201,168,76,.08);
+            animation: slideDown .25s ease-out;
+        }
+        .cart-item-icon { font-size: 1.4rem; opacity: .5; flex-shrink: 0; margin-top: .15rem; }
+        .cart-item-info { flex: 1; }
+        .cart-item-name {
+            font-size: .95rem;
+            color: var(--cream);
+            margin-bottom: .2rem;
+        }
+        .cart-item-meta {
+            font-size: .78rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .cart-item-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--gold);
+            flex-shrink: 0;
+        }
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: .9rem;
+            padding: .1rem;
+            transition: color .2s;
+            flex-shrink: 0;
+            align-self: center;
+        }
+        .cart-item-remove:hover { color: var(--error); }
+        .cart-footer {
+            padding: 1.5rem 2rem 2rem;
+            border-top: 1px solid rgba(201,168,76,.1);
+        }
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1.5rem;
+        }
+        .cart-total-label {
+            font-size: .7rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .cart-total-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+        }
+        .cart-total-note {
+            font-size: .72rem;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+        }
+        .reserve-btn {
+            width: 100%;
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            padding: 1.1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .85rem;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .25s, transform .1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
+        }
+        .reserve-btn:hover:not(:disabled) { background: var(--gold-light); }
+        .reserve-btn:active:not(:disabled) { transform: scale(.98); }
+        .reserve-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+        /* ── LOADING / SPINNER ── */
+        .spinner {
+            width: 14px; height: 14px;
+            border: 2px solid rgba(201,168,76,.3);
+            border-top-color: var(--dark);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
             display: none;
         }
+        .spinner.show { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .rooms-section.visible {
-            display: block;
+        /* ── NO RESULTS ── */
+        .no-results {
+            text-align: center;
+            padding: 4rem 0;
+            color: var(--text-muted);
+        }
+        .no-results-icon { font-size: 3rem; opacity: .3; margin-bottom: 1rem; }
+        .no-results p { font-size: .9rem; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 700px) {
+            .logo-header { left: 1.5rem; font-size: 1.2rem; }
+            .cart-trigger { right: 1.5rem; }
+            .page-wrapper { padding: 2rem 1rem 6rem; }
+            .room-row { flex-wrap: wrap; }
+            .search-form { flex-direction: column; }
+            .suite-grid { grid-template-columns: 1fr; }
         }
 
-        @media (max-width: 768px) {
-            header, main { padding-left: 1.5rem; padding-right: 1.5rem; }
-            .date-search { padding: 0 1.5rem; }
-            .date-form { flex-direction: column; gap: 1rem; }
-            .search-btn { width: 100%; }
-            .suite-item { flex-direction: column; align-items: flex-start; gap: .8rem; }
-            .suite-right { padding-right: 3rem; }
+        /* ── POLL STATUS ── */
+        .poll-status {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: .72rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            min-height: 1.2rem;
         }
+        .poll-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background .3s;
+        }
+        .poll-dot.syncing  { background: var(--gold); animation: pulse .8s ease-in-out infinite alternate; }
+        .poll-dot.ok       { background: var(--success); }
+        .poll-dot.error    { background: var(--error); }
+        @keyframes pulse { from { opacity: .4; } to { opacity: 1; } }
+
+        /* flash on live update */
+        @keyframes flashGold {
+            0%   { background: rgba(201,168,76,.18); }
+            100% { background: transparent; }
+        }
+        .updated { animation: flashGold .7s ease-out; }
+
+        /* suite marked unavailable by polling */
+        .suite-card.unavailable {
+            opacity: .4;
+            pointer-events: none;
+            position: relative;
+        }
+        .suite-card.unavailable .suite-toggle-btn::after {
+            content: ' · No disponible';
+        }
+
     </style>
 </head>
 <body>
 
+<!-- LOGO -->
+<a href="/" class="logo-header">Deusto <span>Hotel</span></a>
 
-<!-- ── HEADER ── -->
-<header>
-    <div class="logo">Deusto <span>Hotel</span></div>
-    <button class="cart-btn" onclick="openCart()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        Reservar selección
-        <span class="cart-count" id="cartCount">0</span>
-    </button>
-</header>
+<!-- CART TRIGGER -->
+<button class="cart-trigger" id="cartTrigger" onclick="openCart()">
+    ◈ Reserva
+    <span class="cart-badge" id="cartBadge">0</span>
+</button>
 
-<!-- ── HERO ── -->
-<div class="hero">
-    <p class="hero-label">Disponibilidad en tiempo real</p>
-    <h1>Elige tu <em>estancia</em><br>perfecta</h1>
-    <div class="divider"></div>
-</div>
-
-<!-- ── DATE SEARCH FORM ── -->
-<div class="date-search">
-    <form th:action="@{/habitaciones/disponibles}" method="get" class="date-form" id="dateForm">
-        <div class="date-field">
-            <label for="fechaEntrada">Fecha de entrada</label>
-            <input
-                    type="date"
-                    id="fechaEntrada"
-                    name="fechaEntrada"
-                    th:value="${param.fechaEntrada}"
-                    required
-            />
-        </div>
-        <div class="date-field">
-            <label for="fechaSalida">Fecha de salida</label>
-            <input
-                    type="date"
-                    id="fechaSalida"
-                    name="fechaSalida"
-                    th:value="${param.fechaSalida}"
-                    required
-            />
-        </div>
-        <button type="submit" class="search-btn">
-            Buscar disponibilidad
-        </button>
-    </form>
-    <div class="date-error" id="dateError">La fecha de salida debe ser posterior a la de entrada.</div>
-</div>
-
-<!-- Fechas activas mostradas cuando hay resultados -->
-<div class="results-header" th:if="${param.fechaEntrada != null}">
-    <div class="results-dates"
-         th:text="'Resultados para: ' + ${param.fechaEntrada} + '  →  ' + ${param.fechaSalida}">
-    </div>
-</div>
-
-<!-- ── MAIN CONTENT – solo visible si el controller devolvió datos ── -->
-<main th:if="${habitacionSimple != null or habitacionDoble != null or habitacionSuite != null}">
-
-    <!-- HABITACIONES SIMPLES -->
-    <section>
-        <h2 class="section-title">Habitaciones Simples</h2>
-        <p class="section-subtitle">Individual · Una cama</p>
-
-        <div class="rooms-row" id="simplesContainer">
-            <div th:if="${habitacionSimple != null}"
-                 class="room-card"
-                 th:data-type="SIMPLE"
-                 th:data-disponibles="${habitacionSimple.numero_disponibles}"
-                 onclick="toggleRoomCard(this)">
-
-                <div class="room-icon">🛏</div>
-                <div class="room-type-tag">Habitación Simple</div>
-                <div class="room-name">Individual Clásica</div>
-
-                <div class="room-availability">
-                    <span class="availability-number" th:text="${habitacionSimple.numero_disponibles}">0</span>
-                    <span class="availability-label">habitaciones<br>disponibles</span>
-                </div>
-            </div>
-
-            <div th:if="${habitacionSimple == null}" class="no-data">
-                No hay habitaciones simples disponibles para las fechas seleccionadas.
-            </div>
-        </div>
-    </section>
-
-    <!-- HABITACIONES DOBLES -->
-    <section>
-        <h2 class="section-title">Habitaciones Dobles</h2>
-        <p class="section-subtitle">Doble · Dos camas o cama king</p>
-
-        <div class="rooms-row" id="doblesContainer">
-            <div th:if="${habitacionDoble != null}"
-                 class="room-card"
-                 th:data-type="DOBLE"
-                 th:data-disponibles="${habitacionDoble.numero_disponibles}"
-                 onclick="toggleRoomCard(this)">
-
-                <div class="room-icon">🛏🛏</div>
-                <div class="room-type-tag">Habitación Doble</div>
-                <div class="room-name">Doble Superior</div>
-
-                <div class="room-availability">
-                    <span class="availability-number" th:text="${habitacionDoble.numero_disponibles}">0</span>
-                    <span class="availability-label">habitaciones<br>disponibles</span>
-                </div>
-            </div>
-
-            <div th:if="${habitacionDoble == null}" class="no-data">
-                No hay habitaciones dobles disponibles para las fechas seleccionadas.
-            </div>
-        </div>
-    </section>
-
-    <!-- SUITES -->
-    <section>
-        <h2 class="section-title">Suites</h2>
-        <p class="section-subtitle">Exclusivo · Experiencia premium</p>
-
-        <ul class="suite-list" id="suitesContainer" th:if="${habitacionSuite != null}">
-            <li th:each="suite, iterStat : ${habitacionSuite.suites}"
-                class="suite-item"
-                th:data-type="SUITE"
-                th:data-index="${iterStat.index}"
-                th:data-id="${suite.id}"
-                th:data-capacidad="${suite.capacidad}"
-                th:data-precio="${suite.precioPorNoche}"
-                onclick="toggleSuiteItem(this)">
-
-                <div class="suite-left">
-                    <span class="suite-index" th:text="${'0' + (iterStat.index + 1)}">01</span>
-                    <div>
-                        <div class="suite-name" th:text="'Suite Presidencial ' + (${iterStat.index + 1})">Suite</div>
-                        <div class="suite-capacity"
-                             th:text="'Capacidad: ' + ${suite.capacidad} + ' personas'">
-                            Capacidad: 2 personas
-                        </div>
-                    </div>
-                </div>
-
-                <div class="suite-right">
-                    <div class="suite-price" th:text="'€' + ${suite.precioPorNoche}">€350</div>
-                    <div class="suite-price-label">por noche</div>
-                </div>
-            </li>
-        </ul>
-
-        <div th:if="${habitacionSuite == null}" class="no-data">
-            No hay suites disponibles para las fechas seleccionadas.
-        </div>
-    </section>
-
-</main>
-
-<!-- ── CARRITO OVERLAY + PANEL ── -->
+<!-- CART OVERLAY -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
 
-<div class="cart-panel" id="cartPanel">
+<!-- CART DRAWER -->
+<div class="cart-drawer" id="cartDrawer">
     <div class="cart-header">
-        <div class="cart-title">Tu selección</div>
-        <button class="close-btn" onclick="closeCart()">✕</button>
+        <h2 class="cart-title">Tu Reserva</h2>
+        <button class="cart-close" onclick="closeCart()">✕</button>
     </div>
-
-    <div class="cart-empty" id="cartEmpty">
-        <div class="cart-empty-icon">🛎</div>
-        <p>No has seleccionado ninguna habitación</p>
-    </div>
-
-    <div class="cart-items" id="cartItems" style="display:none"></div>
-
-    <div class="cart-footer" id="cartFooter" style="display:none">
-        <div class="cart-total">
-            Total seleccionado: <span id="cartTotal">0 habitaciones</span>
+    <div class="cart-body" id="cartBody">
+        <div class="cart-empty" id="cartEmpty">
+            <div class="cart-empty-icon">◫</div>
+            <p>Tu reserva está vacía.<br>Selecciona habitaciones para continuar.</p>
         </div>
-        <button class="reserve-btn" onclick="reservar()">Confirmar reserva</button>
+        <div id="cartItems"></div>
+    </div>
+    <div class="cart-footer">
+        <div class="cart-total-row">
+            <span class="cart-total-label">Total estimado por noche</span>
+            <span class="cart-total-value" id="cartTotal">0 €</span>
+        </div>
+        <p class="cart-total-note" id="cartNights"></p>
+        <div class="alert alert-error" id="reservaError" style="display:none; margin-bottom:1rem;">
+            <span class="alert-icon">⚠</span>
+            <span id="reservaErrorMsg"></span>
+        </div>
+        <div class="alert alert-success" id="reservaSuccess" style="display:none; margin-bottom:1rem;">
+            <span class="alert-icon">✓</span>
+            <span>¡Reserva realizada con éxito! Te redirigiremos en breve.</span>
+        </div>
+        <button class="reserve-btn" id="reserveBtn" onclick="realizarReserva()">
+            <span id="reserveBtnText">Confirmar Reserva</span>
+            <span class="spinner" id="reserveSpinner"></span>
+        </button>
     </div>
 </div>
 
-<script>
-    // ── STATE ──────────────────────────────────────────────
-    const STORAGE_KEY = 'deusto_hotel_carrito';
-    let carrito = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+<!-- PAGE -->
+<div class="page-wrapper">
+    <div class="page-header">
+        <p class="page-subtitle">Disponibilidad</p>
+        <h1 class="page-title">Habitaciones</h1>
+        <div class="divider"></div>
+    </div>
 
-    // ── DATE VALIDATION ───────────────────────────────────
-    document.getElementById('dateForm').addEventListener('submit', function(e) {
-        const entrada = document.getElementById('fechaEntrada').value;
-        const salida  = document.getElementById('fechaSalida').value;
-        const errDiv  = document.getElementById('dateError');
+    <!-- SEARCH FORM -->
+    <div class="search-card">
+        <p class="search-card-title">Selecciona tus fechas</p>
+        <form class="search-form" id="searchForm" method="get" action="/habitaciones/disponibles">
+            <div class="form-group">
+                <label for="fechaEntrada">Fecha de entrada</label>
+                <input
+                        type="date"
+                        id="fechaEntrada"
+                        name="fechaEntrada"
+                        th:value="${param.fechaEntrada != null ? param.fechaEntrada[0] : ''}"
+                        required
+                />
+            </div>
+            <div class="form-group">
+                <label for="fechaSalida">Fecha de salida</label>
+                <input
+                        type="date"
+                        id="fechaSalida"
+                        name="fechaSalida"
+                        th:value="${param.fechaSalida != null ? param.fechaSalida[0] : ''}"
+                        required
+                />
+            </div>
+            <button type="submit" class="search-btn">Buscar disponibilidad</button>
+        </form>
+    </div>
 
-        if (entrada && salida && salida <= entrada) {
-            e.preventDefault();
-            errDiv.classList.add('show');
-        } else {
-            errDiv.classList.remove('show');
+    <!-- ERROR ALERT -->
+    <div class="alert alert-error" th:if="${error}">
+        <span class="alert-icon">⚠</span>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- ROOMS SECTION (only shown when dates were submitted) -->
+    <div class="rooms-section" th:if="${habitacionSimple != null or habitacionDoble != null or habitacionSuite != null}">
+
+        <!-- Fechas ocultas para JS -->
+        <input type="hidden" id="hiddenFechaEntrada" th:value="${param.fechaEntrada != null ? param.fechaEntrada[0] : ''}">
+        <input type="hidden" id="hiddenFechaSalida"  th:value="${param.fechaSalida  != null ? param.fechaSalida[0]  : ''}">
+
+        <!-- Poll status indicator -->
+        <div class="poll-status" id="pollStatus" style="display:none;">
+            <span class="poll-dot" id="pollDot"></span>
+            <span id="pollText"></span>
+        </div>
+
+        <p class="section-label">Habitaciones disponibles para tu estancia</p>
+
+        <!-- ── INDIVIDUAL ── -->
+        <div th:if="${habitacionSimple != null}" class="room-row" id="rowIndividual">
+            <div class="room-row-icon">◻</div>
+            <div class="room-row-info">
+                <div class="room-row-name">Habitación Individual</div>
+                <div class="room-row-meta">
+                    1 persona &nbsp;·&nbsp;
+                    <span id="countIndividual" th:text="${habitacionSimple.numero_disponibles}">0</span> disponibles
+                </div>
+            </div>
+            <div class="room-row-price">
+                50 €
+                <span>por noche</span>
+            </div>
+            <div class="room-qty-control">
+                <button class="qty-btn" onclick="changeQty('individual', -1)">−</button>
+                <span class="qty-value" id="qtyIndividual">0</span>
+                <button class="qty-btn" id="btnAddIndividual" th:data-max="${habitacionSimple.numero_disponibles}" onclick="changeQty('individual', 1)">+</button>
+            </div>
+            <button class="add-to-cart-btn" onclick="addSimple('INDIVIDUAL', 50)">Añadir</button>
+        </div>
+
+        <!-- ── DOBLE ── -->
+        <div th:if="${habitacionDoble != null}" class="room-row" id="rowDoble">
+            <div class="room-row-icon">◼</div>
+            <div class="room-row-info">
+                <div class="room-row-name">Habitación Doble</div>
+                <div class="room-row-meta">
+                    2 personas &nbsp;·&nbsp;
+                    <span id="countDoble" th:text="${habitacionDoble.numero_disponibles}">0</span> disponibles
+                </div>
+            </div>
+            <div class="room-row-price">
+                70 €
+                <span>por noche</span>
+            </div>
+            <div class="room-qty-control">
+                <button class="qty-btn" onclick="changeQty('doble', -1)">−</button>
+                <span class="qty-value" id="qtyDoble">0</span>
+                <button class="qty-btn" id="btnAddDoble" th:data-max="${habitacionDoble.numero_disponibles}" onclick="changeQty('doble', 1)">+</button>
+            </div>
+            <button class="add-to-cart-btn" onclick="addSimple('DOBLE', 70)">Añadir</button>
+        </div>
+
+        <!-- ── SUITES ── -->
+        <div th:if="${habitacionSuite != null}" id="suitesWrapper">
+            <p class="section-label" style="margin-top:2.5rem;">Suites premium</p>
+            <div class="suite-grid" id="suiteGrid">
+                <div th:each="suite : ${habitacionSuite.suites}"
+                     class="suite-card"
+                     th:id="'suite-' + ${suite.id}"
+                     th:data-id="${suite.id}"
+                     th:data-capacidad="${suite.capacidad}"
+                     th:data-precio="${suite.precioPorNoche}">
+                    <span class="suite-selected-badge">Seleccionada</span>
+                    <div class="suite-icon">◈</div>
+                    <div class="suite-id" th:text="'Suite #' + ${suite.id}">Suite #1</div>
+                    <div class="suite-name">Suite Deluxe</div>
+                    <div class="suite-details">
+                        <div class="suite-detail">
+                            <span class="suite-detail-label">Capacidad</span>
+                            <span class="suite-detail-value" th:text="${suite.capacidad} + ' personas'">0 personas</span>
+                        </div>
+                        <div class="suite-detail">
+                            <span class="suite-detail-label">Habitación</span>
+                            <span class="suite-detail-value" th:text="'#' + ${suite.id}">#1</span>
+                        </div>
+                    </div>
+                    <div class="suite-price" th:text="${suite.precioPorNoche} + ' €'">0 €</div>
+                    <div class="suite-price-label">por noche</div>
+                    <button class="suite-toggle-btn">Seleccionar suite</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NO ROOMS AT ALL -->
+        <div th:if="${habitacionSimple == null and habitacionDoble == null and habitacionSuite == null}"
+             class="no-results">
+            <div class="no-results-icon">◫</div>
+            <p>No hay habitaciones disponibles para las fechas seleccionadas.</p>
+        </div>
+
+    </div><!-- /rooms-section -->
+</div><!-- /page-wrapper -->
+
+<script th:inline="javascript">
+    // ── STATE ──
+    const cart = [];           // { tipo, cantidad, id_habitacion, precio, label }
+    let fechaEntrada = '';
+    let fechaSalida  = '';
+
+    // Read dates from URL params or hidden inputs
+    window.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        fechaEntrada = params.get('fechaEntrada') || '';
+        fechaSalida  = params.get('fechaSalida')  || '';
+        // Fallback: hidden inputs
+        const elEntrada = document.getElementById('hiddenFechaEntrada');
+        const elSalida  = document.getElementById('hiddenFechaSalida');
+        if (!fechaEntrada && elEntrada) fechaEntrada = elEntrada.value || '';
+        if (!fechaSalida  && elSalida)  fechaSalida  = elSalida.value  || '';
+
+        // Date minimum = today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fechaEntrada').min = today;
+        document.getElementById('fechaSalida').min  = today;
+
+        updateCartUI();
+
+        // Night count
+        if (fechaEntrada && fechaSalida) {
+            const nights = calcNights(fechaEntrada, fechaSalida);
+            if (nights > 0) {
+                document.getElementById('cartNights').textContent =
+                    `Estancia de ${nights} noche${nights !== 1 ? 's' : ''}`;
+            }
         }
     });
 
-    // Set min date on inputs (today)
-    (function() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('fechaEntrada').min = today;
-        document.getElementById('fechaSalida').min = today;
-
-        document.getElementById('fechaEntrada').addEventListener('change', function() {
-            document.getElementById('fechaSalida').min = this.value;
-        });
-    })();
-
-    // ── TOGGLE HABITACION SIMPLE/DOBLE ────────────────────
-    function toggleRoomCard(card) {
-        const tipo = card.dataset.type;
-        const disponibles = parseInt(card.dataset.disponibles);
-        const idx = carrito.findIndex(i => i.tipo === tipo && i.category === 'habitacion');
-
-        const current = idx !== -1 ? carrito[idx].cantidad : 0;
-
-        if (current >= disponibles) return; // no superar disponibles
-
-        if (idx === -1) {
-            carrito.push({
-                id: tipo + '_hab',
-                category: 'habitacion',
-                tipo,
-                nombre: tipo === 'SIMPLE' ? 'Individual Clásica' : 'Doble Superior',
-                disponibles,
-                cantidad: 1
-            });
-        } else {
-            carrito[idx].cantidad += 1;
+    // Date validation
+    document.getElementById('fechaEntrada').addEventListener('change', function() {
+        const salida = document.getElementById('fechaSalida');
+        if (salida.value && salida.value <= this.value) {
+            salida.value = '';
         }
+        salida.min = this.value;
+    });
 
-        card.classList.add('selected');
-        saveAndUpdate();
+    // ── QTY CONTROLS ──
+    const quantities = { individual: 0, doble: 0 };
+
+    function changeQty(tipo, delta) {
+        const btnId = tipo === 'individual' ? 'btnAddIndividual' : 'btnAddDoble';
+        const btn = document.getElementById(btnId);
+        const max = btn ? parseInt(btn.dataset.max, 10) : Infinity;
+        const current = quantities[tipo];
+        const next = current + delta;
+        if (next < 0) return;
+        if (delta > 0 && next > max) return;
+        quantities[tipo] = next;
+        const el = document.getElementById(tipo === 'individual' ? 'qtyIndividual' : 'qtyDoble');
+        if (el) el.textContent = next;
     }
 
-    // ── TOGGLE SUITE ──────────────────────────────────────
-    function toggleSuiteItem(item) {
-        const index = item.dataset.index;
-        const precio = item.dataset.precio;
-        const capacidad = item.dataset.capacidad;
-        const suiteId  = item.dataset.id;
-        const id = 'SUITE_' + index;
-        const idx = carrito.findIndex(i => i.id === id);
-
-        if (item.classList.contains('selected')) {
-            item.classList.remove('selected');
-            if (idx !== -1) carrito.splice(idx, 1);
-        } else {
-            item.classList.add('selected');
-            if (idx === -1) {
-                carrito.push({
-                    id,
-                    category: 'suite',
-                    tipo: 'SUITE',
-                    nombre: 'Suite Presidencial ' + (parseInt(index) + 1),
-                    capacidad,
-                    precio: parseInt(precio),
-                    suiteId: parseInt(suiteId)
-                });
-            }
-        }
-        saveAndUpdate();
-    }
-
-    // ── SAVE + UPDATE UI ──────────────────────────────────
-    function saveAndUpdate() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(carrito));
-        updateCartUI();
-        updateCartCount();
-    }
-
-    function updateCartCount() {
-        document.getElementById('cartCount').textContent = carrito.length;
-    }
-
-    function updateCartUI() {
-        const empty  = document.getElementById('cartEmpty');
-        const items  = document.getElementById('cartItems');
-        const footer = document.getElementById('cartFooter');
-        const total  = document.getElementById('cartTotal');
-
-        if (carrito.length === 0) {
-            empty.style.display = 'flex';
-            items.style.display = 'none';
-            footer.style.display = 'none';
+    // ── ADD SIMPLE/DOBLE TO CART ──
+    function addSimple(tipo, precio) {
+        const key = tipo === 'INDIVIDUAL' ? 'individual' : 'doble';
+        const cantidad = quantities[key];
+        if (cantidad <= 0) {
+            alert('Selecciona al menos 1 habitación.');
             return;
         }
 
-        empty.style.display = 'none';
-        items.style.display = 'flex';
-        footer.style.display = 'block';
+        // Remove existing entry of same tipo
+        const idx = cart.findIndex(c => c.tipo === tipo && !c.id_habitacion);
+        if (idx !== -1) cart.splice(idx, 1);
 
-        items.innerHTML = carrito.map(item => `
-            <div class="cart-item">
-                <div>
-                    <div class="cart-item-name">${item.nombre}</div>
-                    <div class="cart-item-type">${item.category === 'suite' ? 'Suite · €' + item.precio + '/noche' : 'Habitación ' + item.tipo.toLowerCase()}</div>
-                </div>
-                <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">✕</button>
-            </div>
-        `).join('');
+        cart.push({
+            tipo,
+            cantidad,
+            id_habitacion: null,
+            precio,
+            label: tipo === 'INDIVIDUAL' ? 'Habitación Individual' : 'Habitación Doble',
+            icon: tipo === 'INDIVIDUAL' ? '◻' : '◼'
+        });
 
-        const suiteTotal = carrito.filter(i => i.category === 'suite').reduce((s, i) => s + i.precio, 0);
-        total.textContent = carrito.length + ' habitación' + (carrito.length !== 1 ? 'es' : '') +
-            (suiteTotal > 0 ? ' · €' + suiteTotal + '/noche en suites' : '');
+        quantities[key] = 0;
+        const el = document.getElementById(tipo === 'INDIVIDUAL' ? 'qtyIndividual' : 'qtyDoble');
+        if (el) el.textContent = '0';
+
+        updateCartUI();
+        openCart();
     }
 
-    // ── REMOVE ITEM ───────────────────────────────────────
-    function removeFromCart(id) {
-        const item = carrito.find(i => i.id === id);
-        carrito = carrito.filter(i => i.id !== id);
+    // ── TOGGLE SUITE ──
+    const selectedSuites = new Set();
 
-        if (item) {
-            if (item.category === 'habitacion') {
-                document.querySelectorAll(`.room-card[data-type="${item.tipo}"]`)
-                    .forEach(el => el.classList.remove('selected'));
-            } else {
-                const idx = id.replace('SUITE_', '');
-                document.querySelectorAll(`.suite-item[data-index="${idx}"]`)
-                    .forEach(el => el.classList.remove('selected'));
+    function toggleSuite(id, capacidad, precio) {
+        const card = document.getElementById('suite-' + id);
+        const btn  = card ? card.querySelector('.suite-toggle-btn') : null;
+
+        if (selectedSuites.has(id)) {
+            // Deselect
+            selectedSuites.delete(id);
+            card && card.classList.remove('selected');
+            if (btn) btn.textContent = 'Seleccionar suite';
+            const idx = cart.findIndex(c => c.id_habitacion === id);
+            if (idx !== -1) cart.splice(idx, 1);
+        } else {
+            // Select
+            selectedSuites.add(id);
+            card && card.classList.add('selected');
+            if (btn) btn.textContent = 'Quitar suite';
+            cart.push({
+                tipo: 'SUITE',
+                cantidad: null,
+                id_habitacion: id,
+                precio,
+                label: `Suite #${id} · ${capacidad} pers.`,
+                icon: '◈'
+            });
+        }
+        updateCartUI();
+    }
+
+    // ── CART UI ──
+    function updateCartUI() {
+        const badge     = document.getElementById('cartBadge');
+        const cartItems = document.getElementById('cartItems');
+        const cartEmpty = document.getElementById('cartEmpty');
+        const cartTotal = document.getElementById('cartTotal');
+
+        badge.textContent = cart.length;
+        badge.classList.toggle('visible', cart.length > 0);
+
+        if (cart.length === 0) {
+            cartEmpty.style.display = 'block';
+            cartItems.innerHTML = '';
+            cartTotal.textContent = '0 €';
+            return;
+        }
+
+        cartEmpty.style.display = 'none';
+
+        cartItems.innerHTML = cart.map((item, i) => {
+            const subtotal = item.cantidad
+                ? item.precio * item.cantidad
+                : item.precio;
+            return `
+            <div class="cart-item">
+                <span class="cart-item-icon">${item.icon}</span>
+                <div class="cart-item-info">
+                    <div class="cart-item-name">${item.label}</div>
+                    <div class="cart-item-meta">
+                        ${item.cantidad ? `${item.cantidad} habitación${item.cantidad !== 1 ? 'es' : ''}` : 'Suite individual'}
+                        &nbsp;·&nbsp; ${item.precio} €/noche
+                    </div>
+                </div>
+                <span class="cart-item-price">${subtotal} €</span>
+                <button class="cart-item-remove" title="Eliminar" onclick="removeItem(${i})">✕</button>
+            </div>`;
+        }).join('');
+
+        const total = cart.reduce((sum, item) => {
+            return sum + (item.cantidad ? item.precio * item.cantidad : item.precio);
+        }, 0);
+        cartTotal.textContent = total + ' €';
+    }
+
+    function removeItem(i) {
+        const item = cart[i];
+        if (item.tipo === 'SUITE' && item.id_habitacion) {
+            selectedSuites.delete(item.id_habitacion);
+            const card = document.getElementById('suite-' + item.id_habitacion);
+            if (card) {
+                card.classList.remove('selected');
+                const btn = card.querySelector('.suite-toggle-btn');
+                if (btn) btn.textContent = 'Seleccionar suite';
             }
         }
-        saveAndUpdate();
+        cart.splice(i, 1);
+        updateCartUI();
     }
 
-    // ── OPEN / CLOSE CART ─────────────────────────────────
+    // ── CART OPEN/CLOSE ──
     function openCart() {
         document.getElementById('cartOverlay').classList.add('open');
-        document.getElementById('cartPanel').classList.add('open');
+        document.getElementById('cartDrawer').classList.add('open');
     }
-
     function closeCart() {
         document.getElementById('cartOverlay').classList.remove('open');
-        document.getElementById('cartPanel').classList.remove('open');
+        document.getElementById('cartDrawer').classList.remove('open');
     }
 
-    // ── RESERVAR ─────────────────────────────────────────
-    async function reservar() {
-
-    if (carrito.length === 0) {
-        alert("Selecciona al menos una habitación");
-        return;
+    // ── NIGHTS CALC ──
+    function calcNights(entrada, salida) {
+        const d1 = new Date(entrada);
+        const d2 = new Date(salida);
+        return Math.max(0, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
     }
 
-    const fechaEntrada = document.getElementById('fechaEntrada').value;
-    const fechaSalida  = document.getElementById('fechaSalida').value;
-
-    if (!fechaEntrada || !fechaSalida) {
-        alert("Selecciona fechas");
-        return;
-    }
-
-    // Convertir carrito → DTOs
-    const requests = carrito.map(item => ({
-        habitacionId: item.suiteId || 1, // ajustar según tipo real
-        checkIn: fechaEntrada,
-        checkOut: fechaSalida
-    }));
-
-    try {
-        const response = await fetch('/reservas', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requests)
-        });
-
-        const text = await response.text();
-
-        if (response.ok && text === "OK") {
-            alert("Reserva realizada correctamente 🎉");
-
-            localStorage.removeItem('deusto_hotel_carrito');
-            location.reload();
-
-        } else {
-            alert("Error: " + text);
+    // ── CONFIRM RESERVATION ──
+    async function realizarReserva() {
+        if (cart.length === 0) {
+            showReservaError('Añade al menos una habitación antes de confirmar.');
+            return;
+        }
+        if (!fechaEntrada || !fechaSalida) {
+            showReservaError('No se detectaron fechas de estancia. Vuelve a buscar.');
+            return;
         }
 
-    } catch (error) {
-        console.error(error);
-        alert("Error de conexión");
-    }
-}
+        const btn     = document.getElementById('reserveBtn');
+        const btnText = document.getElementById('reserveBtnText');
+        const spinner = document.getElementById('reserveSpinner');
 
-    // ── RESTORE FROM LOCALSTORAGE ON LOAD ─────────────────
-    document.addEventListener('DOMContentLoaded', () => {
-        carrito.forEach(item => {
-            if (item.category === 'habitacion') {
-                document.querySelectorAll(`.room-card[data-type="${item.tipo}"]`)
-                    .forEach(el => el.classList.add('selected'));
+        btn.disabled = true;
+        btnText.textContent = 'Reservando...';
+        spinner.classList.add('show');
+        hideReservaMessages();
+
+        // Build request body
+        const body = cart.map(item => {
+            if (item.tipo === 'SUITE') {
+                return {
+                    tipo: 'SUITE',
+                    id_cliente: 0,          // backend sobreescribe con el de sesión
+                    cantidad: null,
+                    id_habitacion: item.id_habitacion,
+                    fechaEntrada: fechaEntrada,
+                    fechaSalida:  fechaSalida
+                };
             } else {
-                const idx = item.id.replace('SUITE_', '');
-                document.querySelectorAll(`.suite-item[data-index="${idx}"]`)
-                    .forEach(el => el.classList.add('selected'));
+                return {
+                    tipo: item.tipo,
+                    id_cliente: 0,          // backend sobreescribe con el de sesión
+                    cantidad: item.cantidad,
+                    id_habitacion: null,
+                    fechaEntrada: fechaEntrada,
+                    fechaSalida:  fechaSalida
+                };
             }
         });
-        updateCartCount();
-        updateCartUI();
-    });
-</script>
 
+        try {
+            const response = await fetch('/reservas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                document.getElementById('reservaSuccess').style.display = 'flex';
+                cart.length = 0;
+                selectedSuites.clear();
+                updateCartUI();
+                setTimeout(() => { window.location.href = '/menu'; }, 2000);
+            } else {
+                const msg = await response.text();
+                showReservaError(msg || 'Error al realizar la reserva. Inténtelo de nuevo.');
+            }
+        } catch (err) {
+            console.error(err);
+            showReservaError('Error de conexión. Inténtelo de nuevo.');
+        } finally {
+            btn.disabled = false;
+            btnText.textContent = 'Confirmar Reserva';
+            spinner.classList.remove('show');
+        }
+    }
+
+    function showReservaError(msg) {
+        const el = document.getElementById('reservaError');
+        document.getElementById('reservaErrorMsg').textContent = msg;
+        el.style.display = 'flex';
+    }
+    function hideReservaMessages() {
+        document.getElementById('reservaError').style.display = 'none';
+        document.getElementById('reservaSuccess').style.display = 'none';
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // LIVE POLLING — actualiza datos desde /api/v1/rooms/disponibles cada 5s
+    // La renderización inicial la hace Thymeleaf; el polling
+    // solo actualiza los contadores y el estado de las suites.
+    // ═══════════════════════════════════════════════════════
+    const POLL_INTERVAL = 5000;
+    let pollTimer = null;
+
+    function setPollStatus(state, text) {
+        const statusEl = document.getElementById('pollStatus');
+        const dotEl    = document.getElementById('pollDot');
+        const textEl   = document.getElementById('pollText');
+        if (!statusEl) return;
+        statusEl.style.display = 'flex';
+        dotEl.className = 'poll-dot ' + state;   // syncing | ok | error
+        textEl.textContent = text;
+    }
+
+    function flashElement(el) {
+        if (!el) return;
+        el.classList.remove('updated');
+        // Force reflow so the animation restarts if triggered twice quickly
+        void el.offsetWidth;
+        el.classList.add('updated');
+    }
+
+    function applyLiveData(data) {
+        // data = List<RoomDisponibleResponse> from the API
+        data.forEach(item => {
+            const tipo = item.tipo; // "INDIVIDUAL" | "DOBLE" | "SUITE"
+
+            if (tipo === 'INDIVIDUAL') {
+                const countEl = document.getElementById('countIndividual');
+                const btnEl   = document.getElementById('btnAddIndividual');
+                const rowEl   = document.getElementById('rowIndividual');
+                const newVal  = item.numero_disponibles ?? 0;
+
+                if (countEl && String(countEl.textContent) !== String(newVal)) {
+                    countEl.textContent = newVal;
+                    flashElement(rowEl);
+                }
+                if (btnEl) btnEl.dataset.max = newVal;
+
+                // Clamp current qty selection if fewer rooms now available
+                if (quantities.individual > newVal) {
+                    quantities.individual = newVal;
+                    const qtyEl = document.getElementById('qtyIndividual');
+                    if (qtyEl) qtyEl.textContent = newVal;
+                }
+            }
+
+            if (tipo === 'DOBLE') {
+                const countEl = document.getElementById('countDoble');
+                const btnEl   = document.getElementById('btnAddDoble');
+                const rowEl   = document.getElementById('rowDoble');
+                const newVal  = item.numero_disponibles ?? 0;
+
+                if (countEl && String(countEl.textContent) !== String(newVal)) {
+                    countEl.textContent = newVal;
+                    flashElement(rowEl);
+                }
+                if (btnEl) btnEl.dataset.max = newVal;
+
+                if (quantities.doble > newVal) {
+                    quantities.doble = newVal;
+                    const qtyEl = document.getElementById('qtyDoble');
+                    if (qtyEl) qtyEl.textContent = newVal;
+                }
+            }
+
+            if (tipo === 'SUITE' && Array.isArray(item.suites)) {
+                // Build a Set of currently available suite ids from API
+                const availableIds = new Set(item.suites.map(s => String(s.id)));
+
+                // For each suite card rendered by Thymeleaf, mark available/unavailable
+                document.querySelectorAll('.suite-card[data-id]').forEach(card => {
+                    const cardId = card.dataset.id;
+                    const wasUnavailable = card.classList.contains('unavailable');
+                    const nowUnavailable = !availableIds.has(cardId);
+
+                    if (nowUnavailable && !wasUnavailable) {
+                        // Became unavailable — deselect from cart if selected
+                        card.classList.add('unavailable');
+                        if (selectedSuites.has(Number(cardId))) {
+                            const idx = cart.findIndex(c => String(c.id_habitacion) === cardId);
+                            if (idx !== -1) cart.splice(idx, 1);
+                            selectedSuites.delete(Number(cardId));
+                            card.classList.remove('selected');
+                            const btn = card.querySelector('.suite-toggle-btn');
+                            if (btn) btn.textContent = 'Seleccionar suite';
+                            updateCartUI();
+                        }
+                        flashElement(card);
+                    } else if (!nowUnavailable && wasUnavailable) {
+                        // Came back available
+                        card.classList.remove('unavailable');
+                        flashElement(card);
+                    }
+                });
+            }
+        });
+    }
+
+    async function pollHabitaciones() {
+        if (!fechaEntrada || !fechaSalida) return;   // no dates yet — nothing to poll
+
+        setPollStatus('syncing', 'Actualizando...');
+
+        try {
+            const url = `/api/habitaciones/disponibles?fechaEntrada=${fechaEntrada}&fechaSalida=${fechaSalida}`;
+            const res = await fetch(url, { credentials: 'include' });
+
+            if (!res.ok) {
+                const msg = await res.text().catch(() => '');
+                console.warn('[poll] API error', res.status, msg);
+                setPollStatus('error', 'Error al actualizar');
+                return;
+            }
+
+            const data = await res.json();
+            applyLiveData(data);
+            setPollStatus('ok', 'Actualizado · ' + new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+
+        } catch (err) {
+            console.error('[poll] fetch failed', err);
+            setPollStatus('error', 'Sin conexión');
+        }
+    }
+
+    function startPolling() {
+        if (pollTimer) return;                   // already running
+        pollTimer = setInterval(pollHabitaciones, POLL_INTERVAL);
+        console.info('[poll] started — every', POLL_INTERVAL / 1000, 's');
+    }
+
+    function stopPolling() {
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+
+    // Start polling only when dates are present (page loaded with them or user submits)
+    window.addEventListener('DOMContentLoaded', () => {
+        if (fechaEntrada && fechaSalida) {
+            // Small delay so initial Thymeleaf render settles first
+            setTimeout(startPolling, 1000);
+        }
+    });
+
+    // Stop polling when tab is hidden, resume when visible (battery/network friendly)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopPolling();
+        } else if (fechaEntrada && fechaSalida) {
+            pollHabitaciones();   // immediate refresh on return
+            startPolling();
+        }
+    });
+
+</script>
 </body>
 </html>
