@@ -174,6 +174,15 @@ public class AppStartup implements CommandLineRunner {
         roomBooking3.setPrecioTotal(400);
         roomBookingRepository.save(roomBooking3);
 
+        RoomBooking roomBookingPasado = new RoomBooking();
+        roomBooking1.setCliente(client1);
+        roomBooking1.setHabitacion(room1);
+        roomBooking1.setCheckIn(LocalDate.now().minusMonths(1));
+        roomBooking1.setCheckOut(LocalDate.now().minusMonths(1).plusDays(2));
+        roomBooking1.setEstado(RoomBookingStatus.CONFIRMADA);
+        roomBooking1.setPrecioTotal(160);
+        roomBookingRepository.save(roomBooking1);
+
         // 5. Crear Reservas de Pistas con diferentes estados
         CourtBooking courtBooking1 = new CourtBooking();
         courtBooking1.setCliente(client1);

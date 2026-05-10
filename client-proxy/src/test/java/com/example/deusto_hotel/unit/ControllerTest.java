@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.matchers.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -666,8 +667,7 @@ class ControllerTest {
 
          @Test
          void verReservas_fracaso() throws Exception {
-             mockMvc.perform(get("/reservas")
-                             .sessionAttr("userId", 0L))
+             mockMvc.perform(get("/reservas"))
                      .andExpect(status().is3xxRedirection())
                      .andExpect(redirectedUrl("/login"));
          }
