@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> {
@@ -31,4 +32,7 @@ public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> 
 
     List<RoomBooking> findByClienteIdAndEstado(Long clienteId,
                                                RoomBookingStatus estado);
+
+    Optional<RoomBooking> findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(Long clienteId,
+                                                                         RoomBookingStatus estado);
 }

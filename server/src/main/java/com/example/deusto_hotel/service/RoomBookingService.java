@@ -5,6 +5,7 @@ import com.example.deusto_hotel.dto.RoomBookingResponse;
 import com.example.deusto_hotel.mapper.RoomBookingMapper;
 import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.model.RoomBooking;
+import com.example.deusto_hotel.model.RoomBookingStatus;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.RoomBookingRepository;
@@ -122,12 +123,28 @@ public class RoomBookingService {
 
 
 
-
-
-
     }
 
+    public void validarReserva(String email) {
+        User cliente = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
+        RoomBooking reservadas = roomBookingRepository
+                .findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(cliente.getId(), RoomBookingStatus.PENDIENTE)
+                .orElseThrow(() -> new IllegalArgumentException("No hay reservas pendientes para este cliente"));
+
+        if (!reservadas.getEstado().equals(RoomBookingStatus.PENDIENTE)) {
+            throw new IllegalArgumentException("La reserva no está en estado pendiente");
+        }
+
+        List<Room> disponiblesTotal = roomRepository.findRoomDisponibles(reservadas.getCheckIn(), reservadas.getCheckOut());
+        if(disponiblesTotal.isEmpty()) {
+            throw new IllegalArgumentException("No hay habitaciones disponibles para confirmar");
+        }
+
+        reservadas.setEstado(RoomBookingStatus.CONFIRMADA);
+        roomBookingRepository.save(reservadas);
+    }
 
     /*
     // Actualizar reserva
