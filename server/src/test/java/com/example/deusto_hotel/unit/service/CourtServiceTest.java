@@ -1,11 +1,9 @@
 package com.example.deusto_hotel.unit.service;
 
 import com.example.deusto_hotel.dto.CourtAvailabilityDTO;
+import com.example.deusto_hotel.dto.CourtBookingResponse;
 import com.example.deusto_hotel.dto.WeekAvailability;
-import com.example.deusto_hotel.model.Court;
-import com.example.deusto_hotel.model.CourtBookingStatus;
-import com.example.deusto_hotel.model.CourtStatus;
-import com.example.deusto_hotel.model.CourtType;
+import com.example.deusto_hotel.model.*;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
 import com.example.deusto_hotel.repository.CourtRepository;
 import com.example.deusto_hotel.service.CourtService;
@@ -132,6 +130,56 @@ public class CourtServiceTest {
         courtService.findAvailableByTypeAndWeek("PADEL", null);
 
         verify(courtRepository).findByTipoAndEstado(CourtType.PADEL, CourtStatus.DISPONIBLE);
+    }
+    @Test
+    void testFindAvailableByTypeAndWeek_filtradoReservas() {
+
+        CourtBooking bookingValido = mock(CourtBooking.class);
+        when(bookingValido.getFecha()).thenReturn(LocalDate.now().plusDays(1));
+        when(bookingValido.getEstado()).thenReturn(CourtBookingStatus.CONFIRMADA);
+        when(bookingValido.getId()).thenReturn(1L);
+
+        CourtBooking bookingFuera = mock(CourtBooking.class);
+        when(bookingFuera.getFecha()).thenReturn(LocalDate.now().plusDays(100));
+
+        CourtBooking bookingCancelado = mock(CourtBooking.class);
+        when(bookingCancelado.getFecha()).thenReturn(LocalDate.now().plusDays(1));
+        when(bookingCancelado.getEstado()).thenReturn(CourtBookingStatus.CANCELADA);
+
+        User cliente = mock(User.class);
+        when(cliente.getId()).thenReturn(1L);
+        when(cliente.getNombre()).thenReturn("Test");
+
+        Court pista = mock(Court.class);
+        when(pista.getId()).thenReturn(1L);
+        when(pista.getNombre()).thenReturn("Pista 1");
+
+        Court court = mock(Court.class);
+        when(court.getTipo()).thenReturn(CourtType.TENIS);
+        when(court.getTipo()).thenReturn(CourtType.TENIS);
+        when(court.getCourtBookings())
+                .thenReturn(List.of(bookingValido, bookingFuera, bookingCancelado));
+
+        when(bookingValido.getCliente()).thenReturn(cliente);
+        when(bookingValido.getPista()).thenReturn(pista);
+        when(bookingValido.getHoraInicio()).thenReturn(LocalTime.of(10, 0));
+        when(bookingValido.getHoraFin()).thenReturn(LocalTime.of(11, 0));
+        when(bookingValido.getPrecioTotal()).thenReturn(20.0);
+        when(bookingValido.getCreadaEn()).thenReturn(LocalDateTime.now());
+
+        when(courtRepository.findByTipoAndEstado(any(), any()))
+                .thenReturn(List.of(court));
+
+        List<CourtAvailabilityDTO> result =
+                courtService.findAvailableByTypeAndWeek("TENIS", 1);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+        List<CourtBookingResponse> bookings = result.get(0).reservas();
+
+        assertEquals(1, bookings.size());
+        assertEquals(1L, bookings.get(0).id());
     }
 
     // ===================================================================================

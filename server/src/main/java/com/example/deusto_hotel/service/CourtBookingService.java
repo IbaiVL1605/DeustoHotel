@@ -14,24 +14,62 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Servicio encargado de la gestión de reservas de pistas deportivas.
+ * <p>
+ * Permite crear, actualizar, eliminar y consultar reservas
+ * asociadas a clientes y pistas.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CourtBookingService {
 
+    /**
+     * Repositorio de acceso a datos de reservas de pistas.
+     */
     private final CourtBookingRepository courtBookingRepository;
+
+    /**
+     * Repositorio de acceso a datos de pistas deportivas.
+     */
     private final CourtRepository courtRepository;
+
+    /**
+     * Repositorio de acceso a datos de usuarios.
+     */
     private final UserRepository userRepository;
+
+    /**
+     * Mapper encargado de transformar entidades y DTOs
+     * de reservas de pistas.
+     */
     private final CourtBookingMapper courtBookingMapper;
+
+    /**
+     * Componente utilizado para enviar notificaciones WebSocket
+     * a los clientes conectados.
+     */
     private final SimpMessagingTemplate messagingTemplate;
 
-    // CREATE
+    /**
+     * Crea una nueva reserva de pista.
+     * <p>
+     * Calcula automáticamente el precio total en función
+     * de las horas reservadas y del precio por hora de la pista.
+     * Además, envía una notificación a los clientes conectados
+     * indicando que se ha creado una nueva reserva.
+     * </p>
+     *
+     * @param request datos necesarios para crear la reserva
+     * @param session sesión HTTP del usuario
+     * @return información de la reserva creada
+     */
     public CourtBookingResponse create(CourtBookingRequest request, HttpSession session) {
 
         CourtBooking booking = courtBookingMapper.toEntity(request);
@@ -44,75 +82,154 @@ public class CourtBookingService {
 
         booking.setFecha(request.fecha());
 
-        Long horas = ChronoUnit.HOURS.between(request.horaInicio(), request.horaFin());
+        Long horas = ChronoUnit.HOURS.between(
+                request.horaInicio(),
+                request.horaFin()
+        );
 
-        booking.setCliente(userRepository.getReferenceById(request.clienteId()));
+        booking.setCliente(
+                userRepository.getReferenceById(request.clienteId())
+        );
 
-        booking.setPrecioTotal(courtRepository.getReferenceById(request.pistaId()).getPrecioPorHora() * horas);
+        booking.setPrecioTotal(
+                courtRepository.getReferenceById(request.pistaId())
+                        .getPrecioPorHora() * horas
+        );
 
         courtBookingRepository.save(booking);
 
-        // Notificar a todos los clientes conectados que hubo un cambio
-        Object payload = Map.of("action", "CREATED", "courtId", booking.getPista().getId(), "fecha", booking.getFecha().toString());
-        messagingTemplate.convertAndSend("/topic/court-updates", payload);
+        // Notificar a clientes conectados
+        Object payload = Map.of(
+                "action",
+                "CREATED",
+                "courtId",
+                booking.getPista().getId(),
+                "fecha",
+                booking.getFecha().toString()
+        );
+
+        messagingTemplate.convertAndSend(
+                "/topic/court-updates",
+                payload
+        );
 
         return courtBookingMapper.toResponse(booking);
     }
 
-    // UPDATE
+    /**
+     * Actualiza una reserva existente.
+     * <p>
+     * Valida que el rango horario sea correcto y que no existan
+     * reservas solapadas para la pista y horario seleccionados.
+     * También recalcula automáticamente el precio total.
+     * </p>
+     *
+     * @param id identificador de la reserva
+     * @param request nuevos datos de la reserva
+     * @return información actualizada de la reserva
+     * @throws RuntimeException si la reserva no existe,
+     * el horario es inválido o la pista no está disponible
+     */
     public CourtBookingResponse update(Long id, CourtBookingRequest request) {
 
         CourtBooking booking = courtBookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+                .orElseThrow(() ->
+                        new RuntimeException("Reserva no encontrada")
+                );
 
         // Validar horas
         if (request.horaInicio().isAfter(request.horaFin()) ||
                 request.horaInicio().equals(request.horaFin())) {
-            throw new RuntimeException("La hora de inicio debe ser menor que la de fin");
+
+            throw new RuntimeException(
+                    "La hora de inicio debe ser menor que la de fin"
+            );
         }
 
-        // Validar disponibilidad (excluyendo la propia reserva)
-        List<CourtBooking> solapamientos = courtBookingRepository.findSolapamientos(
-                request.pistaId(),
-                request.fecha(),
-                request.horaInicio(),
-                request.horaFin()
-        ).stream().filter(b -> !b.getId().equals(id)).toList();
+        // Validar disponibilidad
+        List<CourtBooking> solapamientos =
+                courtBookingRepository.findSolapamientos(
+                        request.pistaId(),
+                        request.fecha(),
+                        request.horaInicio(),
+                        request.horaFin()
+                ).stream().filter(b ->
+                        !b.getId().equals(id)
+                ).toList();
 
         if (!solapamientos.isEmpty()) {
-            throw new RuntimeException("La pista no está disponible");
+
+            throw new RuntimeException(
+                    "La pista no está disponible"
+            );
         }
 
         // Actualizar datos
         courtBookingMapper.updateEntityFromRequest(request, booking);
 
         Court pista = courtRepository.findById(request.pistaId())
-                .orElseThrow(() -> new RuntimeException("Pista no encontrada"));
+                .orElseThrow(() ->
+                        new RuntimeException("Pista no encontrada")
+                );
 
         booking.setPista(pista);
 
         // Recalcular precio
-        long horas = request.horaInicio().until(request.horaFin(), java.time.temporal.ChronoUnit.HOURS);
-        booking.setPrecioTotal(horas * pista.getPrecioPorHora());
+        long horas = request.horaInicio().until(
+                request.horaFin(),
+                java.time.temporal.ChronoUnit.HOURS
+        );
+
+        booking.setPrecioTotal(
+                horas * pista.getPrecioPorHora()
+        );
 
         CourtBooking updated = courtBookingRepository.save(booking);
 
         return courtBookingMapper.toResponse(updated);
     }
 
-    // DELETE
+    /**
+     * Elimina una reserva existente.
+     * <p>
+     * Tras eliminar la reserva, se envía una notificación
+     * a los clientes conectados mediante WebSocket.
+     * </p>
+     *
+     * @param id identificador de la reserva
+     * @throws RuntimeException si la reserva no existe
+     */
     public void delete(Long id) {
+
         if (!courtBookingRepository.existsById(id)) {
+
             throw new RuntimeException("Reserva no encontrada");
         }
+
         courtBookingRepository.deleteById(id);
-        Object payload = Map.of("action", "DELETED", "bookingId", id);
-        messagingTemplate.convertAndSend("/topic/court-updates", payload);
+
+        Object payload = Map.of(
+                "action",
+                "DELETED",
+                "bookingId",
+                id
+        );
+
+        messagingTemplate.convertAndSend(
+                "/topic/court-updates",
+                payload
+        );
     }
 
-    // FIND BY CLIENTE
+    /**
+     * Obtiene todas las reservas asociadas a un cliente.
+     *
+     * @param clienteId identificador del cliente
+     * @return lista de reservas del cliente
+     */
     @Transactional(readOnly = true)
     public List<CourtBookingResponse> findByClienteId(Long clienteId) {
+
         return courtBookingRepository.findByClienteId(clienteId)
                 .stream()
                 .map(courtBookingMapper::toResponse)
@@ -164,6 +281,4 @@ public class CourtBookingService {
 
     }
      */
-
-
 }

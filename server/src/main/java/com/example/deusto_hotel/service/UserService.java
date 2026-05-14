@@ -74,18 +74,4 @@ public class UserService {
                 usuario.getCreadoEn()
         );
     }
-
-    /*
-    public UserResponse update(Long id, UserRequest request) {
-        // Implementar
-        throw new UnsupportedOperationException();
-    }
-
-
-    public void delete(Long id) {
-        // Implementar
-        throw new UnsupportedOperationException();
-    }
-
-     */
 }

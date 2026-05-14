@@ -302,14 +302,18 @@
 
     <!-- RESERVAS DE HABITACIONES -->
     <div class="section">
-        <h2 class="section-title">Reservas de Habitaciones</h2>
+        <h2 class="section-title">Habitaciones (Próximas)</h2>
 
-        <div th:if="${roomBookings != null and !roomBookings.isEmpty()}" class="reservas-grid">
-            <div th:each="booking : ${roomBookings}" class="reserva-card">
+        <div th:if="${roomBookings != null}" class="reservas-grid">
+            <div th:each="booking : ${roomBookings}"
+                 th:if="${booking.checkOut.isAfter(T(java.time.LocalDate).now())}"
+                 class="reserva-card">
+
                 <div class="reserva-header">
                     <span class="reserva-id">Reserva #<span th:text="${booking.id}"></span></span>
                     <span class="reserva-status" th:text="${booking.estado}"></span>
                 </div>
+
                 <div class="reserva-details">
                     <div class="detail-item">
                         <span class="detail-label">Habitación</span>
@@ -323,37 +327,57 @@
                         <span class="detail-label">Check-out</span>
                         <span class="detail-value" th:text="${booking.checkOut}"></span>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Precio Total</span>
-                        <span class="detail-value" th:text="${booking.precioTotal} + '€'"></span>
-                    </div>
-                </div>
-                <div class="reserva-actions">
-                    <button class="btn btn-modify">Modificar</button>
-                    <form th:action="@{'/reservas/eliminar/' + ${booking.id}}" method="post"
-                          onsubmit="return confirmarEliminacion();">
-                        <button type="submit" class="btn btn-delete">Eliminar</button>
-                    </form>
-
                 </div>
             </div>
         </div>
+    </div>
 
-        <div th:if="${roomBookings == null or roomBookings.isEmpty()}" class="empty-state">
-            <p>No tienes reservas de habitaciones</p>
+    <div class="section">
+        <h2 class="section-title">Habitaciones (Pasadas)</h2>
+
+        <div th:if="${roomBookings != null}" class="reservas-grid">
+            <div th:each="booking : ${roomBookings}"
+                 th:if="${booking.checkOut.isBefore(T(java.time.LocalDate).now())}"
+                 class="reserva-card">
+
+                <div class="reserva-header">
+                    <span class="reserva-id">Reserva #<span th:text="${booking.id}"></span></span>
+                    <span class="reserva-status">FINALIZADA</span>
+                </div>
+
+                <div class="reserva-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Habitación</span>
+                        <span class="detail-value" th:text="${booking.habitacionNumero}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Check-in</span>
+                        <span class="detail-value" th:text="${booking.checkIn}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Check-out</span>
+                        <span class="detail-value" th:text="${booking.checkOut}"></span>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
     <!-- RESERVAS DE PISTAS -->
     <div class="section">
-        <h2 class="section-title">Reservas de Pistas</h2>
+        <h2 class="section-title">Pistas (Próximas)</h2>
 
-        <div th:if="${courtBookings != null and !courtBookings.isEmpty()}" class="reservas-grid">
-            <div th:each="booking : ${courtBookings}" class="reserva-card">
+        <div th:if="${courtBookings != null}" class="reservas-grid">
+            <div th:each="booking : ${courtBookings}"
+                 th:if="${booking.fecha.isAfter(T(java.time.LocalDate).now())}"
+                 class="reserva-card">
+
                 <div class="reserva-header">
                     <span class="reserva-id">Reserva #<span th:text="${booking.id}"></span></span>
                     <span class="reserva-status" th:text="${booking.estado}"></span>
                 </div>
+
                 <div class="reserva-details">
                     <div class="detail-item">
                         <span class="detail-label">Pista</span>
@@ -363,27 +387,35 @@
                         <span class="detail-label">Fecha</span>
                         <span class="detail-value" th:text="${booking.fecha}"></span>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Hora</span>
-                        <span class="detail-value" th:text="${booking.horaInicio} + ' - ' + ${booking.horaFin}"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Precio</span>
-                        <span class="detail-value" th:text="${booking.precioTotal} + '€'"></span>
-                    </div>
-                </div>
-                <div class="reserva-actions">
-                    <button class="btn btn-modify">Modificar</button>
-                    <form th:action="@{'/reservas/eliminar/pista/' + ${booking.id}}" method="post"
-                          onsubmit="return confirmarEliminacion();">
-                        <button type="submit" class="btn btn-delete">Eliminar</button>
-                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div th:if="${courtBookings == null or courtBookings.isEmpty()}" class="empty-state">
-            <p>No tienes reservas de pistas</p>
+    <div class="section">
+        <h2 class="section-title">Pistas (Pasadas)</h2>
+
+        <div th:if="${courtBookings != null}" class="reservas-grid">
+            <div th:each="booking : ${courtBookings}"
+                 th:if="${booking.fecha.isBefore(T(java.time.LocalDate).now())}"
+                 class="reserva-card">
+
+                <div class="reserva-header">
+                    <span class="reserva-id">Reserva #<span th:text="${booking.id}"></span></span>
+                    <span class="reserva-status">FINALIZADA</span>
+                </div>
+
+                <div class="reserva-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Pista</span>
+                        <span class="detail-value" th:text="${booking.pistaNombre}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Fecha</span>
+                        <span class="detail-value" th:text="${booking.fecha}"></span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

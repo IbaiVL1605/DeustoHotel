@@ -276,8 +276,8 @@ public String deleteBooking(@PathVariable Long id, HttpSession session) {
     // Menu para ver reservas (tanto de habitaciones como de pistas)
     @GetMapping("/reservas")
     public String verReservas(HttpSession session, Model model) {
-        long clienteId = (long) session.getAttribute("userId");
-        if (clienteId == 0) {
+        Long clienteId = (Long) session.getAttribute("userId");
+        if (clienteId == null) {
             return "redirect:/login";
         }
 
