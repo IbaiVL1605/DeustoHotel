@@ -61,11 +61,16 @@ public class RoomController {
     }
 
     @PutMapping("/{id}/bloquear")
-    public ResponseEntity<String> bloquearHabitacion(
-            @PathVariable Long id) {
+    public ResponseEntity<String> bloquearHabitacion(@PathVariable Long id) {
 
-        roomService.bloquearHabitacion(id);
+        try {
+            roomService.bloquearHabitacion(id);
 
-        return ResponseEntity.ok("Habitación bloqueada correctamente");
+            return ResponseEntity.ok("Habitación bloqueada correctamente");
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.notFound().build();
+        }
     }
 }
