@@ -2,6 +2,7 @@ package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.dto.RoomBookingResponse;
+import com.example.deusto_hotel.exception.Excepciones;
 import com.example.deusto_hotel.mapper.RoomBookingMapper;
 import com.example.deusto_hotel.model.Room;
 import com.example.deusto_hotel.model.RoomBooking;
@@ -127,7 +128,7 @@ public class RoomBookingService {
 
     public void validarReserva(String email) {
         User cliente = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
+                .orElseThrow(() -> new Excepciones.UsuarioNoEncontradoException("Cliente no encontrado"));
 
         RoomBooking reservadas = roomBookingRepository
                 .findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(cliente.getId(), RoomBookingStatus.PENDIENTE)
