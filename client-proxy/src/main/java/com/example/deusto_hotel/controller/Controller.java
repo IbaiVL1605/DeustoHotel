@@ -343,4 +343,23 @@ public String deleteBooking(@PathVariable Long id, HttpSession session) {
         }
     }
 
+    @PostMapping("/update/{id}")
+    public String updateCourtBooking(
+            @PathVariable Long id,
+            @ModelAttribute CourtBookingRequest request,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            proxy.updateCourtBooking(id, request);
+            redirectAttributes.addFlashAttribute("success",
+                    "Reserva actualizada correctamente");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error",
+                    e.getMessage());
+        }
+
+        return "redirect:/mis-reservas";
+    }
+
 }

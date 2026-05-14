@@ -205,7 +205,34 @@ public class RoomServiceTest {
         verify(roomRepository, never()).deleteById(anyLong());
     }
 
+    @Test
+    void bloquearHabitacion_ok() {
 
+        Room room = new Room(1L, RoomType.SUITE);
+        room.setEstado(RoomStatus.DISPONIBLE);
+
+        when(roomRepository.findById(1L))
+                .thenReturn(java.util.Optional.of(room));
+
+        roomService.bloquearHabitacion(1L);
+
+        assertEquals(RoomStatus.BLOQUEADA, room.getEstado());
+
+        verify(roomRepository).save(room);
+    }
+
+    @Test
+    void bloquearHabitacion_notFound() {
+
+        when(roomRepository.findById(1L))
+                .thenReturn(java.util.Optional.empty());
+
+        assertThrows(RuntimeException.class, () ->
+                roomService.bloquearHabitacion(1L)
+        );
+
+        verify(roomRepository, never()).save(any());
+    }
 
 
 }

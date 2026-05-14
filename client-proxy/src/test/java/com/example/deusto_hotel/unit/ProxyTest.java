@@ -724,4 +724,68 @@ class ProxyTest {
             proxy.getCourtBookingsByClienteId(clienteId);
         });
     }
+
+    //Mensaje para Ibai: Si mi niño ve esto y dice "pero esto no lo tenia que hacer yo???" quiero que sepa
+    //que de forma totalmente voluntaria (Marta me da miedo) he decidido hace los teses, besitos.
+    @Test
+    void updateCourtBooking_exito() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        String jsonResponse = """
+        {
+          "pistaId": 1,
+          "fecha": "2026-05-20",
+          "horaInicio": "10:00:00",
+          "horaFin": "12:00:00",
+          "clienteId": 1
+        }
+        """;
+
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn(jsonResponse);
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse) response);
+
+        CourtBookingRequest request = new CourtBookingRequest(
+                1L,
+                LocalDate.of(2026, 5, 20),
+                java.time.LocalTime.of(10, 0),
+                java.time.LocalTime.of(12, 0),
+                1L
+        );
+
+        CourtBookingResponse result = proxy.updateCourtBooking(1L, request);
+
+        assertNotNull(result);
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
+
+    //Mensaje para Ibai: Si mi niño ve esto y dice "pero esto no lo tenia que hacer yo???" quiero que sepa
+    //que de forma totalmente voluntaria (Marta me da miedo) he decidido hace los teses, besitos.
+    @Test
+    void updateCourtBooking_error() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        when(response.statusCode()).thenReturn(400);
+        when(response.body()).thenReturn("Error actualizando la reserva");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn((HttpResponse) response);
+
+        CourtBookingRequest request = new CourtBookingRequest(
+                1L,
+                LocalDate.of(2026, 5, 20),
+                java.time.LocalTime.of(10, 0),
+                java.time.LocalTime.of(12, 0),
+                1L
+        );
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            proxy.updateCourtBooking(1L, request);
+        });
+
+        assertEquals("Error actualizando la reserva: Error actualizando la reserva", ex.getMessage());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+    }
 }

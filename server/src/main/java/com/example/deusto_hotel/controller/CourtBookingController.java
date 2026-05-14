@@ -2,7 +2,6 @@ package com.example.deusto_hotel.controller;
 
 import com.example.deusto_hotel.dto.CourtBookingRequest;
 import com.example.deusto_hotel.dto.CourtBookingResponse;
-import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.service.CourtBookingService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +12,22 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
+/**
+ * Controlador REST encargado de la gestión de reservas de pistas.
+ * <p>
+ * Expone endpoints para crear, actualizar, eliminar y consultar
+ * reservas de pistas deportivas.
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/v1/court-bookings")
 @RequiredArgsConstructor
 public class CourtBookingController {
 
+    /**
+     * Servicio encargado de la lógica de negocio
+     * de reservas de pistas.
+     */
     private final CourtBookingService courtBookingService;
 
     /*
@@ -34,37 +44,64 @@ public class CourtBookingController {
     }
      */
 
-    // CREATE
+    /**
+     * Crea una nueva reserva de pista.
+     *
+     * @param request datos de la reserva
+     * @param session sesión HTTP del usuario
+     * @return reserva creada con estado HTTP 201
+     */
     @PostMapping
     public ResponseEntity<CourtBookingResponse> create(
-            @RequestBody @Valid CourtBookingRequest request, HttpSession session) {
+            @RequestBody @Valid CourtBookingRequest request,
+            HttpSession session) {
 
-        CourtBookingResponse response = courtBookingService.create(request, session);
+        CourtBookingResponse response =
+                courtBookingService.create(request, session);
 
-        // REST correcto → 201 CREATED
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
-    // UPDATE
+    /**
+     * Actualiza una reserva existente.
+     *
+     * @param id identificador de la reserva
+     * @param request nuevos datos de la reserva
+     * @return reserva actualizada
+     */
     @PutMapping("/{id}")
     public ResponseEntity<CourtBookingResponse> update(
             @PathVariable Long id,
             @RequestBody @Valid CourtBookingRequest request) {
 
-        CourtBookingResponse response = courtBookingService.update(id, request);
+        CourtBookingResponse response =
+                courtBookingService.update(id, request);
+
         return ResponseEntity.ok(response);
     }
 
-    // DELETE
+    /**
+     * Elimina una reserva de pista.
+     *
+     * @param id identificador de la reserva
+     * @return respuesta sin contenido (HTTP 204)
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        // Borrar la reserva de pista
+
         courtBookingService.delete(id);
 
-        return ResponseEntity.noContent().build(); // 204
+        return ResponseEntity.noContent().build();
     }
 
-    // GET BY CLIENTE
+    /**
+     * Obtiene todas las reservas de un cliente.
+     *
+     * @param clienteId identificador del cliente
+     * @return lista de reservas del cliente
+     */
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<CourtBookingResponse>> getByClienteId(
             @PathVariable Long clienteId) {
