@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -252,6 +254,8 @@ public String deleteBooking(@PathVariable Long id, HttpSession session) {
 
         if (role == null) {
             return "redirect:/login";
+        }else if (role == "RECEPTIONIST"){
+            return "user/recepcionista";
         }
 
         model.addAttribute("role", role);
@@ -341,6 +345,16 @@ public String deleteBooking(@PathVariable Long id, HttpSession session) {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    // Endpoint para recepcionista
+    @GetMapping("/recepcion")
+    public String showRecepcioj(HttpSession session) {
+        String role = (String) session.getAttribute("userRole");
+        if (role == null || !role.equals("RECEPTIONIST")) {
+            return "redirect:/login";
+        }
+        return "user/recepcionista";
     }
 
 }
