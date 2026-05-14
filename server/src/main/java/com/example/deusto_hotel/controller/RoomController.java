@@ -38,8 +38,14 @@ public class RoomController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        roomService.delete(id);
-        return ResponseEntity.noContent().build();
+
+        try {
+            roomService.delete(id);
+            return ResponseEntity.noContent().build();
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/disponibles")
