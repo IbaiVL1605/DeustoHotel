@@ -311,4 +311,24 @@ public class Proxy {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return ResponseEntity.status(response.statusCode()).body(response.body());
     }
+
+    public CourtBookingResponse updateCourtBooking(Long id, CourtBookingRequest request)
+            throws IOException, InterruptedException {
+
+        String jsonBody = objectMapper.writeValueAsString(request);
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/court-bookings/" + id))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            return objectMapper.readValue(response.body(), CourtBookingResponse.class);
+        }
+
+        throw new RuntimeException("Error actualizando la reserva: " + response.body());
+    }
 }
