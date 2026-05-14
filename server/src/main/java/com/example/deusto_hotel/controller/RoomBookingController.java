@@ -2,7 +2,6 @@ package com.example.deusto_hotel.controller;
 
 import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.dto.RoomBookingResponse;
-import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.service.RoomBookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -62,6 +60,20 @@ public class RoomBookingController {
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<RoomBookingResponse>> getByClienteId(@PathVariable Long clienteId) {
         return ResponseEntity.ok(roomBookingService.findByClienteId(clienteId));
+    }
+
+    // Validar reserva (Recepcionista)
+    @PostMapping("/validar")
+    public ResponseEntity<String> validarReserva(@RequestParam String email) {
+
+        if (email == null || email.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "El correo del cliente es obligatorio");
+        }
+
+        roomBookingService.validarReserva(email);
+
+        return ResponseEntity.ok("Reserva validada correctamente");
     }
 
     /*
