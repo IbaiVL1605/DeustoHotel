@@ -354,6 +354,20 @@ public class Proxy {
             throw new RuntimeException("Error al bloquear la pista: " + response.body());
         }
     }
+
+    public void unblockCourt(Long id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/courts/" + id + "/unblock"))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new RuntimeException("Error al desbloquear la pista: " + response.body());
+        }
+    }
+
     public void bloquearHabitacion(Long id)
             throws IOException, InterruptedException {
 
@@ -364,13 +378,11 @@ public class Proxy {
 
         HttpResponse<String> response = httpClient.send(
                 request,
-                HttpResponse.BodyHandlers.ofString()
-        );
+                HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw new RuntimeException(
-                    "Error al bloquear habitación: " + response.body()
-            );
+                    "Error al bloquear habitación: " + response.body());
         }
     }
 

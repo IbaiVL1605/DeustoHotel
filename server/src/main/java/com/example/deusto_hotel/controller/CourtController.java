@@ -116,6 +116,12 @@ public class CourtController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{id}/unblock")
+    public ResponseEntity<CourtResponse> unblockCourt(@PathVariable Long id) {
+        CourtResponse response = courtService.unblockCourt(id);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
     public ResponseEntity<List<CourtResponse>> getAll(@RequestParam(required = false) String tipo) {
         List<CourtResponse> courts = courtService.findAll();

@@ -703,6 +703,19 @@ class ControllerTest {
         }
 
         @Test
+        void unblockCourtFromAdmin_Success() throws Exception {
+                // Simulamos la interacción desde la interfaz web (botón de desbloquear)
+                mockMvc.perform(post("/admin/courts/1/unblock"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/admin"))
+                                .andExpect(flash().attribute("success",
+                                                "Pista desbloqueada y disponible de nuevo."));
+
+                // Comprobamos que el controlador web ha llamado al método del proxy
+                verify(proxy).unblockCourt(1L);
+        }
+
+        @Test
         void adminPage_MuestraPistasExito() throws Exception {
                 List<CourtResponse> courtsMock = List.of(
                                 new CourtResponse(1L, "Pista 1", CourtType.TENIS, 20.0, CourtStatus.DISPONIBLE));

@@ -204,4 +204,17 @@ public class CourtControllerTest {
                 .andExpect(jsonPath("$.estado").value("BLOQUEADA"));
     }
 
+    @Test
+    void unblockCourt_Success() throws Exception {
+        // Simulamos la respuesta que nos daría el servicio
+        CourtResponse courtResponse = new CourtResponse(1L, "Pista 1", CourtType.TENIS, 20.0, CourtStatus.DISPONIBLE);
+
+        when(courtService.unblockCourt(1L)).thenReturn(courtResponse);
+
+        // Hacemos una petición POST simulada al endpoint y comprobamos la respuesta
+        mockMvc.perform(post("/api/v1/courts/1/unblock"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("DISPONIBLE"));
+    }
+
 }

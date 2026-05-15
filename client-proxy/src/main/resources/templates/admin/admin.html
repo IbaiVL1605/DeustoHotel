@@ -382,9 +382,13 @@
                                   method="post" style="margin: 0;">
                                 <button type="submit" class="btn-outline">Bloquear Mantenimiento</button>
                             </form>
-                            <span th:if="${court.estado.name() == 'BLOQUEADA'}" style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">
-                                En reparaciones
-                            </span>
+                            <form th:if="${court.estado.name() == 'BLOQUEADA'}" 
+                                  th:action="@{/admin/courts/{id}/unblock(id=${court.id})}" 
+                                  method="post" style="margin: 0;">
+                                <button type="submit" class="btn-outline" style="color: var(--success); border-color: var(--success);">
+                                    Desbloquear
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
