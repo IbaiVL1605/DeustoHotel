@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-04-28T15:59:29.653Z" hostname="ibai-B550M-K" time="0.101">
+  <properties/>
+  <testcase name="shouldCreateSimpleBookingSuccessfully()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.085"/>
+  <testcase name="shouldThrowExceptionWhenUserDoesNotExist()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowExceptionWhenCheckInIsBeforeNow()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldDeleteBooking()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowExceptionWhenSuiteBookingOverlaps()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowExceptionWhenNotEnoughRoomsOfSpecificType()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowIfDeleteByNonOwnerUser()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowExceptionWhenSuiteNotFound()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowIfDeleteWithoutAuthenticatedUser()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldCreateSuiteBookingSuccessfully()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowExceptionWhenCheckOutIsBeforeCheckIn()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowExceptionWhenRoomTypeIsNull()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowIfDeleteNonExistingBooking()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <testcase name="shouldThrowExceptionWhenNoRoomsAvailableAtAll()" classname="com.example.deusto_hotel.unit.service.RoomBookingServiceTest" time="0.001"/>
+  <system-out><![CDATA[Reserva SUITE: 101
+Reserva SUITE: 999
+Reserva SUITE: 101
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.deusto_hotel.unit.controller.UserControllerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-04-28T15:59:28.950Z" hostname="ibai-B550M-K" time="0.037">
+  <properties/>
+  <testcase name="registrarUsuario_Success()" classname="com.example.deusto_hotel.unit.controller.UserControllerTest" time="0.037"/>
+  <system-out><![CDATA[2026-04-28T17:59:28.979+02:00  INFO 27007 --- [deusto_hotel_server] [    Test worker] o.s.mock.web.MockServletContext          : Initializing Spring TestDispatcherServlet ''
+2026-04-28T17:59:28.980+02:00  INFO 27007 --- [deusto_hotel_server] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-28T17:59:28.980+02:00  INFO 27007 --- [deusto_hotel_server] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

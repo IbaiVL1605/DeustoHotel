@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.deusto_hotel.unit.ControllerTest" tests="27" skipped="0" failures="0" errors="0" timestamp="2026-04-28T16:00:03.617Z" hostname="ibai-B550M-K" time="3.126">
+  <properties/>
+  <testcase name="login_error_correoIncorrecto()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.121"/>
+  <testcase name="shouldRegisterUserSuccessfully()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.022"/>
+  <testcase name="testGetHabitacionesDisponibles_ErrorProxy()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.336"/>
+  <testcase name="deleteBooking_error()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.007"/>
+  <testcase name="testGetHabitacionesDisponibles_Exito()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.032"/>
+  <testcase name="deleteBooking_success()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.005"/>
+  <testcase name="login_error_correoVacio()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.004"/>
+  <testcase name="login_error_passwordNull()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.004"/>
+  <testcase name="login_error_passwordVacio()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.003"/>
+  <testcase name="login_exito_admin_redirigeAAdmin()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.006"/>
+  <testcase name="login_error_contrasenaIncorrecta()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.004"/>
+  <testcase name="crearReserva_error()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.136"/>
+  <testcase name="crearReserva_exito()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.01"/>
+  <testcase name="shouldNotRegisterUserIfEmailAlreadyExists()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.005"/>
+  <testcase name="testGetHabitacionesDisponibles_FechaSalidaNull()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.007"/>
+  <testcase name="createCourtBooking_noUser()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.018"/>
+  <testcase name="getPistas_conFiltroTipoYFecha()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.038"/>
+  <testcase name="testGetHabitacionesDisponibles_FechaEntradaNull()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.006"/>
+  <testcase name="login_error_correoNull()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.002"/>
+  <testcase name="createCourtBooking_error()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.006"/>
+  <testcase name="createCourtBooking_exito()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.006"/>
+  <testcase name="deleteCourtBookingTest_error()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.004"/>
+  <testcase name="deleteCourtBooking_exito()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.004"/>
+  <testcase name="getPistas_errorProxy()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.004"/>
+  <testcase name="deleteBooking_noUser()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.003"/>
+  <testcase name="login_exito()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.004"/>
+  <testcase name="getPistas_exito_sinFiltro()" classname="com.example.deusto_hotel.unit.ControllerTest" time="0.049"/>
+  <system-out><![CDATA[18:00:03.795 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.deusto_hotel.unit.ControllerTest]: ControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+18:00:03.919 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.deusto_hotel.Application for test class com.example.deusto_hotel.unit.ControllerTest
+18:00:03.922 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.deusto_hotel.unit.ControllerTest]: ControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+18:00:03.929 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.deusto_hotel.Application for test class com.example.deusto_hotel.unit.ControllerTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.4)
+
+2026-04-28T18:00:04.430+02:00  INFO 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] c.e.deusto_hotel.unit.ControllerTest     : Starting ControllerTest using Java 21.0.10 with PID 27820 (started by ibai in /home/ibai/IdeaProjects/DeustoHotel/client-proxy)
+2026-04-28T18:00:04.431+02:00  INFO 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] c.e.deusto_hotel.unit.ControllerTest     : No active profile set, falling back to 1 default profile: "default"
+2026-04-28T18:00:04.443+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@68303c3e
+2026-04-28T18:00:05.523+02:00  INFO 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.v.b.OptionalValidatorFactoryBean     : Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2026-04-28T18:00:05.649+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : 17 mappings in 'requestMappingHandlerMapping'
+2026-04-28T18:00:05.671+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2026-04-28T18:00:05.691+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 2 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-04-28T18:00:05.790+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-04-28T18:00:05.819+02:00  INFO 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-04-28T18:00:05.819+02:00  INFO 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-28T18:00:05.821+02:00  INFO 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-04-28T18:00:05.845+02:00  INFO 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] c.e.deusto_hotel.unit.ControllerTest     : Started ControllerTest in 1.679 seconds (process running for 2.949)
+2026-04-28T18:00:05.930+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#login(HttpSession, String, String)
+2026-04-28T18:00:05.983+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#signup(String, String, String, RedirectAttributes)
+2026-04-28T18:00:05.991+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.008+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#getHabitacionesDisponibles(Model, LocalDate, LocalDate)
+2026-04-28T18:00:06.013+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.v.ContentNegotiatingViewResolver : Selected '*/*' given [*/*]
+2026-04-28T18:00:06.345+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#deleteBooking(Long, HttpSession)
+Error al eliminar: Error
+2026-04-28T18:00:06.347+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.359+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#getHabitacionesDisponibles(Model, LocalDate, LocalDate)
+2026-04-28T18:00:06.361+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.v.ContentNegotiatingViewResolver : Selected '*/*' given [*/*]
+2026-04-28T18:00:06.388+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#deleteBooking(Long, HttpSession)
+2026-04-28T18:00:06.388+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.410+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#login(HttpSession, String, String)
+2026-04-28T18:00:06.411+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.417+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#login(HttpSession, String, String)
+2026-04-28T18:00:06.466+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#crearReserva(HttpSession, List)
+2026-04-28T18:00:06.545+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [[RoomBookingRequest[tipo=INDIVIDUAL, id_cliente=999, cantidad=1, id_habitacion=1, fechaEntrada=2026- (truncated)...]
+2026-04-28T18:00:06.550+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'text/plain', given [*/*] and supported [text/plain, */*, application/json, application/*+json]
+2026-04-28T18:00:06.552+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["Usuario no logeado"]
+2026-04-28T18:00:06.565+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#crearReserva(HttpSession, List)
+2026-04-28T18:00:06.566+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [[RoomBookingRequest[tipo=INDIVIDUAL, id_cliente=999, cantidad=1, id_habitacion=1, fechaEntrada=2026- (truncated)...]
+2026-04-28T18:00:06.567+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'text/plain', given [*/*] and supported [text/plain, */*, application/json, application/*+json]
+2026-04-28T18:00:06.567+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK"]
+2026-04-28T18:00:06.573+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#signup(String, String, String, RedirectAttributes)
+2026-04-28T18:00:06.574+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.579+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#getHabitacionesDisponibles(Model, LocalDate, LocalDate)
+2026-04-28T18:00:06.579+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.v.ContentNegotiatingViewResolver : Selected '*/*' given [*/*]
+2026-04-28T18:00:06.589+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#createCourtBooking(CourtBookingRequest, HttpSession)
+2026-04-28T18:00:06.594+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [CourtBookingRequest[pistaId=1, fecha=2026-04-28, horaInicio=10:00, horaFin=12:00, clienteId=null]]
+2026-04-28T18:00:06.594+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Using 'text/plain', given [*/*] and supported [text/plain, */*, application/json, application/*+json]
+2026-04-28T18:00:06.594+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Writing ["{"status":"ERROR", "message":"Usuario no autenticado"}"]
+2026-04-28T18:00:06.607+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#getPistas(Model, String, Integer, Integer)
+2026-04-28T18:00:06.609+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.v.ContentNegotiatingViewResolver : Selected '*/*' given [*/*]
+2026-04-28T18:00:06.646+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#getHabitacionesDisponibles(Model, LocalDate, LocalDate)
+2026-04-28T18:00:06.646+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.v.ContentNegotiatingViewResolver : Selected '*/*' given [*/*]
+2026-04-28T18:00:06.658+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#createCourtBooking(CourtBookingRequest, HttpSession)
+2026-04-28T18:00:06.659+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [CourtBookingRequest[pistaId=1, fecha=2026-04-28, horaInicio=10:00, horaFin=12:00, clienteId=null]]
+2026-04-28T18:00:06.660+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Using 'text/plain', given [*/*] and supported [text/plain, */*, application/json, application/*+json]
+2026-04-28T18:00:06.660+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Writing ["{"status":"ERROR", "message":"Error backend"}"]
+2026-04-28T18:00:06.666+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#createCourtBooking(CourtBookingRequest, HttpSession)
+2026-04-28T18:00:06.666+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [CourtBookingRequest[pistaId=1, fecha=2026-04-28, horaInicio=10:00, horaFin=12:00, clienteId=null]]
+2026-04-28T18:00:06.667+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Using 'text/plain', given [*/*] and supported [text/plain, */*, application/json, application/*+json]
+2026-04-28T18:00:06.667+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] m.m.a.RequestResponseBodyMethodProcessor : Writing ["{"status":"OK"}"]
+2026-04-28T18:00:06.671+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#deleteCourtBooking(Long)
+Error: Error
+2026-04-28T18:00:06.672+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.676+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#deleteCourtBooking(Long)
+2026-04-28T18:00:06.677+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.682+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#getPistas(Model, String, Integer, Integer)
+2026-04-28T18:00:06.687+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#deleteBooking(Long, HttpSession)
+2026-04-28T18:00:06.687+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.691+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#login(HttpSession, String, String)
+2026-04-28T18:00:06.692+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.web.servlet.view.RedirectView        : View name [redirect:], model {}
+2026-04-28T18:00:06.697+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.deusto_hotel.controller.Controller#getPistas(Model, String, Integer, Integer)
+2026-04-28T18:00:06.698+02:00 DEBUG 27820 --- [deusto_hotel_clienbt_proxy] [    Test worker] o.s.w.s.v.ContentNegotiatingViewResolver : Selected '*/*' given [*/*]
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/home/ibai/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.17.8/f09415827a71be7ed621c7bd02550678f28bc81c/byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

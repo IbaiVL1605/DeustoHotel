@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.deusto_hotel.unit.service.UserServiceTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-04-28T15:59:29.759Z" hostname="ibai-B550M-K" time="0.034">
+  <properties/>
+  <testcase name="testIniciarSesionUsuario_UsuarioNoEncontrado()" classname="com.example.deusto_hotel.unit.service.UserServiceTest" time="0.028"/>
+  <testcase name="testRegistrarUsuario_Success()" classname="com.example.deusto_hotel.unit.service.UserServiceTest" time="0.001"/>
+  <testcase name="testIniciarSesionUsuario_UsuarioBloqueado()" classname="com.example.deusto_hotel.unit.service.UserServiceTest" time="0.001"/>
+  <testcase name="testRegistrarUsuario_EmailAlreadyExists()" classname="com.example.deusto_hotel.unit.service.UserServiceTest" time="0.001"/>
+  <testcase name="testIniciarSesionUsuario_ContrasenaIncorrecta()" classname="com.example.deusto_hotel.unit.service.UserServiceTest" time="0.001"/>
+  <testcase name="testIniciarSesionUsuario_Success()" classname="com.example.deusto_hotel.unit.service.UserServiceTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

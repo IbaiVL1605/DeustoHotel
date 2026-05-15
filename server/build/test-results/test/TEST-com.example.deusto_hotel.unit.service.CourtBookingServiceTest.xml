@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.deusto_hotel.unit.service.CourtBookingServiceTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-04-28T15:59:29.153Z" hostname="ibai-B550M-K" time="0.334">
+  <properties/>
+  <testcase name="testFindByClienteId()" classname="com.example.deusto_hotel.unit.service.CourtBookingServiceTest" time="0.322"/>
+  <testcase name="testDelete_NotFound()" classname="com.example.deusto_hotel.unit.service.CourtBookingServiceTest" time="0.001"/>
+  <testcase name="testCreate()" classname="com.example.deusto_hotel.unit.service.CourtBookingServiceTest" time="0.004"/>
+  <testcase name="testDelete()" classname="com.example.deusto_hotel.unit.service.CourtBookingServiceTest" time="0.001"/>
+  <testcase name="testUpdate()" classname="com.example.deusto_hotel.unit.service.CourtBookingServiceTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.deusto_hotel.RoomBookingRequestTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-04-26T11:44:26.863Z" hostname="ibai-B550M-K" time="0.035">
+  <properties/>
+  <testcase name="validate_ShouldContinue_WhenTypeIsNotNull()" classname="com.example.deusto_hotel.RoomBookingRequestTest" time="0.016"/>
+  <testcase name="shouldNotThrowException_WhenSuiteIsValid()" classname="com.example.deusto_hotel.RoomBookingRequestTest" time="0.002"/>
+  <testcase name="shouldThrowException_WhenSuiteMissingRoomId()" classname="com.example.deusto_hotel.RoomBookingRequestTest" time="0.001"/>
+  <testcase name="shouldNotThrowException_WhenIndividualIsValid()" classname="com.example.deusto_hotel.RoomBookingRequestTest" time="0.0"/>
+  <testcase name="shouldThrowException_WhenIndividualHasRoomId()" classname="com.example.deusto_hotel.RoomBookingRequestTest" time="0.0"/>
+  <testcase name="shouldThrowException_WhenIndividualMissingQuantity()" classname="com.example.deusto_hotel.RoomBookingRequestTest" time="0.0"/>
+  <testcase name="shouldThrowException_WhenSuiteHasQuantity()" classname="com.example.deusto_hotel.RoomBookingRequestTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

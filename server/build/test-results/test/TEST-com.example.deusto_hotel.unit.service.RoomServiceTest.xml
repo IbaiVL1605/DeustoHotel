@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.deusto_hotel.unit.service.RoomServiceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-28T15:59:29.755Z" hostname="ibai-B550M-K" time="0.003">
+  <properties/>
+  <testcase name="shouldCreateRoomSuccessfully()" classname="com.example.deusto_hotel.unit.service.RoomServiceTest" time="0.001"/>
+  <testcase name="shouldCreateDoubleRoomWithDefaultValues()" classname="com.example.deusto_hotel.unit.service.RoomServiceTest" time="0.001"/>
+  <testcase name="shouldCreateIndividualRoomWithDefaultValues()" classname="com.example.deusto_hotel.unit.service.RoomServiceTest" time="0.0"/>
+  <testcase name="shouldThrowExceptionIfRoomNumberAlreadyExists()" classname="com.example.deusto_hotel.unit.service.RoomServiceTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

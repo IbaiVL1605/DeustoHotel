@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CourtBookingService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">com.example.deusto_hotel.service</a> &gt; <span class="el_source">CourtBookingService.java</span></div><h1>CourtBookingService.java</h1><pre class="source lang-java linenums">package com.example.deusto_hotel.service;
+
+import com.example.deusto_hotel.dto.CourtBookingRequest;
+import com.example.deusto_hotel.dto.CourtBookingResponse;
+import com.example.deusto_hotel.mapper.CourtBookingMapper;
+import com.example.deusto_hotel.model.Court;
+import com.example.deusto_hotel.model.CourtBooking;
+import com.example.deusto_hotel.repository.CourtBookingRepository;
+import com.example.deusto_hotel.repository.CourtRepository;
+import com.example.deusto_hotel.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class CourtBookingService {
+
+    private final CourtBookingRepository courtBookingRepository;
+    private final CourtRepository courtRepository;
+    private final UserRepository userRepository;
+    private final CourtBookingMapper courtBookingMapper;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    // CREATE
+    public CourtBookingResponse create(CourtBookingRequest request, HttpSession session) {
+
+<span class="fc" id="L37">        CourtBooking booking = courtBookingMapper.toEntity(request);</span>
+
+<span class="fc" id="L39">        booking.setPista(courtRepository.getReferenceById(request.pistaId()));</span>
+
+<span class="fc" id="L41">        booking.setHoraInicio(request.horaInicio());</span>
+
+<span class="fc" id="L43">        booking.setHoraFin(request.horaFin());</span>
+
+<span class="fc" id="L45">        booking.setFecha(request.fecha());</span>
+
+<span class="fc" id="L47">        Long horas = ChronoUnit.HOURS.between(request.horaInicio(), request.horaFin());</span>
+
+<span class="fc" id="L49">        booking.setCliente(userRepository.getReferenceById(request.clienteId()));</span>
+
+<span class="fc" id="L51">        booking.setPrecioTotal(courtRepository.getReferenceById(request.pistaId()).getPrecioPorHora() * horas);</span>
+
+<span class="fc" id="L53">        courtBookingRepository.save(booking);</span>
+
+        // Notificar a todos los clientes conectados que hubo un cambio
+<span class="fc" id="L56">        Object payload = Map.of(&quot;action&quot;, &quot;CREATED&quot;, &quot;courtId&quot;, booking.getPista().getId(), &quot;fecha&quot;, booking.getFecha().toString());</span>
+<span class="fc" id="L57">        messagingTemplate.convertAndSend(&quot;/topic/court-updates&quot;, payload);</span>
+
+<span class="fc" id="L59">        return courtBookingMapper.toResponse(booking);</span>
+    }
+
+    // UPDATE
+    public CourtBookingResponse update(Long id, CourtBookingRequest request) {
+
+<span class="fc" id="L65">        CourtBooking booking = courtBookingRepository.findById(id)</span>
+<span class="pc" id="L66">                .orElseThrow(() -&gt; new RuntimeException(&quot;Reserva no encontrada&quot;));</span>
+
+        // Validar horas
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (request.horaInicio().isAfter(request.horaFin()) ||</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">                request.horaInicio().equals(request.horaFin())) {</span>
+<span class="nc" id="L71">            throw new RuntimeException(&quot;La hora de inicio debe ser menor que la de fin&quot;);</span>
+        }
+
+        // Validar disponibilidad (excluyendo la propia reserva)
+<span class="fc" id="L75">        List&lt;CourtBooking&gt; solapamientos = courtBookingRepository.findSolapamientos(</span>
+<span class="fc" id="L76">                request.pistaId(),</span>
+<span class="fc" id="L77">                request.fecha(),</span>
+<span class="fc" id="L78">                request.horaInicio(),</span>
+<span class="fc" id="L79">                request.horaFin()</span>
+<span class="pc bnc" id="L80" title="All 2 branches missed.">        ).stream().filter(b -&gt; !b.getId().equals(id)).toList();</span>
+
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        if (!solapamientos.isEmpty()) {</span>
+<span class="nc" id="L83">            throw new RuntimeException(&quot;La pista no está disponible&quot;);</span>
+        }
+
+        // Actualizar datos
+<span class="fc" id="L87">        courtBookingMapper.updateEntityFromRequest(request, booking);</span>
+
+<span class="fc" id="L89">        Court pista = courtRepository.findById(request.pistaId())</span>
+<span class="pc" id="L90">                .orElseThrow(() -&gt; new RuntimeException(&quot;Pista no encontrada&quot;));</span>
+
+<span class="fc" id="L92">        booking.setPista(pista);</span>
+
+        // Recalcular precio
+<span class="fc" id="L95">        long horas = request.horaInicio().until(request.horaFin(), java.time.temporal.ChronoUnit.HOURS);</span>
+<span class="fc" id="L96">        booking.setPrecioTotal(horas * pista.getPrecioPorHora());</span>
+
+<span class="fc" id="L98">        CourtBooking updated = courtBookingRepository.save(booking);</span>
+
+<span class="fc" id="L100">        return courtBookingMapper.toResponse(updated);</span>
+    }
+
+    // DELETE
+    public void delete(Long id) {
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (!courtBookingRepository.existsById(id)) {</span>
+<span class="fc" id="L106">            throw new RuntimeException(&quot;Reserva no encontrada&quot;);</span>
+        }
+<span class="fc" id="L108">        courtBookingRepository.deleteById(id);</span>
+<span class="fc" id="L109">        Object payload = Map.of(&quot;action&quot;, &quot;DELETED&quot;, &quot;bookingId&quot;, id);</span>
+<span class="fc" id="L110">        messagingTemplate.convertAndSend(&quot;/topic/court-updates&quot;, payload);</span>
+<span class="fc" id="L111">    }</span>
+
+    // FIND BY CLIENTE
+    @Transactional(readOnly = true)
+    public List&lt;CourtBookingResponse&gt; findByClienteId(Long clienteId) {
+<span class="fc" id="L116">        return courtBookingRepository.findByClienteId(clienteId)</span>
+<span class="fc" id="L117">                .stream()</span>
+<span class="fc" id="L118">                .map(courtBookingMapper::toResponse)</span>
+<span class="fc" id="L119">                .toList();</span>
+    }
+
+        /*
+    // GET ALL
+    @Transactional(readOnly = true)
+    public List&lt;CourtBookingResponse&gt; findAll() {
+        return courtBookingRepository.findAll()
+                .stream()
+                .map(courtBookingMapper::toResponse)
+                .toList();
+    }
+
+    // GET BY ID
+    @Transactional(readOnly = true)
+    public CourtBookingResponse findById(Long id) {
+        CourtBooking booking = courtBookingRepository.findById(id)
+                .orElseThrow(() -&gt; new RuntimeException(&quot;Reserva no encontrada&quot;));
+
+        return courtBookingMapper.toResponse(booking);
+    }
+     */
+
+
+    /*
+    // FIND BY PISTA
+    @Transactional(readOnly = true)
+    public List&lt;CourtBookingResponse&gt; findByPistaId(Long pistaId) {
+        return courtBookingRepository.findByPistaId(pistaId)
+                .stream()
+                .map(courtBookingMapper::toResponse)
+                .toList();
+
+    // DISPONIBILIDAD
+    @Transactional(readOnly = true)
+    public boolean isDisponible(Long pistaId, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
+
+        return courtBookingRepository.findSolapamientos(
+                pistaId,
+                fecha,
+                horaInicio,
+                horaFin
+        ).isEmpty();
+    }
+
+
+    }
+     */
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c60d08ab-56a8-4e92-be64-3aeef32ed960" name="Changes" comment="terminado comentarios" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_/home/ibai/IdeaProjects/DeustoHotel" value="3B5JMzQ5TQcnm0FzX4IHBaJ6ih2" />
+      <entry key="_/home/ibai/IdeaProjects/DeustoHotel/common" value="3CqHxKmBwOLLwXHJBX5uacweosk" />
+    </persistenceIdMap>
+  </component>
+  <component name="CopilotUserSelectedChatMode">
+    <option name="chatModeId" value="Agent" />
+  </component>
+  <component name="CopilotUserSelectedModel">
+    <selectedModels>
+      <entry key="agent-panel" value="Auto" />
+      <entry key="chat-panel" value="Auto" />
+    </selectedModels>
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="deusto_hotel" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="deusto_hotel" type="f1a62948:ProjectNode" />
+                <item name="server" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="deusto_hotel" type="f1a62948:ProjectNode" />
+                <item name="server" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="deusto_hotel" type="f1a62948:ProjectNode" />
+                <item name="server" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="application" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Record" />
+        <option value="Class" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;IbaiVL1605&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/IbaiVL1605/DeustoHotel.git&quot;,
+    &quot;accountId&quot;: &quot;d5f3abbf-5e41-471d-a7b4-2427ea464647&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="3B5JMzQ5TQcnm0FzX4IHBaJ6ih2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Gradle.ControllerTest.crearReserva_exito.executor": "Debug",
+    "Gradle.DeustoHotel [:client-proxy:bootRun].executor": "Run",
+    "Gradle.DeustoHotel [:server:bootRun].executor": "Run",
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.RoomBookingServiceTest.shouldThrowExceptionWhenSuiteBookingOverlaps.executor": "Run",
+    "Gradle.RoomMapperTest.testToRoomDisponiblesResponse_WhenInputIsNull.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ToolWindow.GitHub Copilot Chat.ShowToolbar": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "gh-pages",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/ibai/IdeaProjects/DeustoHotel/client-proxy/src/main/resources/templates/user",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "/home/ibai/IdeaProjects/DeustoHotel/client-proxy/src/main/java/com/example/Main.java",
+    "settings.editor.selected.configurable": "com.github.copilot.settings.customization.CustomizationConfigurable",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/client-proxy/src/main/resources/templates/user" />
+      <recent name="$PROJECT_DIR$/client-proxy/src/main/resources" />
+      <recent name="$PROJECT_DIR$/client-proxy/src/main/java/com/example/deusto_hotel" />
+      <recent name="$PROJECT_DIR$/common" />
+      <recent name="$PROJECT_DIR$/server" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/client-proxy/src/main/resources/templates/" />
+      <recent name="$PROJECT_DIR$/client-proxy/src/main/resources" />
+      <recent name="$PROJECT_DIR$/client-proxy/src/main/resources/templates/user" />
+      <recent name="$PROJECT_DIR$/server" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Gradle.DeustoHotel [:server:bootRun]">
+    <configuration name="ControllerTest.crearReserva_exito" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":client-proxy:test" />
+            <option value="--tests" />
+            <option value="&quot;com.example.deusto_hotel.unit.ControllerTest.crearReserva_exito&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="DeustoHotel [:client-proxy:bootRun]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":client-proxy:bootRun" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="DeustoHotel [:server:bootRun]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":server:bootRun" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="RoomBookingServiceTest.shouldThrowExceptionWhenSuiteBookingOverlaps" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":server:test" />
+            <option value="--tests" />
+            <option value="&quot;com.example.deusto_hotel.unit.service.RoomBookingServiceTest.shouldThrowExceptionWhenSuiteBookingOverlaps&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="RoomMapperTest.testToRoomDisponiblesResponse_WhenInputIsNull" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":server:test" />
+            <option value="--tests" />
+            <option value="&quot;com.example.deusto_hotel.unit.RoomMapperTest.testToRoomDisponiblesResponse_WhenInputIsNull&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="deusto_hotel.client-proxy.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.deusto_hotel.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DeustoHotelApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="deusto_hotel.common.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.deusto_hotel.DeustoHotelApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DeustoHotelApplication (2)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="deusto_hotel.server.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.deusto_hotel.DeustoHotelApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DeustoHotelApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="deusto_hotel.server.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.deusto_hotel.DeustoHotelApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.DeustoHotel [:server:bootRun]" />
+        <item itemvalue="Gradle.RoomBookingServiceTest.shouldThrowExceptionWhenSuiteBookingOverlaps" />
+        <item itemvalue="Gradle.DeustoHotel [:client-proxy:bootRun]" />
+        <item itemvalue="Gradle.ControllerTest.crearReserva_exito" />
+        <item itemvalue="Gradle.RoomMapperTest.testToRoomDisponiblesResponse_WhenInputIsNull" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c60d08ab-56a8-4e92-be64-3aeef32ed960" name="Changes" comment="" />
+      <created>1773772955992</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1773772955992</updated>
+      <workItem from="1773772957960" duration="711000" />
+      <workItem from="1773775680988" duration="1019000" />
+      <workItem from="1773916925194" duration="5066000" />
+      <workItem from="1773922464065" duration="615000" />
+      <workItem from="1773939753424" duration="842000" />
+      <workItem from="1773945033593" duration="2219000" />
+      <workItem from="1773947263194" duration="1889000" />
+      <workItem from="1773949163384" duration="47000" />
+      <workItem from="1774002451141" duration="4185000" />
+      <workItem from="1774010844582" duration="671000" />
+      <workItem from="1774011927497" duration="1018000" />
+      <workItem from="1774086031836" duration="1609000" />
+      <workItem from="1774087722156" duration="226000" />
+      <workItem from="1774088157941" duration="77000" />
+      <workItem from="1774365104646" duration="3177000" />
+      <workItem from="1776680248170" duration="2562000" />
+      <workItem from="1776690082386" duration="782000" />
+      <workItem from="1776699423643" duration="5272000" />
+      <workItem from="1776789232135" duration="3174000" />
+      <workItem from="1776855843142" duration="8465000" />
+      <workItem from="1776940267099" duration="122000" />
+      <workItem from="1776953378131" duration="2733000" />
+      <workItem from="1776957550398" duration="2956000" />
+      <workItem from="1776961774564" duration="340000" />
+      <workItem from="1776962905530" duration="63000" />
+      <workItem from="1777045919163" duration="38000" />
+      <workItem from="1777046159743" duration="59000" />
+      <workItem from="1777046238508" duration="5902000" />
+      <workItem from="1777110934756" duration="175000" />
+      <workItem from="1777105245154" duration="1037000" />
+      <workItem from="1777106373099" duration="39000" />
+      <workItem from="1777106420919" duration="2826000" />
+      <workItem from="1777110105410" duration="215000" />
+      <workItem from="1777201438420" duration="2446000" />
+      <workItem from="1777213965528" duration="1669000" />
+      <workItem from="1777367729156" duration="1061000" />
+      <workItem from="1777369298702" duration="1821000" />
+      <workItem from="1777384372141" duration="8291000" />
+      <workItem from="1777634229251" duration="2000" />
+      <workItem from="1778327312632" duration="2000" />
+      <workItem from="1778327409949" duration="1000" />
+      <workItem from="1778327745053" duration="3000" />
+      <workItem from="1778327801251" duration="2000" />
+      <workItem from="1778328487558" duration="2000" />
+      <workItem from="1778340248546" duration="3000" />
+      <workItem from="1778341839070" duration="1000" />
+      <workItem from="1778345065127" duration="4000" />
+      <workItem from="1778428525305" duration="453000" />
+      <workItem from="1778506666954" duration="957000" />
+      <workItem from="1778582764841" duration="2000" />
+      <workItem from="1778753983158" duration="2154000" />
+      <workItem from="1778748975147" duration="1050000" />
+      <workItem from="1778750048989" duration="67000" />
+      <workItem from="1778750939030" duration="965000" />
+      <workItem from="1778752209264" duration="80000" />
+      <workItem from="1778822534111" duration="112000" />
+      <workItem from="1778860908705" duration="47000" />
+      <workItem from="1778860983265" duration="200000" />
+      <workItem from="1778862519866" duration="990000" />
+    </task>
+    <task id="LOCAL-00001" summary="Correcion de versiones compatibles en gradle">
+      <option name="closed" value="true" />
+      <created>1773940374135</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1773940374135</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Actualizado los dtos del endpoint getRoomDisponibles">
+      <option name="closed" value="true" />
+      <created>1773947456578</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1773947456578</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Creacion del esqueleto del client proxy">
+      <option name="closed" value="true" />
+      <created>1773949203681</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1773949203681</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Terminado client-proxy para buscar disponibilidad">
+      <option name="closed" value="true" />
+      <created>1774012803180</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1774012803180</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Actualizacion de verion de &quot;springdoc-openapi-starter-webmvc-ui&quot;, creacion de expepcion handler global, testeo simple y aplicacion de las excepciones necesarias a getHabitacionesDisponibles">
+      <option name="closed" value="true" />
+      <created>1774087614793</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1774087614793</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Actualizacion de verion de &quot;springdoc-openapi-starter-webmvc-ui&quot;, creacion de expepcion handler global, testeo simple y aplicacion de las excepciones necesarias a getHabitacionesDisponibles">
+      <option name="closed" value="true" />
+      <created>1774087888013</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1774087888013</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Añadido el suit id en el html y los dtos">
+      <option name="closed" value="true" />
+      <created>1774367993850</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1774367993850</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Testeo unitario RoomMapper finalizado y comprobado">
+      <option name="closed" value="true" />
+      <created>1776682073190</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1776682073190</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Testeo unitario RoomController medio terminado">
+      <option name="closed" value="true" />
+      <created>1776703762292</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1776703762292</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Testeo controller get Disponibles finalizado y comprobado">
+      <option name="closed" value="true" />
+      <created>1776704935110</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1776704935110</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Cambio reservar habitacion completada y funcional">
+      <option name="closed" value="true" />
+      <created>1776864300111</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1776864300111</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Creacion y comprobacion de la funcionalidad crear reserva desde cliente">
+      <option name="closed" value="true" />
+      <created>1776960983891</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1776960983891</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Finalizacion de tests server y common para la funcionalidad: crear reserva. 100% de cobertura comprobada con jacoco">
+      <option name="closed" value="true" />
+      <created>1777052091304</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1777052091304</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Actualizado build.gradle del cliente para añadir la dependencia de @MvcTest">
+      <option name="closed" value="true" />
+      <created>1777103891076</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1777103891076</updated>
+    </task>
+    <task id="LOCAL-00015" summary="-test integracion getDisponibles finalizados y comprobados&#10;-configuracion de build.gradle para añadir las dependencias necesiarias, configurar la tarea de integracion y los @Tags de los tipos de tareas">
+      <option name="closed" value="true" />
+      <created>1777108848717</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1777108848717</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Comprobacion de usuario registrado descomentado para hacer los tests">
+      <option name="closed" value="true" />
+      <created>1777110214513</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1777110214513</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Creacion test unitarios del Proxy y Controller del cliente, con 100% de coberturta comprobada">
+      <option name="closed" value="true" />
+      <created>1777203851123</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1777203851123</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Cambio de html para ver disponibles y reservar">
+      <option name="closed" value="true" />
+      <created>1777215614573</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1777215614573</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Añadida comprobacion suit ya reservada en server service y test unitarios.&#10;Añadida la funcionalidad en html y controller del cliente para la actualizacion en tiempo real de las habitaciones disponibles">
+      <option name="closed" value="true" />
+      <created>1777371001009</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1777371001009</updated>
+    </task>
+    <task id="LOCAL-00020" summary="* Reescritura de los test de rendimiento&#10;* Creacion de reporte html con Jmeter-nogui">
+      <option name="closed" value="true" />
+      <created>1777392785478</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1777392785478</updated>
+    </task>
+    <task id="LOCAL-00021" summary="terminado comentarios">
+      <option name="closed" value="true" />
+      <created>1778822630816</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1778822630816</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-websocket" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.persistence:jakarta.persistence-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
+    <option featureType="dependencySupport" implementationName="java:org.thymeleaf:thymeleaf" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-messaging" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Correcion de versiones compatibles en gradle" />
+    <MESSAGE value="Actualizado los dtos del endpoint getRoomDisponibles" />
+    <MESSAGE value="Creacion del esqueleto del client proxy" />
+    <MESSAGE value="Terminado client-proxy para buscar disponibilidad" />
+    <MESSAGE value="Actualizacion de verion de &quot;springdoc-openapi-starter-webmvc-ui&quot;, creacion de expepcion handler global, testeo simple y aplicacion de las excepciones necesarias a getHabitacionesDisponibles" />
+    <MESSAGE value="Añadido el suit id en el html y los dtos" />
+    <MESSAGE value="Testeo unitario RoomMapper finalizado y comprobado" />
+    <MESSAGE value="Testeo unitario RoomController medio terminado" />
+    <MESSAGE value="Testeo controller get Disponibles finalizado y comprobado" />
+    <MESSAGE value="Cambio reservar habitacion completada y funcional" />
+    <MESSAGE value="Creacion y comprobacion de la funcionalidad crear reserva desde cliente" />
+    <MESSAGE value="Finalizacion de tests server y common para la funcionalidad: crear reserva. 100% de cobertura comprobada con jacoco" />
+    <MESSAGE value="Actualizado build.gradle del cliente para añadir la dependencia de @MvcTest" />
+    <MESSAGE value="-test integracion getDisponibles finalizados y comprobados&#10;-configuracion de build.gradle para añadir las dependencias necesiarias, configurar la tarea de integracion y los @Tags de los tipos de tareas" />
+    <MESSAGE value="Comprobacion de usuario registrado descomentado para hacer los tests" />
+    <MESSAGE value="Creacion test unitarios del Proxy y Controller del cliente, con 100% de coberturta comprobada" />
+    <MESSAGE value="Cambio de html para ver disponibles y reservar" />
+    <MESSAGE value="Añadida comprobacion suit ya reservada en server service y test unitarios.&#10;Añadida la funcionalidad en html y controller del cliente para la actualizacion en tiempo real de las habitaciones disponibles" />
+    <MESSAGE value="* Reescritura de los test de rendimiento&#10;* Creacion de reporte html con Jmeter-nogui" />
+    <MESSAGE value="terminado comentarios" />
+    <option name="LAST_COMMIT_MESSAGE" value="terminado comentarios" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>

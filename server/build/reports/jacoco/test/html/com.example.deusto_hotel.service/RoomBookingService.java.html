@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RoomBookingService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">com.example.deusto_hotel.service</a> &gt; <span class="el_source">RoomBookingService.java</span></div><h1>RoomBookingService.java</h1><pre class="source lang-java linenums">package com.example.deusto_hotel.service;
+
+import com.example.deusto_hotel.dto.RoomBookingRequest;
+import com.example.deusto_hotel.dto.RoomBookingResponse;
+import com.example.deusto_hotel.mapper.RoomBookingMapper;
+import com.example.deusto_hotel.model.Room;
+import com.example.deusto_hotel.model.RoomBooking;
+import com.example.deusto_hotel.model.RoomType;
+import com.example.deusto_hotel.model.User;
+import com.example.deusto_hotel.repository.RoomBookingRepository;
+import com.example.deusto_hotel.repository.UserRepository;
+import com.example.deusto_hotel.repository.RoomRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class RoomBookingService {
+
+    private final RoomBookingRepository roomBookingRepository;
+    private final RoomBookingMapper roomBookingMapper;
+    private final RoomRepository roomRepository;
+    private  final UserRepository userRepository;
+
+
+
+    // Crear reserva
+    @Transactional()
+    public void create(List&lt;RoomBookingRequest&gt; request) {
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        for  (RoomBookingRequest roomBookingRequest : request) {</span>
+<span class="fc" id="L40">            validarFechas(roomBookingRequest);</span>
+
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            if (roomBookingRequest.tipo() == null) {</span>
+<span class="fc" id="L43">                throw new IllegalArgumentException(&quot;Tipo de habitación no válido&quot;);</span>
+            }
+
+<span class="fc" id="L46">            User cliente = userRepository.findById(roomBookingRequest.id_cliente())</span>
+<span class="fc" id="L47">                    .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Cliente no encontrado&quot;));</span>
+
+<span class="pc bpc" id="L49" title="1 of 3 branches missed.">            switch (roomBookingRequest.tipo()) {</span>
+<span class="fc" id="L50">                case INDIVIDUAL, DOBLE -&gt; reservarSimples(roomBookingRequest, cliente);</span>
+<span class="fc" id="L51">                case SUITE -&gt; reservarSuits(roomBookingRequest, cliente);</span>
+            }
+<span class="fc" id="L53">        }</span>
+
+
+<span class="fc" id="L56">    }</span>
+
+    private void reservarSuits(RoomBookingRequest roomBookingRequest, User cliente) {
+<span class="fc" id="L59">        System.out.printf(&quot;Reserva SUITE: %s\n&quot;, roomBookingRequest.id_habitacion());</span>
+<span class="fc" id="L60">        Optional&lt;Room&gt; habitacion = roomRepository.findByIdAndTipo(roomBookingRequest.id_habitacion(), RoomType.SUITE);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if(habitacion.isEmpty()) {throw new IllegalArgumentException(&quot;Habitacion no encontrada para tipo SUITE&quot;);}</span>
+
+        // Verificar solapamientos con otras reservas
+<span class="fc" id="L64">        List&lt;RoomBooking&gt; solapamientos = roomBookingRepository.findSolapamientos(</span>
+<span class="fc" id="L65">                habitacion.get().getId(),</span>
+<span class="fc" id="L66">                roomBookingRequest.fechaEntrada(),</span>
+<span class="fc" id="L67">                roomBookingRequest.fechaSalida()</span>
+        );
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (!solapamientos.isEmpty()) {</span>
+<span class="fc" id="L71">            throw new IllegalArgumentException(&quot;La habitación ya está reservada para las fechas seleccionadas&quot;);</span>
+        }
+
+<span class="fc" id="L74">        RoomBooking reserva = new RoomBooking();</span>
+<span class="fc" id="L75">        reserva.setCliente(cliente);</span>
+<span class="fc" id="L76">        reserva.setHabitacion(habitacion.get());</span>
+<span class="fc" id="L77">        reserva.setCheckIn(roomBookingRequest.fechaEntrada());</span>
+<span class="fc" id="L78">        reserva.setCheckOut(roomBookingRequest.fechaSalida());</span>
+<span class="fc" id="L79">        reserva.setPrecioTotal(habitacion.get().getPrecioPorNoche());</span>
+
+<span class="fc" id="L81">        roomBookingRepository.save(reserva);</span>
+<span class="fc" id="L82">    }</span>
+
+    private void validarFechas(RoomBookingRequest roomBookingRequest) {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if(!roomBookingRequest.fechaSalida().isAfter(roomBookingRequest.fechaEntrada())) {</span>
+<span class="fc" id="L86">            throw new IllegalArgumentException(&quot;La fecha de salida debe de ser posterior a la fecha de entrada.&quot;);</span>
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        } if(roomBookingRequest.fechaEntrada().isBefore(LocalDate.now())) {</span>
+<span class="fc" id="L89">            throw new IllegalArgumentException(&quot;La fecha de entrada no puede ser anterior a la fecha actual.&quot;);</span>
+
+        }
+
+<span class="fc" id="L93">    }</span>
+
+    private void reservarSimples(RoomBookingRequest roomBookingRequest, User cliente) {
+
+<span class="fc" id="L97">        List&lt;Room&gt; disponiblesTotal = roomRepository.findRoomDisponibles(roomBookingRequest.fechaEntrada(), roomBookingRequest.fechaSalida());</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if(disponiblesTotal.isEmpty()) {throw new IllegalArgumentException(&quot;No hay habitaciones disponibles para las fechas seleccionadas&quot;);}</span>
+
+<span class="fc" id="L100">        List&lt;Room&gt; disponibles = disponiblesTotal.stream()</span>
+<span class="fc" id="L101">                .filter(h -&gt; h.getTipo().equals(roomBookingRequest.tipo()))</span>
+<span class="fc" id="L102">                .toList();</span>
+
+
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if(disponibles.size() &lt; roomBookingRequest.cantidad()) {throw new IllegalArgumentException(String.format(&quot;No hay habitaciones disponibles para las fechas seleccionadas con el tipo: %s&quot;, roomBookingRequest.tipo()));}</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (int i = 0; i &lt; roomBookingRequest.cantidad(); i++) {</span>
+<span class="fc" id="L108">            RoomBooking reserva = new RoomBooking();</span>
+
+<span class="fc" id="L110">            reserva.setCliente(cliente);</span>
+<span class="fc" id="L111">            reserva.setCheckIn(roomBookingRequest.fechaEntrada());</span>
+<span class="fc" id="L112">            reserva.setCheckOut(roomBookingRequest.fechaSalida());</span>
+
+
+<span class="fc" id="L115">            Room habitacion = disponibles.get(i);</span>
+<span class="fc" id="L116">            reserva.setPrecioTotal(habitacion.getPrecioPorNoche());</span>
+<span class="fc" id="L117">            reserva.setHabitacion(habitacion);</span>
+
+
+<span class="fc" id="L120">            roomBookingRepository.save(reserva);</span>
+        }
+
+
+
+
+
+
+<span class="fc" id="L128">    }</span>
+
+
+
+    /*
+    // Actualizar reserva
+    public RoomBookingResponse update(Long id, RoomBookingRequest request) {
+
+
+
+        RoomBooking booking = roomBookingRepository.findById(id)
+                .orElseThrow(() -&gt; new RuntimeException(&quot;Reserva no encontrada&quot;));
+
+        Room room = roomRepository.findById(request.habitacionId())
+                .orElseThrow(() -&gt; new RuntimeException(&quot;Habitación no encontrada&quot;));
+
+        roomBookingMapper.updateEntityFromRequest(request, booking);
+
+        booking.setHabitacion(room);
+        booking.setPrecioTotal(calcularPrecio(room, request.checkIn(), request.checkOut()));
+
+        return roomBookingMapper.toResponse(booking);
+    }
+    
+*/
+
+//  Eliminar reserva
+public void delete(Long id, Long userId) {
+
+<span class="fc" id="L157">    RoomBooking booking = roomBookingRepository.findById(id)</span>
+<span class="fc" id="L158">            .orElseThrow(() -&gt; new ResponseStatusException(</span>
+                    HttpStatus.NOT_FOUND, &quot;Reserva no encontrada&quot;));
+
+<span class="fc bfc" id="L161" title="All 2 branches covered.">    if (userId == null) {</span>
+<span class="fc" id="L162">        throw new ResponseStatusException(</span>
+                HttpStatus.UNAUTHORIZED, &quot;Usuario no autenticado&quot;);
+    }
+
+<span class="fc bfc" id="L166" title="All 2 branches covered.">    if (!booking.getCliente().getId().equals(userId)) {</span>
+<span class="fc" id="L167">        throw new ResponseStatusException(</span>
+                HttpStatus.FORBIDDEN, &quot;No puedes cancelar esta reserva&quot;);
+    }
+
+<span class="fc" id="L171">    roomBookingRepository.deleteById(id);</span>
+<span class="fc" id="L172">}</span>
+
+    //  Buscar por cliente
+    @Transactional(readOnly = true)
+    public List&lt;RoomBookingResponse&gt; findByClienteId(Long clienteId) {
+<span class="nc" id="L177">        return roomBookingRepository.findByClienteId(clienteId)</span>
+<span class="nc" id="L178">                .stream()</span>
+<span class="nc" id="L179">                .map(roomBookingMapper::toResponse)</span>
+<span class="nc" id="L180">                .toList();</span>
+    }
+
+    /*
+    //  Buscar por habitación
+    @Transactional(readOnly = true)
+    public List&lt;RoomBookingResponse&gt; findByHabitacionId(Long habitacionId) {
+        return roomBookingRepository.findByHabitacionId(habitacionId)
+                .stream()
+                .map(roomBookingMapper::toResponse)
+                .toList();
+    }
+    private Double calcularPrecio(Room room, java.time.LocalDate checkIn, java.time.LocalDate checkOut) {
+        long dias = ChronoUnit.DAYS.between(checkIn, checkOut);
+        return (double) (dias * room.getPrecioPorNoche());
+    }
+    */
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

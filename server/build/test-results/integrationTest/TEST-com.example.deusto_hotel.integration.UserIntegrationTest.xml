@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.deusto_hotel.integration.UserIntegrationTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-04-28T15:59:49.321Z" hostname="ibai-B550M-K" time="0.124">
+  <properties/>
+  <testcase name="shouldRegisterUserSuccessfully()" classname="com.example.deusto_hotel.integration.UserIntegrationTest" time="0.048"/>
+  <testcase name="shouldFailLoginWhenUserDoesNotExist()" classname="com.example.deusto_hotel.integration.UserIntegrationTest" time="0.016"/>
+  <testcase name="shouldLoginSuccessfully()" classname="com.example.deusto_hotel.integration.UserIntegrationTest" time="0.022"/>
+  <testcase name="shouldFailLoginWhenPasswordIsInvalid()" classname="com.example.deusto_hotel.integration.UserIntegrationTest" time="0.016"/>
+  <testcase name="shouldFailWhenEmailAlreadyExists()" classname="com.example.deusto_hotel.integration.UserIntegrationTest" time="0.015"/>
+  <system-out><![CDATA[2026-04-28T17:59:49.322+02:00  INFO 27360 --- [deusto_hotel_server] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.example.deusto_hotel.integration.UserIntegrationTest]: UserIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-04-28T17:59:49.323+02:00  INFO 27360 --- [deusto_hotel_server] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.example.deusto_hotel.DeustoHotelApplication for test class com.example.deusto_hotel.integration.UserIntegrationTest
+2026-04-28T17:59:49.324+02:00  INFO 27360 --- [deusto_hotel_server] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.example.deusto_hotel.integration.UserIntegrationTest]: UserIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-04-28T17:59:49.324+02:00  INFO 27360 --- [deusto_hotel_server] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.example.deusto_hotel.DeustoHotelApplication for test class com.example.deusto_hotel.integration.UserIntegrationTest
+Hibernate: select u1_0.id from users u1_0 where u1_0.email=? limit ?
+Hibernate: insert into users (bloqueado,cancelaciones,creado_en,email,nombre,password,rol) values (?,?,?,?,?,?,?)
+Hibernate: select u1_0.id,u1_0.bloqueado,u1_0.cancelaciones,u1_0.creado_en,u1_0.email,u1_0.nombre,u1_0.password,u1_0.rol from users u1_0 where u1_0.email=?
+Hibernate: select u1_0.id from users u1_0 where u1_0.email=? limit ?
+Hibernate: insert into users (bloqueado,cancelaciones,creado_en,email,nombre,password,rol) values (?,?,?,?,?,?,?)
+Hibernate: select u1_0.id,u1_0.bloqueado,u1_0.cancelaciones,u1_0.creado_en,u1_0.email,u1_0.nombre,u1_0.password,u1_0.rol from users u1_0 where u1_0.email=?
+Hibernate: select u1_0.id from users u1_0 where u1_0.email=? limit ?
+Hibernate: insert into users (bloqueado,cancelaciones,creado_en,email,nombre,password,rol) values (?,?,?,?,?,?,?)
+Hibernate: select u1_0.id,u1_0.bloqueado,u1_0.cancelaciones,u1_0.creado_en,u1_0.email,u1_0.nombre,u1_0.password,u1_0.rol from users u1_0 where u1_0.email=?
+Hibernate: select u1_0.id from users u1_0 where u1_0.email=? limit ?
+Hibernate: insert into users (bloqueado,cancelaciones,creado_en,email,nombre,password,rol) values (?,?,?,?,?,?,?)
+Hibernate: select u1_0.id from users u1_0 where u1_0.email=? limit ?
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

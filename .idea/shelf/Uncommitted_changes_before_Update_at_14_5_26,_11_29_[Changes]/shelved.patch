@@ -1,0 +1,1298 @@
+Index: server/src/main/java/com/example/deusto_hotel/repository/RoomRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.repository;\n\nimport com.example.deusto_hotel.model.Room;\nimport com.example.deusto_hotel.model.RoomStatus;\nimport com.example.deusto_hotel.model.RoomType;\nimport jakarta.validation.constraints.Positive;\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport org.springframework.data.jpa.repository.Query;\nimport org.springframework.stereotype.Repository;\n\nimport java.time.LocalDate;\nimport java.util.List;\nimport java.util.Optional;\n\n@Repository\npublic interface RoomRepository extends JpaRepository<Room, Long> {\n\n    List<Room> findByEstado(RoomStatus estado);\n\n    List<Room> findByTipo(RoomType tipo);\n\n    Optional<Room> findByNumero(String numero);\n\n    @Query(\"SELECT r FROM Room r WHERE r.estado = 'DISPONIBLE' AND \" +\n           \"r.id NOT IN (SELECT rb.habitacion.id FROM RoomBooking rb \" +\n           \"WHERE rb.estado != 'CANCELADA' AND rb.checkIn < :fechaSalida AND rb.checkOut > :fechaEntrada) \" +\n           \"ORDER BY r.numero\")\n    List<Room> findRoomDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida);\n\n    boolean existsByNumero(String numero);\n\n    Optional<Room> findByIdAndTipo(@Positive Long aLong, RoomType roomType);\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/repository/RoomRepository.java b/server/src/main/java/com/example/deusto_hotel/repository/RoomRepository.java
+--- a/server/src/main/java/com/example/deusto_hotel/repository/RoomRepository.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/repository/RoomRepository.java	(date 1778748796509)
+@@ -12,22 +12,59 @@
+ import java.util.List;
+ import java.util.Optional;
+ 
++/**
++ * Repositorio para gestionar las operaciones de base de datos de habitaciones.
++ * Extiende JpaRepository para proporcionar operaciones CRUD básicas y consultas personalizadas.
++ */
+ @Repository
+ public interface RoomRepository extends JpaRepository<Room, Long> {
+ 
++    /**
++     * Encuentra todas las habitaciones con un estado específico.
++     * @param estado El estado de la habitación
++     * @return Lista de habitaciones con el estado dado
++     */
+     List<Room> findByEstado(RoomStatus estado);
+ 
++    /**
++     * Encuentra todas las habitaciones de un tipo específico.
++     * @param tipo El tipo de habitación
++     * @return Lista de habitaciones del tipo dado
++     */
+     List<Room> findByTipo(RoomType tipo);
+ 
++    /**
++     * Encuentra una habitación por su número.
++     * @param numero El número de la habitación
++     * @return Optional con la habitación si existe, Optional vacío en caso contrario
++     */
+     Optional<Room> findByNumero(String numero);
+ 
++    /**
++     * Verifica si existe una habitación con el número especificado.
++     * @param numero El número de la habitación
++     * @return true si existe la habitación, false en caso contrario
++     */
++    boolean existsByNumero(String numero);
++
++    /**
++     * Encuentra habitaciones disponibles (no reservadas) para un rango de fechas específico.
++     * Solo devuelve habitaciones con estado DISPONIBLE que no tengan reservas superpuestas (excepto canceladas).
++     * @param fechaEntrada La fecha de entrada
++     * @param fechaSalida La fecha de salida
++     * @return Lista de habitaciones disponibles ordenadas por número
++     */
+     @Query("SELECT r FROM Room r WHERE r.estado = 'DISPONIBLE' AND " +
+            "r.id NOT IN (SELECT rb.habitacion.id FROM RoomBooking rb " +
+            "WHERE rb.estado != 'CANCELADA' AND rb.checkIn < :fechaSalida AND rb.checkOut > :fechaEntrada) " +
+            "ORDER BY r.numero")
+     List<Room> findRoomDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida);
+ 
+-    boolean existsByNumero(String numero);
+-
++    /**
++     * Encuentra una habitación por su ID y tipo.
++     * @param aLong El ID de la habitación
++     * @param roomType El tipo de habitación
++     * @return Optional con la habitación si existe, Optional vacío en caso contrario
++     */
+     Optional<Room> findByIdAndTipo(@Positive Long aLong, RoomType roomType);
+ }
+Index: server/src/main/java/com/example/deusto_hotel/service/RoomService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.service;\n\nimport com.example.deusto_hotel.dto.RoomDisponibleResponse;\nimport com.example.deusto_hotel.dto.RoomRequest;\nimport com.example.deusto_hotel.dto.RoomResponse;\nimport com.example.deusto_hotel.mapper.RoomMapper;\nimport com.example.deusto_hotel.model.Room;\nimport com.example.deusto_hotel.model.RoomType;\nimport com.example.deusto_hotel.repository.RoomRepository;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\nimport java.time.LocalDate;\nimport java.util.ArrayList;\nimport java.util.List;\n\n@Service\n@RequiredArgsConstructor\n@Transactional\npublic class RoomService {\n\n    private final RoomRepository roomRepository;\n    private final RoomMapper roomMapper;\n\n    /*\n    @Transactional(readOnly = true)\n    public List<RoomResponse> findAll() {\n        return roomRepository.findAll()\n                .stream()\n                .map(room -> new RoomResponse(\n                        room.getId(),\n                        room.getNumero(),\n                        room.getTipo(),\n                        room.getCapacidad(),\n                        (double) room.getPrecioPorNoche(),\n                        room.getEstado()\n                ))\n                .toList();\n    }\n\n    @Transactional(readOnly = true)\n    public RoomResponse findById(Long id) {\n        Room room = roomRepository.findById(id)\n                .orElseThrow(() -> new RuntimeException(\"Habitación no encontrada\"));\n\n        return new RoomResponse(\n                room.getId(),\n                room.getNumero(),\n                room.getTipo(),\n                room.getCapacidad(),\n                (double) room.getPrecioPorNoche(),\n                room.getEstado()\n        );\n    }\n     */\n\n    @Transactional(readOnly = true)\n    public List<RoomDisponibleResponse> getDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {\n\n        List<Room> disponibles = roomRepository.findRoomDisponibles(fechaEntrada, fechaSalida);\n\n        return roomMapper.toRoomDisponiblesResponse(disponibles);\n    }\n    public RoomResponse create(RoomRequest request) {\n\n        if (roomRepository.existsByNumero(request.numero())) {\n            throw new IllegalArgumentException(\"Ya existe una habitación con ese número\");\n        }\n\n        Room room = new Room();\n\n        room.setTipo(request.tipo());\n        room.setNumero(request.numero());\n\n        if (request.tipo() == RoomType.SUITE) {\n            room.setCapacidad(request.capacidad());\n            room.setPrecioPorNoche(request.precioPorNoche().intValue());\n        }else if (request.tipo() == RoomType.INDIVIDUAL) {\n        } else if (request.tipo() == RoomType.DOBLE) {\n        }else {\n            throw new IllegalArgumentException(\"Tipo de habitación no válido\");\n        }\n\n        Room saved = roomRepository.save(room);\n\n        return new RoomResponse(\n                saved.getId(),\n                saved.getNumero(),\n                saved.getTipo(),\n                saved.getCapacidad(),\n                (double) saved.getPrecioPorNoche(),\n                saved.getEstado()\n        );\n    }\n\n    /*\n    public RoomResponse update(Long id, RoomRequest request) {\n\n        Room room = roomRepository.findById(id)\n                .orElseThrow(() -> new RuntimeException(\"Habitación no encontrada\"));\n\n        room.setNumero(request.numero());\n        room.setTipo(request.tipo());\n\n        if (request.tipo().name().equals(\"SUITE\")) {\n            room.setCapacidad(request.capacidad());\n            room.setPrecioPorNoche(request.precioPorNoche().intValue());\n        }\n\n        Room updated = roomRepository.save(room);\n\n        return new RoomResponse(\n                updated.getId(),\n                updated.getNumero(),\n                updated.getTipo(),\n                updated.getCapacidad(),\n                (double) updated.getPrecioPorNoche(),\n                updated.getEstado()\n        );\n    }\n    */\n\n    public void delete(Long id) {\n        if (!roomRepository.existsById(id)) {\n            throw new RuntimeException(\"Habitación no encontrada\");\n        }\n        roomRepository.deleteById(id);\n    }\n\n}\n\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/service/RoomService.java b/server/src/main/java/com/example/deusto_hotel/service/RoomService.java
+--- a/server/src/main/java/com/example/deusto_hotel/service/RoomService.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/service/RoomService.java	(date 1778749657322)
+@@ -15,6 +15,16 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
++/**
++ * Servicio para la gestión de habitaciones del hotel.
++ *
++ * Proporciona métodos para crear, eliminar y consultar habitaciones,
++ * así como para buscar habitaciones disponibles en un rango de fechas específico.
++ * Gestiona la lógica de negocio para validar data de habitación y disponibilidad.
++ *
++ * @author Deusto Hotel Team
++ * @version 1.0
++ */
+ @Service
+ @RequiredArgsConstructor
+ @Transactional
+@@ -23,38 +33,24 @@
+     private final RoomRepository roomRepository;
+     private final RoomMapper roomMapper;
+ 
+-    /*
+-    @Transactional(readOnly = true)
+-    public List<RoomResponse> findAll() {
+-        return roomRepository.findAll()
+-                .stream()
+-                .map(room -> new RoomResponse(
+-                        room.getId(),
+-                        room.getNumero(),
+-                        room.getTipo(),
+-                        room.getCapacidad(),
+-                        (double) room.getPrecioPorNoche(),
+-                        room.getEstado()
+-                ))
+-                .toList();
+-    }
+-
+-    @Transactional(readOnly = true)
+-    public RoomResponse findById(Long id) {
+-        Room room = roomRepository.findById(id)
+-                .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
+-
+-        return new RoomResponse(
+-                room.getId(),
+-                room.getNumero(),
+-                room.getTipo(),
+-                room.getCapacidad(),
+-                (double) room.getPrecioPorNoche(),
+-                room.getEstado()
+-        );
+-    }
++    /**
++     * Obtiene la lista de habitaciones disponibles en un rango de fechas específico.
++     *
++     * Busca todas las habitaciones que no tienen reservas que se solapen con el
++     * rango de fechas proporcionado (desde fechaEntrada hasta fechaSalida).
++     * Las habitaciones se retornan mapeadas a objetos {@link RoomDisponibleResponse}.
++     *
++     * Este método es de solo lectura (readOnly = true) para optimizar el rendimiento
++     * en consultas sin necesidad de transacción completa.
++     *
++     * @param fechaEntrada Fecha de entrada solicitada (inclusive). Formato: yyyy-MM-dd.
++     *
++     * @param fechaSalida Fecha de salida solicitada (inclusive). Formato: yyyy-MM-dd.
++     *
++     * @return Lista de objetos {@link RoomDisponibleResponse} con las habitaciones disponibles
++     *         en el rango de fechas especificado. La lista puede estar vacía si no hay
++     *         habitaciones disponibles.
+      */
+-
+     @Transactional(readOnly = true)
+     public List<RoomDisponibleResponse> getDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {
+ 
+@@ -62,6 +58,31 @@
+ 
+         return roomMapper.toRoomDisponiblesResponse(disponibles);
+     }
++
++    /**
++     * Crea una nueva habitación en el sistema.
++     *
++     * Valida que no exista una habitación con el mismo número y que el tipo
++     * de habitación sea válido (SUITE, INDIVIDUAL o DOBLE).
++     *
++     * Para habitaciones tipo SUITE, asigna los valores de capacidad y precio por noche
++     * desde el request. Para INDIVIDUAL y DOBLE, se asignan valores por defecto.
++     *
++     * Validaciones:
++     * - No debe existir otra habitación con el número proporcionado.
++     * - El tipo de habitación debe ser válido (SUITE, INDIVIDUAL o DOBLE).
++     * - Para SUITE: Se requieren capacidad y precio por noche válidos.
++     *
++     * @param request Objeto {@link RoomRequest} con los datos de la habitación a crear.
++     *                Contiene los campos: numero, tipo, capacidad y precioPorNoche.
++     *
++     * @return {@link RoomResponse} con los datos de la habitación creada,
++     *         incluyendo su ID asignado automáticamente, estado inicial
++     *         y todos los campos especificados en el request.
++     *
++     * @throws IllegalArgumentException Si ya existe una habitación con el número proporcionado,
++     *                                   o si el tipo de habitación no es válido.
++     */
+     public RoomResponse create(RoomRequest request) {
+ 
+         if (roomRepository.existsByNumero(request.numero())) {
+@@ -76,9 +97,9 @@
+         if (request.tipo() == RoomType.SUITE) {
+             room.setCapacidad(request.capacidad());
+             room.setPrecioPorNoche(request.precioPorNoche().intValue());
+-        }else if (request.tipo() == RoomType.INDIVIDUAL) {
++        } else if (request.tipo() == RoomType.INDIVIDUAL) {
+         } else if (request.tipo() == RoomType.DOBLE) {
+-        }else {
++        } else {
+             throw new IllegalArgumentException("Tipo de habitación no válido");
+         }
+ 
+@@ -94,33 +115,16 @@
+         );
+     }
+ 
+-    /*
+-    public RoomResponse update(Long id, RoomRequest request) {
+-
+-        Room room = roomRepository.findById(id)
+-                .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
+-
+-        room.setNumero(request.numero());
+-        room.setTipo(request.tipo());
+-
+-        if (request.tipo().name().equals("SUITE")) {
+-            room.setCapacidad(request.capacidad());
+-            room.setPrecioPorNoche(request.precioPorNoche().intValue());
+-        }
+-
+-        Room updated = roomRepository.save(room);
+-
+-        return new RoomResponse(
+-                updated.getId(),
+-                updated.getNumero(),
+-                updated.getTipo(),
+-                updated.getCapacidad(),
+-                (double) updated.getPrecioPorNoche(),
+-                updated.getEstado()
+-        );
+-    }
+-    */
+-
++    /**
++     * Elimina una habitación existente del sistema.
++     *
++     * Verifica que la habitación con el ID proporcionado exista antes de proceder
++     * a su eliminación. Si la habitación no existe, se lanzará una {@link RuntimeException}.
++     *
++     * @param id Identificador único de la habitación a eliminar. Debe ser un valor positivo y válido.
++     *
++     * @throws RuntimeException Si la habitación con el ID especificado no existe en el sistema.
++     */
+     public void delete(Long id) {
+         if (!roomRepository.existsById(id)) {
+             throw new RuntimeException("Habitación no encontrada");
+Index: server/src/main/java/com/example/deusto_hotel/service/RoomBookingService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.service;\n\nimport com.example.deusto_hotel.dto.RoomBookingRequest;\nimport com.example.deusto_hotel.dto.RoomBookingResponse;\nimport com.example.deusto_hotel.mapper.RoomBookingMapper;\nimport com.example.deusto_hotel.model.Room;\nimport com.example.deusto_hotel.model.RoomBooking;\nimport com.example.deusto_hotel.model.RoomType;\nimport com.example.deusto_hotel.model.User;\nimport com.example.deusto_hotel.repository.RoomBookingRepository;\nimport com.example.deusto_hotel.repository.UserRepository;\nimport com.example.deusto_hotel.repository.RoomRepository;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.http.HttpStatus;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\nimport org.springframework.web.server.ResponseStatusException;\n\nimport java.time.LocalDate;\nimport java.util.List;\nimport java.util.Optional;\n\n@Service\n@RequiredArgsConstructor\n@Transactional\npublic class RoomBookingService {\n\n    private final RoomBookingRepository roomBookingRepository;\n    private final RoomBookingMapper roomBookingMapper;\n    private final RoomRepository roomRepository;\n    private  final UserRepository userRepository;\n\n\n\n    // Crear reserva\n    @Transactional()\n    public void create(List<RoomBookingRequest> request) {\n\n        for  (RoomBookingRequest roomBookingRequest : request) {\n            validarFechas(roomBookingRequest);\n\n            if (roomBookingRequest.tipo() == null) {\n                throw new IllegalArgumentException(\"Tipo de habitación no válido\");\n            }\n\n            User cliente = userRepository.findById(roomBookingRequest.id_cliente())\n                    .orElseThrow(() -> new IllegalArgumentException(\"Cliente no encontrado\"));\n\n            switch (roomBookingRequest.tipo()) {\n                case INDIVIDUAL, DOBLE -> reservarSimples(roomBookingRequest, cliente);\n                case SUITE -> reservarSuits(roomBookingRequest, cliente);\n            }\n        }\n\n\n    }\n\n    private void reservarSuits(RoomBookingRequest roomBookingRequest, User cliente) {\n        System.out.printf(\"Reserva SUITE: %s\\n\", roomBookingRequest.id_habitacion());\n        Optional<Room> habitacion = roomRepository.findByIdAndTipo(roomBookingRequest.id_habitacion(), RoomType.SUITE);\n        if(habitacion.isEmpty()) {throw new IllegalArgumentException(\"Habitacion no encontrada para tipo SUITE\");}\n\n        // Verificar solapamientos con otras reservas\n        List<RoomBooking> solapamientos = roomBookingRepository.findSolapamientos(\n                habitacion.get().getId(),\n                roomBookingRequest.fechaEntrada(),\n                roomBookingRequest.fechaSalida()\n        );\n\n        if (!solapamientos.isEmpty()) {\n            throw new IllegalArgumentException(\"La habitación ya está reservada para las fechas seleccionadas\");\n        }\n\n        RoomBooking reserva = new RoomBooking();\n        reserva.setCliente(cliente);\n        reserva.setHabitacion(habitacion.get());\n        reserva.setCheckIn(roomBookingRequest.fechaEntrada());\n        reserva.setCheckOut(roomBookingRequest.fechaSalida());\n        reserva.setPrecioTotal(habitacion.get().getPrecioPorNoche());\n\n        roomBookingRepository.save(reserva);\n    }\n\n    private void validarFechas(RoomBookingRequest roomBookingRequest) {\n        if(!roomBookingRequest.fechaSalida().isAfter(roomBookingRequest.fechaEntrada())) {\n            throw new IllegalArgumentException(\"La fecha de salida debe de ser posterior a la fecha de entrada.\");\n\n        } if(roomBookingRequest.fechaEntrada().isBefore(LocalDate.now())) {\n            throw new IllegalArgumentException(\"La fecha de entrada no puede ser anterior a la fecha actual.\");\n\n        }\n\n    }\n\n    private void reservarSimples(RoomBookingRequest roomBookingRequest, User cliente) {\n\n        List<Room> disponiblesTotal = roomRepository.findRoomDisponibles(roomBookingRequest.fechaEntrada(), roomBookingRequest.fechaSalida());\n        if(disponiblesTotal.isEmpty()) {throw new IllegalArgumentException(\"No hay habitaciones disponibles para las fechas seleccionadas\");}\n\n        List<Room> disponibles = disponiblesTotal.stream()\n                .filter(h -> h.getTipo().equals(roomBookingRequest.tipo()))\n                .toList();\n\n\n        if(disponibles.size() < roomBookingRequest.cantidad()) {throw new IllegalArgumentException(String.format(\"No hay habitaciones disponibles para las fechas seleccionadas con el tipo: %s\", roomBookingRequest.tipo()));}\n\n        for (int i = 0; i < roomBookingRequest.cantidad(); i++) {\n            RoomBooking reserva = new RoomBooking();\n\n            reserva.setCliente(cliente);\n            reserva.setCheckIn(roomBookingRequest.fechaEntrada());\n            reserva.setCheckOut(roomBookingRequest.fechaSalida());\n\n\n            Room habitacion = disponibles.get(i);\n            reserva.setPrecioTotal(habitacion.getPrecioPorNoche());\n            reserva.setHabitacion(habitacion);\n\n\n            roomBookingRepository.save(reserva);\n        }\n\n\n\n\n\n\n    }\n\n\n\n    /*\n    // Actualizar reserva\n    public RoomBookingResponse update(Long id, RoomBookingRequest request) {\n\n\n\n        RoomBooking booking = roomBookingRepository.findById(id)\n                .orElseThrow(() -> new RuntimeException(\"Reserva no encontrada\"));\n\n        Room room = roomRepository.findById(request.habitacionId())\n                .orElseThrow(() -> new RuntimeException(\"Habitación no encontrada\"));\n\n        roomBookingMapper.updateEntityFromRequest(request, booking);\n\n        booking.setHabitacion(room);\n        booking.setPrecioTotal(calcularPrecio(room, request.checkIn(), request.checkOut()));\n\n        return roomBookingMapper.toResponse(booking);\n    }\n    \n*/\n\n//  Eliminar reserva\npublic void delete(Long id, Long userId) {\n\n    RoomBooking booking = roomBookingRepository.findById(id)\n            .orElseThrow(() -> new ResponseStatusException(\n                    HttpStatus.NOT_FOUND, \"Reserva no encontrada\"));\n\n    if (userId == null) {\n        throw new ResponseStatusException(\n                HttpStatus.UNAUTHORIZED, \"Usuario no autenticado\");\n    }\n\n    if (!booking.getCliente().getId().equals(userId)) {\n        throw new ResponseStatusException(\n                HttpStatus.FORBIDDEN, \"No puedes cancelar esta reserva\");\n    }\n\n    roomBookingRepository.deleteById(id);\n}\n\n    //  Buscar por cliente\n    @Transactional(readOnly = true)\n    public List<RoomBookingResponse> findByClienteId(Long clienteId) {\n        return roomBookingRepository.findByClienteId(clienteId)\n                .stream()\n                .map(roomBookingMapper::toResponse)\n                .toList();\n    }\n\n    /*\n    //  Buscar por habitación\n    @Transactional(readOnly = true)\n    public List<RoomBookingResponse> findByHabitacionId(Long habitacionId) {\n        return roomBookingRepository.findByHabitacionId(habitacionId)\n                .stream()\n                .map(roomBookingMapper::toResponse)\n                .toList();\n    }\n    private Double calcularPrecio(Room room, java.time.LocalDate checkIn, java.time.LocalDate checkOut) {\n        long dias = ChronoUnit.DAYS.between(checkIn, checkOut);\n        return (double) (dias * room.getPrecioPorNoche());\n    }\n    */\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/service/RoomBookingService.java b/server/src/main/java/com/example/deusto_hotel/service/RoomBookingService.java
+--- a/server/src/main/java/com/example/deusto_hotel/service/RoomBookingService.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/service/RoomBookingService.java	(date 1778749237195)
+@@ -20,6 +20,16 @@
+ import java.util.List;
+ import java.util.Optional;
+ 
++/**
++ * Servicio para la gestión de reservas de habitaciones del hotel.
++ *
++ * Proporciona métodos para crear, eliminar y consultar reservas de habitaciones.
++ * Gestiona la lógica de negocio para validar fechas, disponibilidad de habitaciones,
++ * y la existencia de clientes antes de procesar las reservas.
++ *
++ * @author Deusto Hotel Team
++ * @version 1.0
++ */
+ @Service
+ @RequiredArgsConstructor
+ @Transactional
+@@ -30,9 +40,36 @@
+     private final RoomRepository roomRepository;
+     private  final UserRepository userRepository;
+ 
+-
+-
+-    // Crear reserva
++    /**
++     * Crea una lista de reservas de habitaciones para uno o más clientes.
++     *
++     * Valida las fechas, el tipo de habitación y la disponibilidad antes de guardar las reservas.
++     * Para las habitaciones tipo SUITE, se reserva la habitación específica solicitada.
++     * Para las habitaciones tipo INDIVIDUAL o DOBLE, se asignan automáticamente habitaciones
++     * disponibles del tipo solicitado.
++     *
++     * Validaciones realizadas:
++     * - La fecha de salida debe ser posterior a la fecha de entrada.
++     * - La fecha de entrada no puede ser anterior a la fecha actual.
++     * - El tipo de habitación debe ser válido (SUITE, INDIVIDUAL o DOBLE).
++     * - El cliente debe existir en el sistema.
++     * - Debe haber habitaciones disponibles del tipo solicitado para las fechas indicadas.
++     * - Para SUITE, no debe haber solapamiento con otras reservas en la misma habitación.
++     * - Para INDIVIDUAL/DOBLE, debe haber suficientes habitaciones disponibles según la cantidad solicitada.
++     *
++     * @param request Lista de objetos {@link RoomBookingRequest} con los datos de las reservas a crear.
++     *                Cada solicitud contiene: id_cliente, id_habitacion, tipo, fechaEntrada, fechaSalida y cantidad.
++     *
++     * @throws IllegalArgumentException Si:
++     *         - Las fechas no cumplen con las validaciones (salida no posterior a entrada,
++     *           o entrada anterior a la fecha actual).
++     *         - El tipo de habitación es nulo o inválido.
++     *         - El cliente (id_cliente) no existe en el sistema.
++     *         - Para SUITE: No existe habitación con el ID y tipo SUITE especificados,
++     *           o hay solapamiento con otras reservas en las fechas indicadas.
++     *         - Para INDIVIDUAL/DOBLE: No hay suficientes habitaciones disponibles del tipo
++     *           y cantidad solicitadas para las fechas indicadas.
++     */
+     @Transactional()
+     public void create(List<RoomBookingRequest> request) {
+ 
+@@ -55,6 +92,19 @@
+ 
+     }
+ 
++    /**
++     * Realiza la reserva de una habitación tipo SUITE.
++     *
++     * Valida que la habitación SUITE exista y no tenga solapamientos de reservas
++     * en el período especificado. Crea la reserva con el precio total basado en
++     * el precio por noche de la habitación.
++     *
++     * @param roomBookingRequest Datos de la solicitud de reserva con ID de habitación y fechas.
++     * @param cliente Usuario cliente que realiza la reserva.
++     *
++     * @throws IllegalArgumentException Si no existe habitación con el ID especificado
++     *                                   o si ya hay reservas solapadas para las fechas indicadas.
++     */
+     private void reservarSuits(RoomBookingRequest roomBookingRequest, User cliente) {
+         System.out.printf("Reserva SUITE: %s\n", roomBookingRequest.id_habitacion());
+         Optional<Room> habitacion = roomRepository.findByIdAndTipo(roomBookingRequest.id_habitacion(), RoomType.SUITE);
+@@ -81,6 +131,18 @@
+         roomBookingRepository.save(reserva);
+     }
+ 
++    /**
++     * Valida las fechas de entrada y salida de una solicitud de reserva.
++     *
++     * Realiza las siguientes validaciones:
++     * - La fecha de salida debe ser posterior a la fecha de entrada.
++     * - La fecha de entrada no puede ser anterior a la fecha actual.
++     *
++     * @param roomBookingRequest Solicitud de reserva con las fechas a validar.
++     *
++     * @throws IllegalArgumentException Si la fecha de salida no es posterior a la entrada,
++     *                                   o si la fecha de entrada es anterior a la fecha actual.
++     */
+     private void validarFechas(RoomBookingRequest roomBookingRequest) {
+         if(!roomBookingRequest.fechaSalida().isAfter(roomBookingRequest.fechaEntrada())) {
+             throw new IllegalArgumentException("La fecha de salida debe de ser posterior a la fecha de entrada.");
+@@ -92,6 +154,19 @@
+ 
+     }
+ 
++    /**
++     * Realiza la reserva de una o más habitaciones tipo INDIVIDUAL o DOBLE.
++     *
++     * Busca habitaciones disponibles del tipo solicitado en el período especificado.
++     * Asigna automáticamente habitaciones disponibles (la cantidad solicitada) al cliente.
++     * Cada habitación se reserva con el precio total basado en su precio por noche.
++     *
++     * @param roomBookingRequest Datos de la solicitud con tipo, fechas, cantidad y cliente.
++     * @param cliente Usuario cliente que realiza la reserva.
++     *
++     * @throws IllegalArgumentException Si no hay habitaciones disponibles del tipo solicitado
++     *                                   en la cantidad requerida para las fechas indicadas.
++     */
+     private void reservarSimples(RoomBookingRequest roomBookingRequest, User cliente) {
+ 
+         List<Room> disponiblesTotal = roomRepository.findRoomDisponibles(roomBookingRequest.fechaEntrada(), roomBookingRequest.fechaSalida());
+@@ -120,58 +195,62 @@
+             roomBookingRepository.save(reserva);
+         }
+ 
+-
+-
+-
+-
+-
+     }
+ 
+-
+-
+-    /*
+-    // Actualizar reserva
+-    public RoomBookingResponse update(Long id, RoomBookingRequest request) {
+-
+-
+-
+-        RoomBooking booking = roomBookingRepository.findById(id)
+-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+-
+-        Room room = roomRepository.findById(request.habitacionId())
+-                .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
+-
+-        roomBookingMapper.updateEntityFromRequest(request, booking);
+-
+-        booking.setHabitacion(room);
+-        booking.setPrecioTotal(calcularPrecio(room, request.checkIn(), request.checkOut()));
+-
+-        return roomBookingMapper.toResponse(booking);
+-    }
+-    
+-*/
+-
+-//  Eliminar reserva
+-public void delete(Long id, Long userId) {
++    /**
++     * Elimina una reserva específica, verificando que el usuario sea el propietario.
++     *
++     * Realiza validaciones de seguridad:
++     * - Verifica que la reserva exista en el sistema.
++     * - Verifica que el usuario esté autenticado (userId no nulo).
++     * - Verifica que el usuario sea el propietario de la reserva (cliente).
++     *
++     * Solo el cliente que realizó la reserva puede cancelarla. Los administradores
++     * u otros usuarios no pueden cancelar reservas ajenas.
++     *
++     * @param id Identificador único de la reserva a eliminar.
++     * @param userId Identificador del usuario que realiza la eliminación (debe ser el propietario).
++     *
++     * @throws ResponseStatusException con código 404 (Not Found) si la reserva no existe.
++     * @throws ResponseStatusException con código 401 (Unauthorized) si userId es nulo
++     *                                   (usuario no autenticado).
++     * @throws ResponseStatusException con código 403 (Forbidden) si el userId no coincide
++     *                                   con el ID del cliente propietario de la reserva.
++     */
++    public void delete(Long id, Long userId) {
+ 
+-    RoomBooking booking = roomBookingRepository.findById(id)
+-            .orElseThrow(() -> new ResponseStatusException(
+-                    HttpStatus.NOT_FOUND, "Reserva no encontrada"));
++        RoomBooking booking = roomBookingRepository.findById(id)
++                .orElseThrow(() -> new ResponseStatusException(
++                        HttpStatus.NOT_FOUND, "Reserva no encontrada"));
+ 
+-    if (userId == null) {
+-        throw new ResponseStatusException(
+-                HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
+-    }
++        if (userId == null) {
++            throw new ResponseStatusException(
++                    HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
++        }
+ 
+-    if (!booking.getCliente().getId().equals(userId)) {
+-        throw new ResponseStatusException(
+-                HttpStatus.FORBIDDEN, "No puedes cancelar esta reserva");
+-    }
++        if (!booking.getCliente().getId().equals(userId)) {
++            throw new ResponseStatusException(
++                    HttpStatus.FORBIDDEN, "No puedes cancelar esta reserva");
++        }
+ 
+-    roomBookingRepository.deleteById(id);
+-}
++        roomBookingRepository.deleteById(id);
++     }
+ 
+-    //  Buscar por cliente
++    /**
++     * Obtiene todas las reservas asociadas a un cliente específico.
++     *
++     * Recupera todas las reservas del cliente ordenadas por fecha de creación
++     * o según la lógica del repositorio. Las reservas se mapean a objetos
++     * {@link RoomBookingResponse} para ser retornadas.
++     *
++     * Este método es de solo lectura (readOnly = true) para optimizar
++     * el rendimiento en consultas sin necesidad de transacción completa.
++     *
++     * @param clienteId Identificador único del cliente cuyas reservas se desean obtener.
++     *
++     * @return Lista de objetos {@link RoomBookingResponse} con todas las reservas del cliente.
++     *         Puede retornar una lista vacía si el cliente no tiene reservas.
++     */
+     @Transactional(readOnly = true)
+     public List<RoomBookingResponse> findByClienteId(Long clienteId) {
+         return roomBookingRepository.findByClienteId(clienteId)
+@@ -180,20 +259,7 @@
+                 .toList();
+     }
+ 
+-    /*
+-    //  Buscar por habitación
+-    @Transactional(readOnly = true)
+-    public List<RoomBookingResponse> findByHabitacionId(Long habitacionId) {
+-        return roomBookingRepository.findByHabitacionId(habitacionId)
+-                .stream()
+-                .map(roomBookingMapper::toResponse)
+-                .toList();
+-    }
+-    private Double calcularPrecio(Room room, java.time.LocalDate checkIn, java.time.LocalDate checkOut) {
+-        long dias = ChronoUnit.DAYS.between(checkIn, checkOut);
+-        return (double) (dias * room.getPrecioPorNoche());
+-    }
+-    */
++
+ 
+ 
+ }
+Index: server/src/main/java/com/example/deusto_hotel/controller/RoomController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.controller;\n\nimport com.example.deusto_hotel.dto.RoomDisponibleResponse;\nimport com.example.deusto_hotel.dto.RoomRequest;\nimport com.example.deusto_hotel.dto.RoomResponse;\nimport com.example.deusto_hotel.service.RoomService;\nimport lombok.RequiredArgsConstructor;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.*;\n\nimport jakarta.validation.Valid;\n\nimport java.time.LocalDate;\nimport java.util.List;\n\n@RestController\n@RequestMapping(\"/api/v1/rooms\")\n@RequiredArgsConstructor\npublic class RoomController {\n\n    private static final Logger log = LoggerFactory.getLogger(RoomController.class);\n    private final RoomService roomService;\n\n    /*\n    @GetMapping\n    public ResponseEntity<List<RoomResponse>> getAll() {\n        return ResponseEntity.ok(roomService.findAll());\n    }\n\n    @GetMapping(\"/{id}\")\n    public ResponseEntity<RoomResponse> getById(@PathVariable Long id) {\n        return ResponseEntity.ok(roomService.findById(id));\n    }\n     */\n\n    @PostMapping\n    public ResponseEntity<RoomResponse> create(\n            @RequestBody @Valid RoomRequest request\n    ) {\n        RoomResponse created = roomService.create(request);\n        log.info(\"Habitación creada: {}\", created);\n\n        return ResponseEntity.status(201).body(created);\n    }\n\n    /*\n    @PutMapping(\"/{id}\")\n    public ResponseEntity<RoomResponse> update(\n            @PathVariable Long id,\n            @RequestBody @Valid RoomRequest request) {\n\n        return ResponseEntity.ok(roomService.update(id, request));\n    }\n    */\n\n    @DeleteMapping(\"/{id}\")\n    public ResponseEntity<Void> delete(@PathVariable Long id) {\n        roomService.delete(id);\n        return ResponseEntity.noContent().build();\n    }\n\n    @GetMapping(\"/disponibles\")\n    public ResponseEntity<List<RoomDisponibleResponse>> getByDisponibles(\n            @RequestParam LocalDate fechaEntrada,\n            @RequestParam LocalDate fechaSalida) {\n\n        if(!fechaEntrada.isBefore(fechaSalida)) {\n            throw new IllegalArgumentException(\"La fecha de salida debe de ser posterior a la fecha de entrada.\");\n\n        } else if(fechaEntrada.isBefore(LocalDate.now())) {\n            throw new IllegalArgumentException(\"La fecha de entrada no puede ser anterior a la fecha actual.\");\n\n        }\n\n        return ResponseEntity.ok(\n                roomService.getDisponibles(fechaEntrada, fechaSalida)\n        );\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/controller/RoomController.java b/server/src/main/java/com/example/deusto_hotel/controller/RoomController.java
+--- a/server/src/main/java/com/example/deusto_hotel/controller/RoomController.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/controller/RoomController.java	(date 1778749031063)
+@@ -4,6 +4,13 @@
+ import com.example.deusto_hotel.dto.RoomRequest;
+ import com.example.deusto_hotel.dto.RoomResponse;
+ import com.example.deusto_hotel.service.RoomService;
++import io.swagger.v3.oas.annotations.Operation;
++import io.swagger.v3.oas.annotations.Parameter;
++import io.swagger.v3.oas.annotations.media.Content;
++import io.swagger.v3.oas.annotations.media.Schema;
++import io.swagger.v3.oas.annotations.responses.ApiResponse;
++import io.swagger.v3.oas.annotations.responses.ApiResponses;
++import io.swagger.v3.oas.annotations.tags.Tag;
+ import lombok.RequiredArgsConstructor;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+@@ -15,27 +22,70 @@
+ import java.time.LocalDate;
+ import java.util.List;
+ 
++/**
++ * Controlador REST para la gestión de habitaciones del hotel.
++ *
++ * Proporciona endpoints para crear, eliminar y consultar habitaciones,
++ * así como para obtener habitaciones disponibles en un rango de fechas.
++ *
++ * @author Deusto Hotel Team
++ * @version 1.0
++ */
+ @RestController
+ @RequestMapping("/api/v1/rooms")
+ @RequiredArgsConstructor
++@Tag(name = "Rooms", description = "Gestión de habitaciones del hotel")
+ public class RoomController {
+ 
+     private static final Logger log = LoggerFactory.getLogger(RoomController.class);
+     private final RoomService roomService;
+ 
+-    /*
+-    @GetMapping
+-    public ResponseEntity<List<RoomResponse>> getAll() {
+-        return ResponseEntity.ok(roomService.findAll());
+-    }
+-
+-    @GetMapping("/{id}")
+-    public ResponseEntity<RoomResponse> getById(@PathVariable Long id) {
+-        return ResponseEntity.ok(roomService.findById(id));
+-    }
++    /**
++     * Crea una nueva habitación en el sistema.
++     *
++     * Valida que no exista una habitación con el mismo número y que el tipo
++     * de habitación sea válido (SUITE, INDIVIDUAL, DOBLE). Si alguna validación
++     * falla, se lanzará una {@link IllegalArgumentException} que será convertida
++     * a una respuesta HTTP 400 (Bad Request).
++     *
++     * @param request Objeto {@link RoomRequest} con los datos de la habitación a crear.
++     *                Contiene los campos: numero, tipo, capacidad y precioPorNoche.
++     *                Debe cumplir con las validaciones definidas en RoomRequest.
++     *
++     * @return {@link ResponseEntity} con código HTTP 201 (Created) y el cuerpo contiene
++     *         un {@link RoomResponse} con los datos de la habitación creada,
++     *         incluyendo su ID asignado automáticamente.
++     *
++     * @throws IllegalArgumentException Si ya existe una habitación con el número proporcionado,
++     *                                   o si el tipo de habitación no es válido.
++     *                                   Genera respuesta HTTP 400 (Bad Request).
++     *
++     * @throws jakarta.validation.ConstraintViolationException Si los parámetros de request
++     *                                                         no cumplen con las restricciones
++     *                                                         de validación definidas.
++     *                                                         Genera respuesta HTTP 400 (Bad Request).
+      */
+-
+     @PostMapping
++    @Operation(
++        summary = "Crear una nueva habitación",
++        description = "Crea una nueva habitación en el sistema con los datos proporcionados. " +
++                      "Valida que no exista una habitación con el mismo número y que el tipo sea válido."
++    )
++    @ApiResponses(value = {
++        @ApiResponse(
++            responseCode = "201",
++            description = "Habitación creada exitosamente",
++            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RoomResponse.class))
++        ),
++        @ApiResponse(
++            responseCode = "400",
++            description = "Error en la solicitud: número de habitación duplicado, tipo inválido o validación fallida"
++        ),
++        @ApiResponse(
++            responseCode = "500",
++            description = "Error interno del servidor"
++        )
++    })
+     public ResponseEntity<RoomResponse> create(
+             @RequestBody @Valid RoomRequest request
+     ) {
+@@ -45,26 +95,113 @@
+         return ResponseEntity.status(201).body(created);
+     }
+ 
+-    /*
+-    @PutMapping("/{id}")
+-    public ResponseEntity<RoomResponse> update(
+-            @PathVariable Long id,
+-            @RequestBody @Valid RoomRequest request) {
+-
+-        return ResponseEntity.ok(roomService.update(id, request));
+-    }
+-    */
+-
++    /**
++     * Elimina una habitación existente del sistema.
++     *
++     * Si la habitación con el ID proporcionado no existe, se lanzará una
++     * {@link RuntimeException} que será convertida a una respuesta HTTP 400 (Bad Request).
++     *
++     * @param id Identificador único de la habitación a eliminar. Debe ser un valor positivo.
++     *
++     * @return {@link ResponseEntity} con código HTTP 204 (No Content).
++     *         No incluye un cuerpo en la respuesta.
++     *
++     * @throws RuntimeException Si la habitación con el ID especificado no existe.
++     *                          Genera respuesta HTTP 400 (Bad Request).
++     */
+     @DeleteMapping("/{id}")
+-    public ResponseEntity<Void> delete(@PathVariable Long id) {
++    @Operation(
++        summary = "Eliminar una habitación",
++        description = "Elimina una habitación del sistema por su identificador único."
++    )
++    @ApiResponses(value = {
++        @ApiResponse(
++            responseCode = "204",
++            description = "Habitación eliminada exitosamente"
++        ),
++        @ApiResponse(
++            responseCode = "400",
++            description = "Error: Habitación no encontrada"
++        ),
++        @ApiResponse(
++            responseCode = "500",
++            description = "Error interno del servidor"
++        )
++    })
++    public ResponseEntity<Void> delete(
++            @Parameter(description = "ID único de la habitación a eliminar", required = true)
++            @PathVariable Long id
++    ) {
+         roomService.delete(id);
+         return ResponseEntity.noContent().build();
+     }
+ 
++    /**
++     * Obtiene la lista de habitaciones disponibles en un rango de fechas específico.
++     *
++     * Devuelve todas las habitaciones que no tienen reservas que se solapen con el
++     * rango de fechas proporcionado (desde fechaEntrada hasta fechaSalida).
++     *
++     * Validaciones:
++     * - La fecha de salida debe ser posterior a la fecha de entrada.
++     * - La fecha de entrada no puede ser anterior a la fecha actual.
++     *
++     * Si alguna validación falla, se lanzará una {@link IllegalArgumentException}.
++     *
++     * @param fechaEntrada Fecha de entrada solicitada (inclusive). Formato: yyyy-MM-dd.
++     *                     Debe ser igual o posterior a la fecha actual.
++     *
++     * @param fechaSalida Fecha de salida solicitada (inclusive). Formato: yyyy-MM-dd.
++     *                    Debe ser posterior a fechaEntrada.
++     *
++     * @return {@link ResponseEntity} con código HTTP 200 (OK) y el cuerpo contiene
++     *         una lista de {@link RoomDisponibleResponse} con las habitaciones disponibles
++     *         en el rango de fechas especificado. La lista puede estar vacía si no hay
++     *         habitaciones disponibles.
++     *
++     * @throws IllegalArgumentException Si la fecha de salida no es posterior a la fecha de entrada,
++     *                                   o si la fecha de entrada es anterior a la fecha actual.
++     *                                   Genera respuesta HTTP 400 (Bad Request).
++     */
+     @GetMapping("/disponibles")
++    @Operation(
++        summary = "Obtener habitaciones disponibles",
++        description = "Retorna una lista de habitaciones disponibles para un rango de fechas especificado. " +
++                      "Las habitaciones disponibles son aquellas sin reservas que se solapen en el período indicado."
++    )
++    @ApiResponses(value = {
++        @ApiResponse(
++            responseCode = "200",
++            description = "Lista de habitaciones disponibles obtenida exitosamente",
++            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RoomDisponibleResponse.class))
++        ),
++        @ApiResponse(
++            responseCode = "400",
++            description = "Error en los parámetros: fecha de salida debe ser posterior a entrada, " +
++                          "o fecha de entrada no puede ser anterior a la actual"
++        ),
++        @ApiResponse(
++            responseCode = "500",
++            description = "Error interno del servidor"
++        )
++    })
+     public ResponseEntity<List<RoomDisponibleResponse>> getByDisponibles(
++            @Parameter(
++                description = "Fecha de entrada (inclusive). Formato: yyyy-MM-dd. " +
++                              "Debe ser igual o posterior a la fecha actual",
++                required = true,
++                example = "2026-05-15"
++            )
+             @RequestParam LocalDate fechaEntrada,
+-            @RequestParam LocalDate fechaSalida) {
++
++            @Parameter(
++                description = "Fecha de salida (inclusive). Formato: yyyy-MM-dd. " +
++                              "Debe ser posterior a la fecha de entrada",
++                required = true,
++                example = "2026-05-20"
++            )
++            @RequestParam LocalDate fechaSalida
++    ) {
+ 
+         if(!fechaEntrada.isBefore(fechaSalida)) {
+             throw new IllegalArgumentException("La fecha de salida debe de ser posterior a la fecha de entrada.");
+Index: server/src/main/java/com/example/deusto_hotel/mapper/RoomBookingMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.mapper;\n\nimport com.example.deusto_hotel.dto.RoomBookingRequest;\nimport com.example.deusto_hotel.dto.RoomBookingResponse;\nimport com.example.deusto_hotel.model.RoomBooking;\nimport org.mapstruct.*;\n\n@Mapper(componentModel = \"spring\")\npublic interface RoomBookingMapper {\n    //  Entity → DTO de respuesta\n    @Mapping(source = \"cliente.id\", target = \"clienteId\")\n    @Mapping(source = \"cliente.nombre\", target = \"clienteNombre\")\n    @Mapping(source = \"habitacion.id\", target = \"habitacionId\")\n    @Mapping(source = \"habitacion.numero\", target = \"habitacionNumero\")\n    RoomBookingResponse toResponse(RoomBooking booking);\n\n\n}\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/mapper/RoomBookingMapper.java b/server/src/main/java/com/example/deusto_hotel/mapper/RoomBookingMapper.java
+--- a/server/src/main/java/com/example/deusto_hotel/mapper/RoomBookingMapper.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/mapper/RoomBookingMapper.java	(date 1778748350698)
+@@ -1,13 +1,22 @@
+ package com.example.deusto_hotel.mapper;
+ 
+-import com.example.deusto_hotel.dto.RoomBookingRequest;
+ import com.example.deusto_hotel.dto.RoomBookingResponse;
+ import com.example.deusto_hotel.model.RoomBooking;
+ import org.mapstruct.*;
+ 
++/**
++ * Mapeador para convertir entre entidades RoomBooking y DTOs de solicitud/respuesta.
++ * Utiliza MapStruct para generar las implementaciones de mapeo automáticamente.
++ */
+ @Mapper(componentModel = "spring")
+ public interface RoomBookingMapper {
+     //  Entity → DTO de respuesta
++    /**
++     * Convierte una entidad RoomBooking a un DTO de respuesta.
++     * Mapea los datos de la reserva, cliente y habitación al DTO de respuesta.
++     * @param booking La entidad RoomBooking a convertir
++     * @return El DTO de respuesta mapeado con los datos de la reserva
++     */
+     @Mapping(source = "cliente.id", target = "clienteId")
+     @Mapping(source = "cliente.nombre", target = "clienteNombre")
+     @Mapping(source = "habitacion.id", target = "habitacionId")
+Index: server/src/main/java/com/example/deusto_hotel/mapper/RoomMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.mapper;\n\nimport com.example.deusto_hotel.dto.RoomDisponibleResponse;\nimport com.example.deusto_hotel.dto.RoomDisponiblesSimplesResponse;\nimport com.example.deusto_hotel.dto.RoomDisponiblesSuitResponse;\nimport com.example.deusto_hotel.dto.SuitResponse;\nimport com.example.deusto_hotel.model.Room;\nimport com.example.deusto_hotel.model.RoomType;\nimport org.mapstruct.Mapper;\n\nimport java.util.ArrayList;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\n@Mapper(componentModel = \"spring\")\npublic abstract class RoomMapper {\n\n    public abstract SuitResponse suitToSuitResponse(Room room);\n\n    public List<RoomDisponibleResponse> toRoomDisponiblesResponse(List<Room> rooms) {\n\n        if (rooms == null) {\n            return new ArrayList<>();\n        }\n\n        Map<RoomType, List<Room>> map = rooms.stream().collect(\n                java.util.stream.Collectors.groupingBy(Room::getTipo)\n        );\n\n        List<RoomDisponibleResponse> response = new ArrayList<>();\n\n        map.forEach((tipo, disponibles) -> {\n            if (tipo.equals(RoomType.SUITE)){\n                List<SuitResponse> suits = disponibles.stream().map(this::suitToSuitResponse).toList();\n                response.add(new RoomDisponiblesSuitResponse(tipo, suits));\n            } else {\n                response.add(new RoomDisponiblesSimplesResponse(tipo, disponibles.size()));\n            }\n        });\n\n        return response;\n    }\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/mapper/RoomMapper.java b/server/src/main/java/com/example/deusto_hotel/mapper/RoomMapper.java
+--- a/server/src/main/java/com/example/deusto_hotel/mapper/RoomMapper.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/mapper/RoomMapper.java	(date 1778749606598)
+@@ -13,11 +13,40 @@
+ import java.util.List;
+ import java.util.Map;
+ 
++/**
++ * Mapper para la transformación de entidades {@link Room} a objetos DTO.
++ *
++ * Proporciona métodos para convertir habitaciones en respuestas disponibles,
++ * agrupándolas por tipo (Suites simples) y aplicando lógica de negocio
++ * según el tipo de habitación.
++ *
++ * @author DeustoHotel
++ * @version 1.0
++ */
+ @Mapper(componentModel = "spring")
+ public abstract class RoomMapper {
+ 
++    /**
++     * Convierte una entidad {@link Room} de tipo Suite a su correspondiente {@link SuitResponse}.
++     *
++     * Este método es abstracto y la implementación se genera automáticamente por MapStruct.
++     *
++     * @param room la habitación de tipo Suite a convertir
++     * @return {@link SuitResponse} con los datos de la suite convertidos, o null si room es null
++     */
+     public abstract SuitResponse suitToSuitResponse(Room room);
+ 
++    /**
++     * Convierte una lista de habitaciones disponibles en respuestas agrupadas por tipo.
++     *
++     * Agrupa las habitaciones por su tipo ({@link RoomType}). Para las suites, crea una
++     * lista de {@link SuitResponse}. Para otros tipos de habitaciones, solo cuenta la
++     * cantidad disponible.
++     *
++     * @param rooms lista de habitaciones disponibles a convertir
++     * @return lista de {@link RoomDisponibleResponse} agrupadas y formateadas por tipo.
++     *         Retorna una lista vacía si el parámetro rooms es null.
++     */
+     public List<RoomDisponibleResponse> toRoomDisponiblesResponse(List<Room> rooms) {
+ 
+         if (rooms == null) {
+Index: server/src/main/java/com/example/deusto_hotel/controller/RoomBookingController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.controller;\n\nimport com.example.deusto_hotel.dto.RoomBookingRequest;\nimport com.example.deusto_hotel.dto.RoomBookingResponse;\nimport com.example.deusto_hotel.model.RoomType;\nimport com.example.deusto_hotel.service.RoomBookingService;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.*;\n\nimport jakarta.validation.Valid;\nimport org.springframework.web.server.ResponseStatusException;\n\nimport java.net.URI;\nimport java.util.List;\n\n@RestController\n@RequestMapping(\"/api/v1/room-bookings\")\n@RequiredArgsConstructor\npublic class RoomBookingController {\n\n    private final RoomBookingService roomBookingService;\n\n    // Crear\n    @PostMapping\n    public ResponseEntity<Void> create(@RequestBody @Valid List<RoomBookingRequest> request) {\n        request.forEach(RoomBookingRequest::validate);\n\n        roomBookingService.create(request);\n\n        return ResponseEntity.status(HttpStatus.CREATED).build();\n    }\n\n\n\n    /*\n\n    //  Actualizar\n    @PutMapping(\"/{id}\")\n    public ResponseEntity<RoomBookingResponse> update(\n            @PathVariable Long id,\n            @RequestBody @Valid RoomBookingRequest request) {\n\n        return ResponseEntity.ok(roomBookingService.update(id, request));\n    }\n    */\n\n    //  Eliminar\n    @DeleteMapping(\"/{id}\")\n    public ResponseEntity<Void> delete(\n            @PathVariable Long id,\n            @RequestParam Long userId\n    ) {\n\n        roomBookingService.delete(id, userId);\n\n        return ResponseEntity.noContent().build();\n    }\n\n    // Buscar por cliente\n    @GetMapping(\"/cliente/{clienteId}\")\n    public ResponseEntity<List<RoomBookingResponse>> getByClienteId(@PathVariable Long clienteId) {\n        return ResponseEntity.ok(roomBookingService.findByClienteId(clienteId));\n    }\n\n    /*\n    // Buscar por habitación\n    @GetMapping(\"/habitacion/{habitacionId}\")\n    public ResponseEntity<List<RoomBookingResponse>> getByHabitacionId(@PathVariable Long habitacionId) {\n        return ResponseEntity.ok(roomBookingService.findByHabitacionId(habitacionId));\n    }\n    */\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/controller/RoomBookingController.java b/server/src/main/java/com/example/deusto_hotel/controller/RoomBookingController.java
+--- a/server/src/main/java/com/example/deusto_hotel/controller/RoomBookingController.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/controller/RoomBookingController.java	(date 1778749330656)
+@@ -2,29 +2,100 @@
+ 
+ import com.example.deusto_hotel.dto.RoomBookingRequest;
+ import com.example.deusto_hotel.dto.RoomBookingResponse;
+-import com.example.deusto_hotel.model.RoomType;
+ import com.example.deusto_hotel.service.RoomBookingService;
++import io.swagger.v3.oas.annotations.Operation;
++import io.swagger.v3.oas.annotations.Parameter;
++import io.swagger.v3.oas.annotations.media.Content;
++import io.swagger.v3.oas.annotations.media.Schema;
++import io.swagger.v3.oas.annotations.responses.ApiResponse;
++import io.swagger.v3.oas.annotations.responses.ApiResponses;
++import io.swagger.v3.oas.annotations.tags.Tag;
+ import lombok.RequiredArgsConstructor;
+ import org.springframework.http.HttpStatus;
+ import org.springframework.http.ResponseEntity;
+ import org.springframework.web.bind.annotation.*;
+-
+-import jakarta.validation.Valid;
+ import org.springframework.web.server.ResponseStatusException;
+ 
+-import java.net.URI;
++import jakarta.validation.Valid;
++
+ import java.util.List;
+ 
++/**
++ * Controlador REST para la gestión de reservas de habitaciones del hotel.
++ *
++ * Proporciona endpoints para crear, eliminar y consultar reservas de habitaciones.
++ * Gestiona las solicitudes HTTP y delega la lógica de negocio al servicio de reservas.
++ *
++ * @author Deusto Hotel Team
++ * @version 1.0
++ */
+ @RestController
+ @RequestMapping("/api/v1/room-bookings")
+ @RequiredArgsConstructor
++@Tag(name = "Room Booking", description = "Gestión de reservas de habitaciones del hotel")
+ public class RoomBookingController {
+ 
+     private final RoomBookingService roomBookingService;
+ 
+-    // Crear
++    /**
++     * Crea una lista de reservas de habitaciones para uno o múltiples clientes.
++     *
++     * Valida todas las solicitudes de reserva before processing, validando:
++     * - Las fechas de entrada y salida son válidas (salida posterior a entrada, entrada no anterior a hoy)
++     * - El tipo de habitación es válido (SUITE, INDIVIDUAL o DOBLE)
++     * - El cliente existe en el sistema
++     * - Para SUITE: La habitación específica existe y no tiene conflictos de disponibilidad
++     * - Para INDIVIDUAL/DOBLE: Hay suficientes habitaciones disponibles del tipo solicitado
++     *
++     * Si alguna validación falla, se lanzará una {@link IllegalArgumentException} que será
++     * convertida a una respuesta HTTP 400 (Bad Request).
++     *
++     * @param request Lista de objetos {@link RoomBookingRequest} que contienen los datos de las
++     *                habitaciones a reservar. Cada solicitud debe incluir: id_cliente, id_habitacion,
++     *                tipo, fechaEntrada, fechaSalida y cantidad.
++     *
++     * @return {@link ResponseEntity} con código HTTP 201 (Created).
++     *         No incluye un cuerpo en la respuesta.
++     *
++     * @throws IllegalArgumentException Si:
++     *         - Las fechas no cumplen validaciones (salida no posterior a entrada,
++     *           o entrada anterior a la fecha actual).
++     *         - El tipo de habitación es nulo o inválido.
++     *         - El cliente (id_cliente) no existe en el sistema.
++     *         - Para SUITE: No existe habitación con el ID/tipo especificados,
++     *           o hay solapamiento con otras reservas.
++     *         - Para INDIVIDUAL/DOBLE: No hay suficientes habitaciones disponibles.
++     *         Genera respuesta HTTP 400 (Bad Request).
++     *
++     * @throws jakarta.validation.ConstraintViolationException Si los parámetros de request
++     *                                                         no cumplen con las restricciones
++     *                                                         de validación de Jakarta.
++     *                                                         Genera respuesta HTTP 400 (Bad Request).
++     */
+     @PostMapping
+-    public ResponseEntity<Void> create(@RequestBody @Valid List<RoomBookingRequest> request) {
++    @Operation(
++        summary = "Crear reservas de habitaciones",
++        description = "Crea una lista de reservas de habitaciones validando disponibilidad, datos de cliente " +
++                      "y fechas. Soporta reservas de SUITE (habitación específica) e INDIVIDUAL/DOBLE (asignación automática)."
++    )
++    @ApiResponses(value = {
++        @ApiResponse(
++            responseCode = "201",
++            description = "Reservas creadas exitosamente"
++        ),
++        @ApiResponse(
++            responseCode = "400",
++            description = "Error en la solicitud: fechas inválidas, tipo de habitación inválido, " +
++                          "cliente no encontrado, habitación no disponible, o no hay suficientes habitaciones"
++        ),
++        @ApiResponse(
++            responseCode = "500",
++            description = "Error interno del servidor"
++        )
++    })
++    public ResponseEntity<Void> create(
++            @RequestBody @Valid List<RoomBookingRequest> request
++    ) {
+         request.forEach(RoomBookingRequest::validate);
+ 
+         roomBookingService.create(request);
+@@ -32,24 +103,75 @@
+         return ResponseEntity.status(HttpStatus.CREATED).build();
+     }
+ 
+-
+-
+-    /*
+-
+-    //  Actualizar
+-    @PutMapping("/{id}")
+-    public ResponseEntity<RoomBookingResponse> update(
+-            @PathVariable Long id,
+-            @RequestBody @Valid RoomBookingRequest request) {
+-
+-        return ResponseEntity.ok(roomBookingService.update(id, request));
+-    }
+-    */
+-
+-    //  Eliminar
++    /**
++     * Elimina una reserva específica, validando que el usuario sea el propietario.
++     *
++     * Realiza validaciones de seguridad:
++     * - Verifica que la reserva exista en el sistema.
++     * - Verifica que el usuario esté autenticado (userId no nulo).
++     * - Verifica que el usuario sea el cliente propietario de la reserva.
++     *
++     * Solo el cliente propietario puede cancelar su reserva. Si el ID del usuario
++     * no coincide con el del cliente que realizó la reserva, la operación será rechazada
++     * con código HTTP 403 (Forbidden).
++     *
++     * @param id Identificador único de la reserva a eliminar. Debe ser un valor válido y existente.
++     *
++     * @param userId Identificador del usuario que realiza la eliminación (cliente propietario).
++     *               Debe coincidir con el ID del cliente que realizó la reserva.
++     *
++     * @return {@link ResponseEntity} con código HTTP 204 (No Content).
++     *         No incluye un cuerpo en la respuesta.
++     *
++     * @throws ResponseStatusException con código 404 (Not Found) si la reserva con el ID
++     *                                   especificado no existe.
++     * @throws ResponseStatusException con código 401 (Unauthorized) si userId es nulo
++     *                                   (usuario no autenticado).
++     * @throws ResponseStatusException con código 403 (Forbidden) si el userId no coincide
++     *                                   con el ID del cliente propietario de la reserva.
++     */
+     @DeleteMapping("/{id}")
++    @Operation(
++        summary = "Eliminar una reserva de habitación",
++        description = "Elimina una reserva específica verificando que el usuario autenticado sea el propietario/cliente. " +
++                      "Solo el cliente que realizó la reserva puede cancelarla."
++    )
++    @ApiResponses(value = {
++        @ApiResponse(
++            responseCode = "204",
++            description = "Reserva eliminada exitosamente"
++        ),
++        @ApiResponse(
++            responseCode = "404",
++            description = "Error: Reserva no encontrada"
++        ),
++        @ApiResponse(
++            responseCode = "401",
++            description = "Error: Usuario no autenticado"
++        ),
++        @ApiResponse(
++            responseCode = "403",
++            description = "Error: No tienes permisos para cancelar esta reserva (no eres el propietario)"
++        ),
++        @ApiResponse(
++            responseCode = "500",
++            description = "Error interno del servidor"
++        )
++    })
+     public ResponseEntity<Void> delete(
++            @Parameter(
++                description = "ID único de la reserva a eliminar",
++                required = true,
++                example = "1"
++            )
+             @PathVariable Long id,
++
++            @Parameter(
++                description = "ID del usuario (cliente) que realiza la eliminación. " +
++                              "Debe ser el propietario de la reserva",
++                required = true,
++                example = "123"
++            )
+             @RequestParam Long userId
+     ) {
+ 
+@@ -58,17 +180,44 @@
+         return ResponseEntity.noContent().build();
+     }
+ 
+-    // Buscar por cliente
++    /**
++     * Obtiene todas las reservas asociadas a un cliente específico.
++     *
++     * Recupera la lista completa de reservas realizadas por el cliente especificado.
++     * Las reservas se retornan en un objeto {@link RoomBookingResponse} mapeado desde
++     * la entidad interna del modelo.
++     *
++     * @param clienteId Identificador único del cliente cuyas reservas se desean obtener.
++     *
++     * @return {@link ResponseEntity} con código HTTP 200 (OK) y el cuerpo contiene una
++     *         lista de {@link RoomBookingResponse} con todas las reservas del cliente.
++     *         Puede retornar una lista vacía si el cliente no tiene reservas.
++     */
+     @GetMapping("/cliente/{clienteId}")
+-    public ResponseEntity<List<RoomBookingResponse>> getByClienteId(@PathVariable Long clienteId) {
++    @Operation(
++        summary = "Obtener reservas por cliente",
++        description = "Retorna todas las reservas de habitaciones realizadas por un cliente específico."
++    )
++    @ApiResponses(value = {
++        @ApiResponse(
++            responseCode = "200",
++            description = "Reservas obtenidas exitosamente",
++            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RoomBookingResponse.class))
++        ),
++        @ApiResponse(
++            responseCode = "500",
++            description = "Error interno del servidor"
++        )
++    })
++    public ResponseEntity<List<RoomBookingResponse>> getByClienteId(
++            @Parameter(
++                description = "ID único del cliente cuyas reservas se desean obtener",
++                required = true,
++                example = "123"
++            )
++            @PathVariable Long clienteId
++    ) {
+         return ResponseEntity.ok(roomBookingService.findByClienteId(clienteId));
+     }
+ 
+-    /*
+-    // Buscar por habitación
+-    @GetMapping("/habitacion/{habitacionId}")
+-    public ResponseEntity<List<RoomBookingResponse>> getByHabitacionId(@PathVariable Long habitacionId) {
+-        return ResponseEntity.ok(roomBookingService.findByHabitacionId(habitacionId));
+-    }
+-    */
+ }
+Index: server/src/main/java/com/example/deusto_hotel/model/Room.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.model;\n\nimport jakarta.persistence.*;\nimport lombok.*;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\n@Entity\n@Table(name = \"rooms\")\n@Getter\n@Setter\n@NoArgsConstructor\npublic class Room {\n\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n\n    @Column(nullable = false, unique = true)\n    private String numero;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false)\n    private RoomType tipo;\n\n    @Column(nullable = true)\n    private int capacidad;\n\n    @Column(nullable = true)\n    private int precioPorNoche;\n\n    @Enumerated(EnumType.STRING)\n    @Column(nullable = false)\n    private RoomStatus estado = RoomStatus.DISPONIBLE;\n\n    @OneToMany(mappedBy = \"habitacion\", cascade = CascadeType.ALL)\n    private List<RoomBooking> roomBookings = new ArrayList<>();\n\n    public Room(Long id, RoomType roomType) {\n        this.capacidad = 1;\n        this.precioPorNoche = 1;\n        this.id = id;\n        this.tipo = roomType;\n        this.numero = String.valueOf(id);\n        this.estado = RoomStatus.DISPONIBLE;\n\n    }\n    public void setCapacidad(int capacidad) {\n        if(!this.tipo.equals(RoomType.SUITE)){\n            throw new IllegalArgumentException(\"No se puede establecer capacidad para habitaciones que no son SUITE\");\n        }\n        this.capacidad = capacidad;\n    }\n\n    public int getCapacidad() {\n        if(this.tipo.equals(RoomType.SUITE)){\n            return capacidad;\n        } else {\n            return tipo.getCapacidad();\n        }\n    }\n\n    public int getPrecioPorNoche() {\n        if(!this.tipo.equals(RoomType.SUITE)){\n            return tipo.getPrecioPorNoche();\n        }\n        return this.precioPorNoche;\n    }\n\n    public void setPrecioPorNoche(int precioPorNoche) {\n        if(!this.tipo.equals(RoomType.SUITE)){\n            throw new IllegalArgumentException(\"No se puede establecer precio para habitaciones que no son SUITE\");\n        }\n\n        this.precioPorNoche = precioPorNoche;\n    }\n\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/model/Room.java b/server/src/main/java/com/example/deusto_hotel/model/Room.java
+--- a/server/src/main/java/com/example/deusto_hotel/model/Room.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/model/Room.java	(date 1778749972665)
+@@ -6,6 +6,26 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
++/**
++ * Entidad que representa una habitación en el hotel.
++ * <p>
++ * Esta clase modela las habitaciones del sistema de gestión hotelera, permitiendo
++ * almacenar información sobre el tipo de habitación, su estado, capacidad y precio.
++ * Soporta diferentes tipos de habitaciones (SUITE y otros tipos predefinidos) con
++ * capacidades y precios específicos.
++ * </p>
++ * <p>
++ * La capacidad y el precio se pueden configurar independientemente solo para habitaciones
++ * de tipo SUITE. Para otros tipos de habitaciones, estos valores se determinan automáticamente
++ * según el tipo.
++ * </p>
++ *
++ * @author Deusto Hotel Team
++ * @version 1.0
++ * @see RoomType
++ * @see RoomStatus
++ * @see RoomBooking
++ */
+ @Entity
+ @Table(name = "rooms")
+ @Getter
+@@ -13,30 +33,47 @@
+ @NoArgsConstructor
+ public class Room {
+ 
++    /** Identificador único de la habitación. */
+     @Id
+     @GeneratedValue(strategy = GenerationType.IDENTITY)
+     private Long id;
+ 
++    /** Número de la habitación. Debe ser único. */
+     @Column(nullable = false, unique = true)
+     private String numero;
+ 
++    /** Tipo de habitación (SIMPLE, DOBLE, TRIPLE, SUITE, etc.). */
+     @Enumerated(EnumType.STRING)
+     @Column(nullable = false)
+     private RoomType tipo;
+ 
++    /** Capacidad de ocupantes de la habitación. Solo configurable para SUITE. */
+     @Column(nullable = true)
+     private int capacidad;
+ 
++    /** Precio por noche de la habitación. Solo configurable para SUITE. */
+     @Column(nullable = true)
+     private int precioPorNoche;
+ 
++    /** Estado actual de la habitación (DISPONIBLE, OCUPADA, MANTENIMIENTO). */
+     @Enumerated(EnumType.STRING)
+     @Column(nullable = false)
+     private RoomStatus estado = RoomStatus.DISPONIBLE;
+ 
++    /** Lista de reservas asociadas a esta habitación. */
+     @OneToMany(mappedBy = "habitacion", cascade = CascadeType.ALL)
+     private List<RoomBooking> roomBookings = new ArrayList<>();
+ 
++    /**
++     * Constructor que inicializa una habitación con un identificador y tipo específico.
++     * <p>
++     * Establece valores por defecto: capacidad en 1, precio en 1, número basado en el ID,
++     * y estado en DISPONIBLE.
++     * </p>
++     *
++     * @param id identificador único de la habitación
++     * @param roomType tipo de habitación
++     */
+     public Room(Long id, RoomType roomType) {
+         this.capacidad = 1;
+         this.precioPorNoche = 1;
+@@ -46,6 +83,18 @@
+         this.estado = RoomStatus.DISPONIBLE;
+ 
+     }
++
++    /**
++     * Establece la capacidad de la habitación.
++     * <p>
++     * Solo se permite establecer la capacidad para habitaciones de tipo SUITE.
++     * Para otros tipos de habitaciones, la capacidad es determinada automáticamente
++     * por el tipo y no puede ser modificada.
++     * </p>
++     *
++     * @param capacidad número de ocupantes permitidos
++     * @throws IllegalArgumentException si la habitación no es de tipo SUITE
++     */
+     public void setCapacidad(int capacidad) {
+         if(!this.tipo.equals(RoomType.SUITE)){
+             throw new IllegalArgumentException("No se puede establecer capacidad para habitaciones que no son SUITE");
+@@ -53,6 +102,15 @@
+         this.capacidad = capacidad;
+     }
+ 
++    /**
++     * Obtiene la capacidad de la habitación.
++     * <p>
++     * Para habitaciones SUITE, retorna el valor configurado específicamente.
++     * Para otros tipos de habitaciones, retorna la capacidad definida en el tipo.
++     * </p>
++     *
++     * @return capacidad de la habitación (número de ocupantes permitidos)
++     */
+     public int getCapacidad() {
+         if(this.tipo.equals(RoomType.SUITE)){
+             return capacidad;
+@@ -61,6 +119,15 @@
+         }
+     }
+ 
++    /**
++     * Obtiene el precio por noche de la habitación.
++     * <p>
++     * Para habitaciones que no son SUITE, retorna el precio definido en el tipo.
++     * Para habitaciones SUITE, retorna el valor configurado específicamente.
++     * </p>
++     *
++     * @return precio por noche en unidades monetarias
++     */
+     public int getPrecioPorNoche() {
+         if(!this.tipo.equals(RoomType.SUITE)){
+             return tipo.getPrecioPorNoche();
+@@ -68,6 +135,17 @@
+         return this.precioPorNoche;
+     }
+ 
++    /**
++     * Establece el precio por noche de la habitación.
++     * <p>
++     * Solo se permite establecer el precio para habitaciones de tipo SUITE.
++     * Para otros tipos de habitaciones, el precio es determinado automáticamente
++     * por el tipo y no puede ser modificado.
++     * </p>
++     *
++     * @param precioPorNoche precio por noche en unidades monetarias
++     * @throws IllegalArgumentException si la habitación no es de tipo SUITE
++     */
+     public void setPrecioPorNoche(int precioPorNoche) {
+         if(!this.tipo.equals(RoomType.SUITE)){
+             throw new IllegalArgumentException("No se puede establecer precio para habitaciones que no son SUITE");
+Index: server/src/main/java/com/example/deusto_hotel/repository/RoomBookingRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.deusto_hotel.repository;\n\nimport com.example.deusto_hotel.model.RoomBooking;\nimport com.example.deusto_hotel.model.RoomBookingStatus;\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport org.springframework.data.jpa.repository.Query;\nimport org.springframework.data.repository.query.Param;\nimport org.springframework.stereotype.Repository;\n\nimport java.time.LocalDate;\nimport java.util.List;\n\n@Repository\npublic interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> {\n\n    List<RoomBooking> findByClienteId(Long clienteId);\n\n    List<RoomBooking> findByHabitacionId(Long habitacionId);\n\n    List<RoomBooking> findByEstado(RoomBookingStatus estado);\n\n\n    @Query(\"SELECT r FROM RoomBooking r WHERE r.habitacion.id = :habitacionId \" +\n           \"AND r.estado != 'CANCELADA' \" +\n           \"AND r.checkIn < :checkOut AND r.checkOut > :checkIn\")\n    List<RoomBooking> findSolapamientos(@Param(\"habitacionId\") Long habitacionId,\n                                        @Param(\"checkIn\") LocalDate checkIn,\n                                        @Param(\"checkOut\") LocalDate checkOut);\n\n\n\n    List<RoomBooking> findByClienteIdAndEstado(Long clienteId,\n                                               RoomBookingStatus estado);\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/src/main/java/com/example/deusto_hotel/repository/RoomBookingRepository.java b/server/src/main/java/com/example/deusto_hotel/repository/RoomBookingRepository.java
+--- a/server/src/main/java/com/example/deusto_hotel/repository/RoomBookingRepository.java	(revision 1cb4f70026983cc9e2bc75da2079b48d02e17083)
++++ b/server/src/main/java/com/example/deusto_hotel/repository/RoomBookingRepository.java	(date 1778748279841)
+@@ -11,15 +11,42 @@
+ import java.util.List;
+ 
+ @Repository
++/**
++ * Repositorio para gestionar las operaciones de base de datos de reservas de habitaciones.
++ * Extiende JpaRepository para proporcionar operaciones CRUD básicas.
++ */
+ public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> {
+ 
++    /**
++     * Encuentra todas las reservas de un cliente específico.
++     * @param clienteId El ID del cliente
++     * @return Lista de reservas del cliente
++     */
+     List<RoomBooking> findByClienteId(Long clienteId);
+ 
++    /**
++     * Encuentra todas las reservas de una habitación específica.
++     * @param habitacionId El ID de la habitación
++     * @return Lista de reservas de la habitación
++     */
+     List<RoomBooking> findByHabitacionId(Long habitacionId);
+ 
++    /**
++     * Encuentra todas las reservas con un estado específico.
++     * @param estado El estado de la reserva
++     * @return Lista de reservas con el estado dado
++     */
+     List<RoomBooking> findByEstado(RoomBookingStatus estado);
+ 
+ 
++    /**
++     * Encuentra reservas que se solapan con las fechas dadas para una habitación específica.
++     * Excluye reservas canceladas.
++     * @param habitacionId El ID de la habitación
++     * @param checkIn La fecha de check-in
++     * @param checkOut La fecha de check-out
++     * @return Lista de reservas que se solapan
++     */
+     @Query("SELECT r FROM RoomBooking r WHERE r.habitacion.id = :habitacionId " +
+            "AND r.estado != 'CANCELADA' " +
+            "AND r.checkIn < :checkOut AND r.checkOut > :checkIn")
+@@ -29,6 +56,12 @@
+ 
+ 
+ 
++    /**
++     * Encuentra todas las reservas de un cliente específico con un estado dado.
++     * @param clienteId El ID del cliente
++     * @param estado El estado de la reserva
++     * @return Lista de reservas del cliente con el estado especificado
++     */
+     List<RoomBooking> findByClienteIdAndEstado(Long clienteId,
+                                                RoomBookingStatus estado);
+ }

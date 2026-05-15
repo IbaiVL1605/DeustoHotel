@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CourtBookingController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">com.example.deusto_hotel.controller</a> &gt; <span class="el_source">CourtBookingController.java</span></div><h1>CourtBookingController.java</h1><pre class="source lang-java linenums">package com.example.deusto_hotel.controller;
+
+import com.example.deusto_hotel.dto.CourtBookingRequest;
+import com.example.deusto_hotel.dto.CourtBookingResponse;
+import com.example.deusto_hotel.dto.RoomBookingRequest;
+import com.example.deusto_hotel.service.CourtBookingService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/v1/court-bookings&quot;)
+@RequiredArgsConstructor
+public class CourtBookingController {
+
+    private final CourtBookingService courtBookingService;
+
+    /*
+    // GET ALL
+    @GetMapping
+    public ResponseEntity&lt;List&lt;CourtBookingResponse&gt;&gt; getAll() {
+        return ResponseEntity.ok(courtBookingService.findAll());
+    }
+
+    // GET BY ID
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;CourtBookingResponse&gt; getById(@PathVariable Long id) {
+        return ResponseEntity.ok(courtBookingService.findById(id));
+    }
+     */
+
+    // CREATE
+    @PostMapping
+    public ResponseEntity&lt;CourtBookingResponse&gt; create(
+            @RequestBody @Valid CourtBookingRequest request, HttpSession session) {
+
+<span class="fc" id="L42">        CourtBookingResponse response = courtBookingService.create(request, session);</span>
+
+        // REST correcto → 201 CREATED
+<span class="fc" id="L45">        return ResponseEntity.status(HttpStatus.CREATED).body(response);</span>
+    }
+
+    // UPDATE
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;CourtBookingResponse&gt; update(
+            @PathVariable Long id,
+            @RequestBody @Valid CourtBookingRequest request) {
+
+<span class="fc" id="L54">        CourtBookingResponse response = courtBookingService.update(id, request);</span>
+<span class="fc" id="L55">        return ResponseEntity.ok(response);</span>
+    }
+
+    // DELETE
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; delete(@PathVariable Long id) {
+        // Borrar la reserva de pista
+<span class="fc" id="L62">        courtBookingService.delete(id);</span>
+
+<span class="fc" id="L64">        return ResponseEntity.noContent().build(); // 204</span>
+    }
+
+    // GET BY CLIENTE
+    @GetMapping(&quot;/cliente/{clienteId}&quot;)
+    public ResponseEntity&lt;List&lt;CourtBookingResponse&gt;&gt; getByClienteId(
+            @PathVariable Long clienteId) {
+
+<span class="fc" id="L72">        return ResponseEntity.ok(</span>
+<span class="fc" id="L73">                courtBookingService.findByClienteId(clienteId)</span>
+        );
+    }
+
+    /*
+    // GET BY PISTA
+    @GetMapping(&quot;/pista/{pistaId}&quot;)
+    public ResponseEntity&lt;List&lt;CourtBookingResponse&gt;&gt; getByPistaId(
+            @PathVariable Long pistaId) {
+
+        return ResponseEntity.ok(
+                courtBookingService.findByPistaId(pistaId)
+        );
+    }
+     */
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
