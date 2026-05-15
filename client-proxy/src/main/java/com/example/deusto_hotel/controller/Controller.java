@@ -164,6 +164,17 @@ public class Controller {
         return "redirect:/admin";
     }
 
+    @PostMapping("/admin/courts/{id}/unblock")
+    public String unblockCourtFromAdmin(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            proxy.unblockCourt(id);
+            redirectAttributes.addFlashAttribute("success", "Pista desbloqueada y disponible de nuevo.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al desbloquear: " + e.getMessage());
+        }
+        return "redirect:/admin";
+    }
+
     /*
      * @GetMapping("/reservas/nueva")
      * public String showCreateForm(Model model) {
@@ -394,6 +405,7 @@ public class Controller {
 
         return "redirect:/mis-reservas";
     }
+
     @PostMapping("/rooms/{id}/bloquear")
     public String bloquearHabitacion(
             @PathVariable Long id,
@@ -406,15 +418,13 @@ public class Controller {
 
             redirectAttributes.addFlashAttribute(
                     "success",
-                    "Habitación bloqueada correctamente"
-            );
+                    "Habitación bloqueada correctamente");
 
         } catch (Exception e) {
 
             redirectAttributes.addFlashAttribute(
                     "error",
-                    "Error al bloquear habitación"
-            );
+                    "Error al bloquear habitación");
         }
 
         LocalDate entrada = (fechaEntrada != null) ? fechaEntrada : LocalDate.now().plusDays(1);

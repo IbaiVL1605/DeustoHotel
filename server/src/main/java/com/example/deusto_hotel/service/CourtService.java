@@ -389,12 +389,30 @@ public class CourtService {
         return result;
     }
 
+    // para bloquear pistas en mantenimiento
     @Transactional
     public CourtResponse blockCourt(Long id) {
         Court court = courtRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Pista no encontrada con ID: " + id));
 
         court.setEstado(CourtStatus.BLOQUEADA);
+        courtRepository.save(court);
+
+        return new CourtResponse(
+                court.getId(),
+                court.getNombre(),
+                court.getTipo(),
+                court.getPrecioPorHora(),
+                court.getEstado());
+    }
+
+    // para desbloquear pistas al terminar el mantenimiento
+    @Transactional
+    public CourtResponse unblockCourt(Long id) {
+        Court court = courtRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Pista no encontrada con ID: " + id));
+
+        court.setEstado(CourtStatus.DISPONIBLE);
         courtRepository.save(court);
 
         return new CourtResponse(

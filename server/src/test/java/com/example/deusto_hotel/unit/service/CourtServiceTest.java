@@ -257,4 +257,23 @@ public class CourtServiceTest {
         verify(courtRepository).save(court);
     }
 
+    @Test
+    void unblockCourt_Success() {
+        // Simulamos una pista que actualmente está bloqueada
+        Court court = new Court();
+        court.setId(1L);
+        court.setNombre("Pista 1");
+        court.setEstado(CourtStatus.BLOQUEADA);
+
+        when(courtRepository.findById(1L)).thenReturn(Optional.of(court));
+        when(courtRepository.save(any(Court.class))).thenReturn(court);
+
+        // Llamamos al método que queremos testear
+        CourtResponse response = courtService.unblockCourt(1L);
+
+        // Verificamos que el estado ha cambiado a DISPONIBLE
+        assertEquals(CourtStatus.DISPONIBLE, response.estado());
+        verify(courtRepository).save(court);
+    }
+
 }
