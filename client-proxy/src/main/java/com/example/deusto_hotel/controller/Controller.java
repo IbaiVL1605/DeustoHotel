@@ -28,15 +28,16 @@ public class Controller {
 
     @GetMapping("/habitaciones/disponibles")
     public String getHabitacionesDisponibles(Model model,
-                                             @RequestParam(required = false) LocalDate fechaEntrada,
-                                             @RequestParam(required = false) LocalDate fechaSalida) {
+            @RequestParam(required = false) LocalDate fechaEntrada,
+            @RequestParam(required = false) LocalDate fechaSalida) {
 
         if (fechaEntrada == null || fechaSalida == null) {
             return "user/habitaciones";
         }
 
         try {
-            ArrayList<RoomDisponibleResponse> habitaciones = proxy.getHabitacionesDisponibles(fechaEntrada, fechaSalida);
+            ArrayList<RoomDisponibleResponse> habitaciones = proxy.getHabitacionesDisponibles(fechaEntrada,
+                    fechaSalida);
 
             habitaciones.forEach(habitacion -> {
                 String key = switch (habitacion.getTipo()) {
@@ -50,9 +51,11 @@ public class Controller {
         } catch (Exception e) {
 
             // Enviamos un mensaje de error a la vista (Thymeleaf/JSP)
-            model.addAttribute("error", "No se han podido cargar las habitaciones en este momento. Inténtelo más tarde.");
+            model.addAttribute("error",
+                    "No se han podido cargar las habitaciones en este momento. Inténtelo más tarde.");
 
-            // Opcional: Podrías devolver una vista específica de error o la misma vista con el mensaje
+            // Opcional: Podrías devolver una vista específica de error o la misma vista con
+            // el mensaje
             return "user/habitaciones";
         }
 
@@ -60,13 +63,16 @@ public class Controller {
     }
 
     @PostMapping("/reservas")
-    public ResponseEntity<String> crearReserva(HttpSession sesion, @RequestBody List<RoomBookingRequest> request) throws IOException, InterruptedException {
-        if(sesion.getAttribute("userId") == null){ return ResponseEntity.badRequest().body("Usuario no logeado"); }
+    public ResponseEntity<String> crearReserva(HttpSession sesion, @RequestBody List<RoomBookingRequest> request)
+            throws IOException, InterruptedException {
+        if (sesion.getAttribute("userId") == null) {
+            return ResponseEntity.badRequest().body("Usuario no logeado");
+        }
 
         List<RoomBookingRequest> updatedRequests = request.stream()
-                .map(r -> new RoomBookingRequest(r.tipo(), (Long) sesion.getAttribute("userId"), r.cantidad(), r.id_habitacion(), r.fechaEntrada(), r.fechaSalida()))
+                .map(r -> new RoomBookingRequest(r.tipo(), (Long) sesion.getAttribute("userId"), r.cantidad(),
+                        r.id_habitacion(), r.fechaEntrada(), r.fechaSalida()))
                 .toList();
-
 
         return proxy.crearReserva(updatedRequests);
     }
@@ -76,8 +82,8 @@ public class Controller {
             Model model,
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month
-    ) throws IOException, InterruptedException, JsonProcessingException {
+            @RequestParam(required = false) Integer month)
+            throws IOException, InterruptedException, JsonProcessingException {
         LocalDate today = LocalDate.now();
         int currentYear = (year != null) ? year : today.getYear();
         int currentMonth = (month != null) ? month : today.getMonthValue();
@@ -118,7 +124,6 @@ public class Controller {
         session.setAttribute("userEmail", usuario.email());
         session.setAttribute("userRole", usuario.rol().name());
 
-
         if (usuario.rol() == Role.ADMIN) {
             return "redirect:/admin";
         } else {
@@ -127,105 +132,131 @@ public class Controller {
     }
 
     @GetMapping("/admin")
-    public String adminPage(HttpSession session) {
+    public String adminPage(HttpSession session, Model model) {
         String role = (String) session.getAttribute("userRole");
-        System.out.println("ROL EN SESIÓN EN /admin: " + role);
         if (role == null || !role.equals("ADMIN")) {
             return "redirect:/login";
         }
+
+        try {
+            // Obtenemos todas las pistas usando el método que ya tienes en el Proxy
+            List<CourtResponse> courts = proxy.getCourts(null);
+            model.addAttribute("courts", courts);
+        } catch (Exception e) {
+            model.addAttribute("error", "No se pudieron cargar las pistas: " + e.getMessage());
+        }
+
         return "admin/admin";
     }
-/*
-    @GetMapping("/reservas/nueva")
-    public String showCreateForm(Model model) {
-        model.addAttribute("booking", new RoomBookingRequest(null, null, null, null));
-        return "user/reserva-form";
+
+    @PostMapping("/admin/courts/{id}/block")
+    public String blockCourtFromAdmin(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            proxy.blockCourt(id);
+            redirectAttributes.addFlashAttribute("success", "Pista bloqueada por mantenimiento exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al bloquear: " + e.getMessage());
+        }
+        return "redirect:/admin";
     }
-    */
-/*
-    @PostMapping("/reservas")
-    @ResponseBody
-    public String createBookings(@RequestBody List<RoomBookingRequest> requests,
-                                 HttpSession session) {
 
-        Long clienteId = (Long) session.getAttribute("userId");
+    /*
+     * @GetMapping("/reservas/nueva")
+     * public String showCreateForm(Model model) {
+     * model.addAttribute("booking", new RoomBookingRequest(null, null, null,
+     * null));
+     * return "user/reserva-form";
+     * }
+     */
+    /*
+     * @PostMapping("/reservas")
+     * 
+     * @ResponseBody
+     * public String createBookings(@RequestBody List<RoomBookingRequest> requests,
+     * HttpSession session) {
+     * 
+     * Long clienteId = (Long) session.getAttribute("userId");
+     * 
+     * if (clienteId == null) {
+     * return "ERROR: Usuario no autenticado";
+     * }
+     * 
+     * try {
+     * List<RoomBookingRequest> requestsConCliente = requests.stream()
+     * .map(r -> new RoomBookingRequest(
+     * r.habitacionId(),
+     * r.checkIn(),
+     * r.checkOut(),
+     * clienteId
+     * ))
+     * .toList();
+     * 
+     * proxy.createBookings(requestsConCliente);
+     * 
+     * return "OK";
+     * 
+     * } catch (Exception e) {
+     * return "ERROR: " + e.getMessage();
+     * }
+     * }
+     */
+    /*
+     * @GetMapping("/reservas/editar/{id}")
+     * public String showEditForm(@PathVariable Long id, Model model) {
+     * model.addAttribute("bookingId", id);
+     * model.addAttribute("booking", new RoomBookingRequest(null, null, null,
+     * null));
+     * return "user/reserva-form";
+     * }
+     * 
+     * @PostMapping("/reservas/{id}")
+     * public String updateBooking(@PathVariable Long id, RoomBookingRequest
+     * request, Model model) {
+     * try {
+     * proxy.updateRoomBooking(id, request);
+     * return "redirect:/habitaciones/disponibles";
+     * } catch (Exception e) {
+     * model.addAttribute("error", e.getMessage());
+     * return "user/reserva-form";
+     * }
+     * }
+     */
+    @PostMapping("/reservas/eliminar/{id}")
+    public String deleteBooking(@PathVariable Long id, HttpSession session) {
 
-        if (clienteId == null) {
-            return "ERROR: Usuario no autenticado";
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return "redirect:/login";
         }
 
         try {
-            List<RoomBookingRequest> requestsConCliente = requests.stream()
-                    .map(r -> new RoomBookingRequest(
-                            r.habitacionId(),
-                            r.checkIn(),
-                            r.checkOut(),
-                            clienteId
-                    ))
-                    .toList();
-
-            proxy.createBookings(requestsConCliente);
-
-            return "OK";
-
+            proxy.deleteRoomBooking(id, userId);
         } catch (Exception e) {
-            return "ERROR: " + e.getMessage();
+            System.out.println("Error al eliminar: " + e.getMessage());
         }
-    }
-*/
-    /*
-    @GetMapping("/reservas/editar/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        model.addAttribute("bookingId", id);
-        model.addAttribute("booking", new RoomBookingRequest(null, null, null, null));
-        return "user/reserva-form";
-    }
 
-    @PostMapping("/reservas/{id}")
-    public String updateBooking(@PathVariable Long id, RoomBookingRequest request, Model model) {
-        try {
-            proxy.updateRoomBooking(id, request);
-            return "redirect:/habitaciones/disponibles";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "user/reserva-form";
-        }
+        return "redirect:/reservas";
     }
-*/
-@PostMapping("/reservas/eliminar/{id}")
-public String deleteBooking(@PathVariable Long id, HttpSession session) {
-
-    Long userId = (Long) session.getAttribute("userId");
-
-    if (userId == null) {
-        return "redirect:/login";
-    }
-
-    try {
-        proxy.deleteRoomBooking(id, userId);
-    } catch (Exception e) {
-        System.out.println("Error al eliminar: " + e.getMessage());
-    }
-
-    return "redirect:/reservas";
-}
 
     /*
- @PostMapping("/admin/rooms")
- public String crearHabitacionFromForm(@ModelAttribute RoomRequest request, Model model) {
-     try {
-         proxy.crearHabitacion(request);
-         model.addAttribute("success", "Habitación creada correctamente");
-     } catch (Exception e) {
-         model.addAttribute("error", e.getMessage());
-     }
-     return "/admin";
- }
- */
+     * @PostMapping("/admin/rooms")
+     * public String crearHabitacionFromForm(@ModelAttribute RoomRequest request,
+     * Model model) {
+     * try {
+     * proxy.crearHabitacion(request);
+     * model.addAttribute("success", "Habitación creada correctamente");
+     * } catch (Exception e) {
+     * model.addAttribute("error", e.getMessage());
+     * }
+     * return "/admin";
+     * }
+     */
 
     @PostMapping("/api/v1/court-bookings")
     @ResponseBody
-    public String createCourtBooking(@RequestBody com.example.deusto_hotel.dto.CourtBookingRequest request, HttpSession session) {
+    public String createCourtBooking(@RequestBody com.example.deusto_hotel.dto.CourtBookingRequest request,
+            HttpSession session) {
         Long clienteId = (Long) session.getAttribute("userId");
         if (clienteId == null) {
             return "{\"status\":\"ERROR\", \"message\":\"Usuario no autenticado\"}";
@@ -236,8 +267,7 @@ public String deleteBooking(@PathVariable Long id, HttpSession session) {
                     request.fecha(),
                     request.horaInicio(),
                     request.horaFin(),
-                    clienteId
-            );
+                    clienteId);
             proxy.createCourtBooking(requestConCliente);
             return "{\"status\":\"OK\"}";
         } catch (Exception e) {
@@ -318,8 +348,7 @@ public String deleteBooking(@PathVariable Long id, HttpSession session) {
             @RequestParam String email,
             @RequestParam String password,
             @RequestParam String nombre,
-            RedirectAttributes redirectAttributes
-    ) {
+            RedirectAttributes redirectAttributes) {
         try {
             proxy.signup(nombre, email, password);
             redirectAttributes.addFlashAttribute("success", "Cuenta creada correctamente. ¡Ya puedes iniciar sesión!");

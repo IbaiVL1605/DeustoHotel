@@ -37,8 +37,8 @@ public class CourtController {
      * para devolver la disponibilidad correspondiente.
      * </p>
      *
-     * @param tipo tipo de pista (opcional)
-     * @param fecha fecha específica (opcional, formato yyyy-MM-dd)
+     * @param tipo   tipo de pista (opcional)
+     * @param fecha  fecha específica (opcional, formato yyyy-MM-dd)
      * @param semana número de semana (opcional)
      * @return lista de disponibilidad de pistas
      */
@@ -46,8 +46,7 @@ public class CourtController {
     public ResponseEntity<List<CourtAvailabilityDTO>> getAvailableCourts(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String fecha,
-            @RequestParam(required = false) Integer semana
-    ) {
+            @RequestParam(required = false) Integer semana) {
 
         List<CourtAvailabilityDTO> result;
 
@@ -55,13 +54,10 @@ public class CourtController {
                 && fecha != null && !fecha.trim().isEmpty()) {
 
             // Caso: tipo + fecha
-            List<CourtAvailabilityDTO> byDate =
-                    courtService.findAvailableByDate(fecha);
+            List<CourtAvailabilityDTO> byDate = courtService.findAvailableByDate(fecha);
 
             result = byDate.stream()
-                    .filter(dto ->
-                            dto.tipo().name().equalsIgnoreCase(tipo)
-                    )
+                    .filter(dto -> dto.tipo().name().equalsIgnoreCase(tipo))
                     .toList();
 
         } else if (tipo != null && !tipo.trim().isEmpty()) {
@@ -87,17 +83,16 @@ public class CourtController {
      * Obtiene la disponibilidad semanal de pistas deportivas
      * para un mes concreto.
      *
-     * @param year año de consulta
+     * @param year  año de consulta
      * @param month mes de consulta
-     * @param tipo tipo de pista (opcional)
+     * @param tipo  tipo de pista (opcional)
      * @return disponibilidad semanal agrupada por días
      */
     @GetMapping("/weekly-availability")
     public ResponseEntity<List<WeekAvailability>> getWeeklyAvailability(
             @RequestParam int year,
             @RequestParam int month,
-            @RequestParam(required = false) String tipo
-    ) {
+            @RequestParam(required = false) String tipo) {
 
         CourtType courtType = null;
 
@@ -110,13 +105,17 @@ public class CourtController {
             }
         }
 
-        List<WeekAvailability> availability =
-                courtService.findWeeklyAvailability(year, month, courtType);
+        List<WeekAvailability> availability = courtService.findWeeklyAvailability(year, month, courtType);
 
         return ResponseEntity.ok(availability);
     }
 
-    /*
+    @PostMapping("/{id}/block")
+    public ResponseEntity<CourtResponse> blockCourt(@PathVariable Long id) {
+        CourtResponse response = courtService.blockCourt(id);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
     public ResponseEntity<List<CourtResponse>> getAll(@RequestParam(required = false) String tipo) {
         List<CourtResponse> courts = courtService.findAll();
@@ -126,26 +125,30 @@ public class CourtController {
         return ResponseEntity.ok(courts);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CourtResponse> getById(@PathVariable Long id) {
-        throw new UnsupportedOperationException();
-    }
-
-    @PostMapping
-    public ResponseEntity<CourtResponse> create(@RequestBody @Valid CourtRequest request) {
-        throw new UnsupportedOperationException();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<CourtResponse> update(
-            @PathVariable Long id,
-            @RequestBody @Valid CourtRequest request) {
-        throw new UnsupportedOperationException();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        throw new UnsupportedOperationException();
-    }
+    /*
+     * @GetMapping("/{id}")
+     * public ResponseEntity<CourtResponse> getById(@PathVariable Long id) {
+     * throw new UnsupportedOperationException();
+     * }
+     * 
+     * @PostMapping
+     * public ResponseEntity<CourtResponse> create(@RequestBody @Valid CourtRequest
+     * request) {
+     * throw new UnsupportedOperationException();
+     * }
+     * 
+     * @PutMapping("/{id}")
+     * public ResponseEntity<CourtResponse> update(
+     * 
+     * @PathVariable Long id,
+     * 
+     * @RequestBody @Valid CourtRequest request) {
+     * throw new UnsupportedOperationException();
+     * }
+     * 
+     * @DeleteMapping("/{id}")
+     * public ResponseEntity<Void> delete(@PathVariable Long id) {
+     * throw new UnsupportedOperationException();
+     * }
      */
 }

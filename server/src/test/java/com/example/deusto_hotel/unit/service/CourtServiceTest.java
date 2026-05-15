@@ -2,6 +2,7 @@ package com.example.deusto_hotel.unit.service;
 
 import com.example.deusto_hotel.dto.CourtAvailabilityDTO;
 import com.example.deusto_hotel.dto.CourtBookingResponse;
+import com.example.deusto_hotel.dto.CourtResponse;
 import com.example.deusto_hotel.dto.WeekAvailability;
 import com.example.deusto_hotel.model.*;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
@@ -20,10 +21,14 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+
 @Tag("unit")
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +49,8 @@ public class CourtServiceTest {
 
     @Test
     public void testFindAvailableByDate_FechaInvalida() {
-        // Al pasar una fecha que no se puede parsear, debe devolver una lista vacía y no lanzar excepción
+        // Al pasar una fecha que no se puede parsear, debe devolver una lista vacía y
+        // no lanzar excepción
         List<CourtAvailabilityDTO> result = courtService.findAvailableByDate("fecha-falsa");
         assertTrue(result.isEmpty());
         verify(courtRepository, never()).findByEstado(any());
@@ -131,6 +137,7 @@ public class CourtServiceTest {
 
         verify(courtRepository).findByTipoAndEstado(CourtType.PADEL, CourtStatus.DISPONIBLE);
     }
+
     @Test
     void testFindAvailableByTypeAndWeek_filtradoReservas() {
 
@@ -170,8 +177,7 @@ public class CourtServiceTest {
         when(courtRepository.findByTipoAndEstado(any(), any()))
                 .thenReturn(List.of(court));
 
-        List<CourtAvailabilityDTO> result =
-                courtService.findAvailableByTypeAndWeek("TENIS", 1);
+        List<CourtAvailabilityDTO> result = courtService.findAvailableByTypeAndWeek("TENIS", 1);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -197,7 +203,8 @@ public class CourtServiceTest {
 
         when(courtRepository.findByEstado(CourtStatus.DISPONIBLE)).thenReturn(List.of(mockPista));
 
-        when(courtBookingRepository.findSolapamientos(anyLong(), any(LocalDate.class), any(LocalTime.class), any(LocalTime.class)))
+        when(courtBookingRepository.findSolapamientos(anyLong(), any(LocalDate.class), any(LocalTime.class),
+                any(LocalTime.class)))
                 .thenReturn(Collections.emptyList());
 
         List<WeekAvailability> result = courtService.findWeeklyAvailability(2026, 2, null);
@@ -220,7 +227,8 @@ public class CourtServiceTest {
                 .thenReturn(List.of(mockPista));
 
         var mockSolapamiento = mock(com.example.deusto_hotel.model.CourtBooking.class);
-        when(courtBookingRepository.findSolapamientos(eq(5L), any(LocalDate.class), any(LocalTime.class), any(LocalTime.class)))
+        when(courtBookingRepository.findSolapamientos(eq(5L), any(LocalDate.class), any(LocalTime.class),
+                any(LocalTime.class)))
                 .thenReturn(List.of(mockSolapamiento));
 
         List<WeekAvailability> result = courtService.findWeeklyAvailability(2026, 3, CourtType.TENIS);
@@ -232,4 +240,21 @@ public class CourtServiceTest {
 
         verify(courtRepository).findByTipoAndEstado(CourtType.TENIS, CourtStatus.DISPONIBLE);
     }
+
+    @Test
+    void blockCourt_Success() {
+        Court court = new Court();
+        court.setId(1L);
+        court.setNombre("Pista 1");
+        court.setEstado(CourtStatus.DISPONIBLE);
+
+        when(courtRepository.findById(1L)).thenReturn(Optional.of(court));
+        when(courtRepository.save(any(Court.class))).thenReturn(court);
+
+        CourtResponse response = courtService.blockCourt(1L);
+
+        assertEquals(CourtStatus.BLOQUEADA, response.estado());
+        verify(courtRepository).save(court);
+    }
+
 }

@@ -2,7 +2,9 @@ package com.example.deusto_hotel.unit.controller;
 
 import com.example.deusto_hotel.controller.CourtController;
 import com.example.deusto_hotel.dto.CourtAvailabilityDTO;
+import com.example.deusto_hotel.dto.CourtResponse;
 import com.example.deusto_hotel.dto.WeekAvailability;
+import com.example.deusto_hotel.model.CourtStatus;
 import com.example.deusto_hotel.model.CourtType;
 import com.example.deusto_hotel.service.CourtService;
 import org.junit.jupiter.api.Tag;
@@ -19,6 +21,8 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 @Tag("unit")
 
 @WebMvcTest(CourtController.class)
@@ -48,9 +52,9 @@ public class CourtControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/courts/available")
-                        .param("tipo", tipo)
-                        .param("fecha", fecha)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .param("tipo", tipo)
+                .param("fecha", fecha)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].tipo").value("TENIS"));
@@ -69,9 +73,9 @@ public class CourtControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/courts/available")
-                        .param("tipo", tipo)
-                        .param("semana", String.valueOf(semana))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .param("tipo", tipo)
+                .param("semana", String.valueOf(semana))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].tipo").value("PADEL"));
@@ -90,8 +94,8 @@ public class CourtControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/courts/available")
-                        .param("fecha", fecha)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .param("fecha", fecha)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].tipo").value("PADEL"));
@@ -107,7 +111,7 @@ public class CourtControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/courts/available")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].tipo").value("TENIS"));
@@ -133,10 +137,10 @@ public class CourtControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/courts/weekly-availability")
-                        .param("year", String.valueOf(year))
-                        .param("month", String.valueOf(month))
-                        .param("tipo", tipo)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .param("year", String.valueOf(year))
+                .param("month", String.valueOf(month))
+                .param("tipo", tipo)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
 
@@ -157,10 +161,10 @@ public class CourtControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/courts/weekly-availability")
-                        .param("year", String.valueOf(year))
-                        .param("month", String.valueOf(month))
-                        .param("tipo", invalidTipo)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .param("year", String.valueOf(year))
+                .param("month", String.valueOf(month))
+                .param("tipo", invalidTipo)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
 
@@ -180,12 +184,24 @@ public class CourtControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/courts/weekly-availability")
-                        .param("year", String.valueOf(year))
-                        .param("month", String.valueOf(month))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .param("year", String.valueOf(year))
+                .param("month", String.valueOf(month))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
 
         verify(courtService, times(1)).findWeeklyAvailability(year, month, null);
     }
+
+    @Test
+    void blockCourt_Success() throws Exception {
+        CourtResponse courtResponse = new CourtResponse(1L, "Pista 1", CourtType.TENIS, 20.0, CourtStatus.BLOQUEADA);
+
+        when(courtService.blockCourt(1L)).thenReturn(courtResponse);
+
+        mockMvc.perform(post("/api/v1/courts/1/block"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("BLOQUEADA"));
+    }
+
 }
