@@ -426,4 +426,27 @@ public class Controller {
                 + salida;
     }
 
+    @GetMapping("/pistas/reservadas")
+    public String verReservasPistas(HttpSession session, Model model) {
+        Long clienteId = (Long) session.getAttribute("userId");
+        if (clienteId == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            log.info("Obteniendo reservas de pistas para clienteId: " + clienteId);
+            // Obtenemos solo las reservas de pistas mediante el proxy
+            List<CourtBookingResponse> courtBookings = proxy.getCourtBookingsByClienteId(clienteId);
+            model.addAttribute("courtBookings", courtBookings);
+
+            // Devolvemos el nombre del nuevo html que hemos creado
+            return "user/reservasPistas";
+
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "user/reservasPistas";
+        }
+    }
+
+
 }
