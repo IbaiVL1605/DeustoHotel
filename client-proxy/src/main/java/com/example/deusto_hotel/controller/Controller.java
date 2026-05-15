@@ -28,8 +28,12 @@ public class Controller {
 
     @GetMapping("/habitaciones/disponibles")
     public String getHabitacionesDisponibles(Model model,
+            HttpSession session,
             @RequestParam(required = false) LocalDate fechaEntrada,
             @RequestParam(required = false) LocalDate fechaSalida) {
+
+        String role = (String) session.getAttribute("userRole");
+        model.addAttribute("role", role);
 
         if (fechaEntrada == null || fechaSalida == null) {
             return "user/habitaciones";
@@ -389,6 +393,37 @@ public class Controller {
         }
 
         return "redirect:/mis-reservas";
+    }
+    @PostMapping("/rooms/{id}/bloquear")
+    public String bloquearHabitacion(
+            @PathVariable Long id,
+            @RequestParam(required = false) LocalDate fechaEntrada,
+            @RequestParam(required = false) LocalDate fechaSalida,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            proxy.bloquearHabitacion(id);
+
+            redirectAttributes.addFlashAttribute(
+                    "success",
+                    "Habitación bloqueada correctamente"
+            );
+
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "Error al bloquear habitación"
+            );
+        }
+
+        LocalDate entrada = (fechaEntrada != null) ? fechaEntrada : LocalDate.now().plusDays(1);
+        LocalDate salida = (fechaSalida != null) ? fechaSalida : entrada.plusDays(1);
+
+        return "redirect:/habitaciones/disponibles?fechaEntrada="
+                + entrada
+                + "&fechaSalida="
+                + salida;
     }
 
 }
