@@ -5,6 +5,7 @@ import com.example.deusto_hotel.dto.RoomRequest;
 import com.example.deusto_hotel.dto.RoomResponse;
 import com.example.deusto_hotel.mapper.RoomMapper;
 import com.example.deusto_hotel.model.Room;
+import com.example.deusto_hotel.model.RoomStatus;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
