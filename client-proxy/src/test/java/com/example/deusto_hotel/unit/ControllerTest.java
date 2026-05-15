@@ -729,4 +729,55 @@ class ControllerTest {
                                 .andExpect(model().attributeExists("courts"));
         }
 
+        @Test
+        void verReservasPistas_exito() throws Exception {
+            when(proxy.getCourtBookingsByClienteId(1L)).thenReturn(List.of());
+
+            mockMvc.perform(get("/pistas/reservadas")
+                            .sessionAttr("userId", 1L))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("user/reservasPistas"))
+                    .andExpect(model().attributeExists("courtBookings"));
+
+            verify(proxy).getCourtBookingsByClienteId(1L);
+        }
+
+    @Test
+    void updateCourtBooking_exito() throws Exception {
+        CourtBookingResponse responseMock = mock(CourtBookingResponse.class);
+
+        when(proxy.updateCourtBooking(eq(1L), any(CourtBookingRequest.class)))
+                .thenReturn(responseMock);
+
+        mockMvc.perform(post("/update/1")
+                        .param("pistaId", "2")
+                        .param("fecha", "2026-05-20")
+                        .param("horaInicio", "10:00")
+                        .param("horaFin", "12:00")
+                        .param("clienteId", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/mis-reservas"))
+                .andExpect(flash().attribute("success", "Reserva actualizada correctamente"));
+
+        verify(proxy).updateCourtBooking(eq(1L), any(CourtBookingRequest.class));
+    }
+
+    @Test
+    void updateCourtBooking_error() throws Exception {
+        doThrow(new RuntimeException("Error backend"))
+                .when(proxy).updateCourtBooking(eq(1L), any(CourtBookingRequest.class));
+
+        mockMvc.perform(post("/update/1")
+                        .param("pistaId", "2")
+                        .param("fecha", "2026-05-20")
+                        .param("horaInicio", "10:00")
+                        .param("horaFin", "12:00")
+                        .param("clienteId", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/mis-reservas"))
+                .andExpect(flash().attribute("error", "Error backend"));
+
+        verify(proxy).updateCourtBooking(eq(1L), any(CourtBookingRequest.class));
+    }
+
 }
