@@ -40,11 +40,10 @@ public class Proxy {
             .registerModule(new JavaTimeModule())
             .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    private ArrayList<RoomDisponibleResponse> parseRoomDisponibleResponse(String response) throws JsonProcessingException {
+    private ArrayList<RoomDisponibleResponse> parseRoomDisponibleResponse(String response)
+            throws JsonProcessingException {
         JsonNode node = objectMapper.readTree(response);
         ArrayList<RoomDisponibleResponse> roomDisponibleResponses = new ArrayList<>();
-
-
 
         node.forEach(item -> {
             if (item.get("tipo").asText().equals(RoomType.SUITE.toString())) {
@@ -52,33 +51,33 @@ public class Proxy {
                 JsonNode suitesNode = item.get("suites");
 
                 List<SuitResponse> suites = StreamSupport
-                        .stream(suitesNode.spliterator(), false)  // ArrayNode → Stream
+                        .stream(suitesNode.spliterator(), false) // ArrayNode → Stream
                         .map(suit -> new SuitResponse(
                                 suit.get("capacidad").asInt(),
                                 suit.get("precioPorNoche").asInt(),
-                                suit.get("id").asInt()
-                        ))
+                                suit.get("id").asInt()))
                         .collect(Collectors.toList());
 
                 roomDisponibleResponses.add(new RoomDisponiblesSuitResponse(
                         RoomType.SUITE,
-                        suites
-                ));
+                        suites));
             } else {
                 roomDisponibleResponses.add(new RoomDisponiblesSimplesResponse(
                         RoomType.valueOf(item.get("tipo").asText()),
-                        item.get("numero_disponibles").asInt()
-                ));
+                        item.get("numero_disponibles").asInt()));
             }
         });
 
         return roomDisponibleResponses;
     }
 
-    public ArrayList<RoomDisponibleResponse> getHabitacionesDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) throws IOException, InterruptedException, JsonProcessingException {
+    public ArrayList<RoomDisponibleResponse> getHabitacionesDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida)
+            throws IOException, InterruptedException, JsonProcessingException {
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(java.net.URI.create(String.format("http://localhost:8080/api/v1/rooms/disponibles?fechaEntrada=%s&fechaSalida=%s",fechaEntrada.toString(), fechaSalida.toString())))
+                .uri(java.net.URI.create(
+                        String.format("http://localhost:8080/api/v1/rooms/disponibles?fechaEntrada=%s&fechaSalida=%s",
+                                fechaEntrada.toString(), fechaSalida.toString())))
                 .GET()
                 .build();
 
@@ -88,11 +87,11 @@ public class Proxy {
             throw new RuntimeException("Error al obtener habitaciones disponibles: " + response.body());
         }
 
-
         return parseRoomDisponibleResponse(response.body());
     }
 
-    public List<CourtResponse> getCourts(String tipo) throws IOException, InterruptedException, JsonProcessingException {
+    public List<CourtResponse> getCourts(String tipo)
+            throws IOException, InterruptedException, JsonProcessingException {
         String url = "http://localhost:8080/api/v1/courts";
         if (tipo != null && !tipo.trim().isEmpty()) {
             url += "?tipo=" + tipo;
@@ -102,11 +101,14 @@ public class Proxy {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        return objectMapper.readValue(response.body(), new TypeReference<List<CourtResponse>>() {});
+        return objectMapper.readValue(response.body(), new TypeReference<List<CourtResponse>>() {
+        });
     }
 
-    public List<WeekAvailability> getCourtsWeeklyAvailability(int year, int month, String tipo) throws IOException, InterruptedException, JsonProcessingException {
-        StringBuilder url = new StringBuilder(String.format("http://localhost:8080/api/v1/courts/weekly-availability?year=%d&month=%d", year, month));
+    public List<WeekAvailability> getCourtsWeeklyAvailability(int year, int month, String tipo)
+            throws IOException, InterruptedException, JsonProcessingException {
+        StringBuilder url = new StringBuilder(
+                String.format("http://localhost:8080/api/v1/courts/weekly-availability?year=%d&month=%d", year, month));
         if (tipo != null && !tipo.trim().isEmpty()) {
             url.append("&tipo=").append(tipo);
         }
@@ -115,20 +117,26 @@ public class Proxy {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        return objectMapper.readValue(response.body(), new TypeReference<List<WeekAvailability>>() {});
+        return objectMapper.readValue(response.body(), new TypeReference<List<WeekAvailability>>() {
+        });
     }
 
-    public List<?> getCourtsAvailable(String tipo, String fecha, Integer semana) throws IOException, InterruptedException, JsonProcessingException {
+    public List<?> getCourtsAvailable(String tipo, String fecha, Integer semana)
+            throws IOException, InterruptedException, JsonProcessingException {
         StringBuilder url = new StringBuilder("http://localhost:8080/api/v1/courts/available?");
-        if (tipo != null && !tipo.trim().isEmpty()) url.append("tipo=").append(tipo).append("&");
-        if (fecha != null && !fecha.trim().isEmpty()) url.append("fecha=").append(fecha).append("&");
-        if (semana != null) url.append("semana=").append(semana);
+        if (tipo != null && !tipo.trim().isEmpty())
+            url.append("tipo=").append(tipo).append("&");
+        if (fecha != null && !fecha.trim().isEmpty())
+            url.append("fecha=").append(fecha).append("&");
+        if (semana != null)
+            url.append("semana=").append(semana);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(java.net.URI.create(url.toString()))
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        return objectMapper.readValue(response.body(), new TypeReference<List<?>>() {});
+        return objectMapper.readValue(response.body(), new TypeReference<List<?>>() {
+        });
     }
 
     public UserResponse login(String email, String password) throws IOException, InterruptedException {
@@ -139,8 +147,7 @@ public class Proxy {
                 .uri(java.net.URI.create(String.format(
                         "http://localhost:8080/api/v1/users/login?correo=%s&contrasena=%s",
                         correo,
-                        contrasena
-                )))
+                        contrasena)))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
@@ -205,8 +212,7 @@ public class Proxy {
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
-            HttpResponse<String> response =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 String errorMessage = response.body() == null || response.body().isBlank()
@@ -249,7 +255,8 @@ public class Proxy {
     }
 
     // Obtener reservas de un cliente (pistas y habitaciones)
-    public List<CourtBookingResponse> getCourtBookingsByClienteId(Long clienteId) throws IOException, InterruptedException {
+    public List<CourtBookingResponse> getCourtBookingsByClienteId(Long clienteId)
+            throws IOException, InterruptedException {
         log.info("Obteniendo reservas de pistas para clienteId: " + clienteId);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -260,13 +267,15 @@ public class Proxy {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
-            return objectMapper.readValue(response.body(), new TypeReference<List<CourtBookingResponse>>() {});
+            return objectMapper.readValue(response.body(), new TypeReference<List<CourtBookingResponse>>() {
+            });
         }
 
         throw new RuntimeException("Error al obtener las reservas del cliente: " + response.body());
     }
 
-    public List<RoomBookingResponse> getRoomBookingsByClienteId(Long clienteId) throws IOException, InterruptedException {
+    public List<RoomBookingResponse> getRoomBookingsByClienteId(Long clienteId)
+            throws IOException, InterruptedException {
         log.info("Obteniendo reservas de habitaciones para clienteId: " + clienteId);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -277,7 +286,8 @@ public class Proxy {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
-            return objectMapper.readValue(response.body(), new TypeReference<List<RoomBookingResponse>>() {});
+            return objectMapper.readValue(response.body(), new TypeReference<List<RoomBookingResponse>>() {
+            });
         }
 
         throw new RuntimeException("Error al obtener las reservas del cliente: " + response.body());
@@ -298,7 +308,8 @@ public class Proxy {
         }
     }
 
-    public ResponseEntity<String> crearReserva(List<RoomBookingRequest> updatedRequests) throws IOException, InterruptedException {
+    public ResponseEntity<String> crearReserva(List<RoomBookingRequest> updatedRequests)
+            throws IOException, InterruptedException {
         String jsonBody = objectMapper.writeValueAsString(updatedRequests);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -306,7 +317,6 @@ public class Proxy {
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
-
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return ResponseEntity.status(response.statusCode()).body(response.body());
@@ -331,4 +341,37 @@ public class Proxy {
 
         throw new RuntimeException("Error actualizando la reserva: " + response.body());
     }
+
+    public void blockCourt(Long id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/courts/" + id + "/block"))
+                .POST(HttpRequest.BodyPublishers.noBody()) // No necesitamos enviar JSON, solo la URL con el ID
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new RuntimeException("Error al bloquear la pista: " + response.body());
+        }
+    }
+    public void bloquearHabitacion(Long id)
+            throws IOException, InterruptedException {
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/rooms/" + id + "/bloquear"))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = httpClient.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new RuntimeException(
+                    "Error al bloquear habitación: " + response.body()
+            );
+        }
+    }
+
 }

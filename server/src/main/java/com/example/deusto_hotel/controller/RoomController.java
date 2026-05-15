@@ -129,12 +129,15 @@ public class RoomController {
             description = "Error interno del servidor"
         )
     })
-    public ResponseEntity<Void> delete(
-            @Parameter(description = "ID único de la habitación a eliminar", required = true)
-            @PathVariable Long id
-    ) {
-        roomService.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+        try {
+            roomService.delete(id);
+            return ResponseEntity.noContent().build();
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
