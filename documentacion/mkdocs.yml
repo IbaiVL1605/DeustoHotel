@@ -1,0 +1,5 @@
+site_name: Deusto Hotel API
+theme:
+  name: readthedocs
+nav:
+  - Introduction: 'index.md'
