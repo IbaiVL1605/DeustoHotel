@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -197,25 +198,30 @@ public class RoomBookingService {
 
     }
 
-    public void validarReserva(String email) {
-        User cliente = userRepository.findByEmail(email)
-                .orElseThrow(() -> new Excepciones.UsuarioNoEncontradoException("Cliente no encontrado"));
+    public void validarReserva(Long idReserva, Long idRecepcionista) {
+        if (idRecepcionista == null) {
+            throw new IllegalArgumentException("Usuario no autenticado");
+        }
 
-        RoomBooking reservadas = roomBookingRepository
-                .findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(cliente.getId(), RoomBookingStatus.PENDIENTE)
-                .orElseThrow(() -> new IllegalArgumentException("No hay reservas pendientes para este cliente"));
+        User recepcionista = userRepository.findById(idRecepcionista)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Usuario no encontrado"));
 
-        if (!reservadas.getEstado().equals(RoomBookingStatus.PENDIENTE)) {
+        if (recepcionista.getRol() != Role.RECEPTIONIST) {
+            throw new IllegalArgumentException("Usuario no autorizado");
+        }
+
+        RoomBooking reserva = roomBookingRepository.findById(idReserva)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Reserva no encontrada"));
+
+        if (reserva.getEstado() != RoomBookingStatus.PENDIENTE) {
             throw new IllegalArgumentException("La reserva no está en estado pendiente");
         }
 
-        List<Room> disponiblesTotal = roomRepository.findRoomDisponibles(reservadas.getCheckIn(), reservadas.getCheckOut());
-        if(disponiblesTotal.isEmpty()) {
-            throw new IllegalArgumentException("No hay habitaciones disponibles para confirmar");
-        }
+        reserva.setEstado(RoomBookingStatus.CONFIRMADA);
 
-        reservadas.setEstado(RoomBookingStatus.CONFIRMADA);
-        roomBookingRepository.save(reservadas);
+        roomBookingRepository.save(reserva);
     }
 
     /**
@@ -282,5 +288,11 @@ public class RoomBookingService {
 
 
 
+    public List<RoomBookingResponse> findAll() {
+        return roomBookingRepository.findAll()
+                .stream()
+                .map(roomBookingMapper::toResponse)
+                .toList();
+    }
 
 }

@@ -386,4 +386,68 @@ public class Proxy {
         }
     }
 
+
+    public List<RoomBookingResponse> getAllRoomBookings()
+            throws IOException, InterruptedException {
+
+        log.info("Obteniendo todas las reservas de habitaciones");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/api/v1/room-bookings"))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Error obteniendo reservas de habitaciones");
+        }
+
+        log.info("Respuesta del servidor: " + response.body());
+
+        return objectMapper.readValue(
+                response.body(),
+                new TypeReference<List<RoomBookingResponse>>() {}
+        );
+    }
+
+    public List<CourtBookingResponse> getAllCourtBookings()
+            throws IOException, InterruptedException {
+        log.info("Obteniendo todas las reservas de pistas");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/api/v1/court-bookings"))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Error obteniendo reservas de pistas");
+        }
+
+        log.info("Respuesta del servidor: " + response.body());
+
+        return objectMapper.readValue(
+                response.body(),
+                new TypeReference<List<CourtBookingResponse>>() {}
+        );
+    }
+
+    // validar reserva
+    public ResponseEntity<String> validarReserva(Long idReserva, Long idRecepcionista) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/api/v1/room-bookings/validar?idReserva="
+                        + idReserva + "&idRecepcionista=" + idRecepcionista))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return ResponseEntity.status(response.statusCode()).body(response.body());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Error al validar la reserva", e);
+        }
+
+    }
+
 }

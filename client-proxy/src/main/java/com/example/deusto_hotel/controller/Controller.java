@@ -185,17 +185,17 @@ public class Controller {
      */
     /*
      * @PostMapping("/reservas")
-     * 
+     *
      * @ResponseBody
      * public String createBookings(@RequestBody List<RoomBookingRequest> requests,
      * HttpSession session) {
-     * 
+     *
      * Long clienteId = (Long) session.getAttribute("userId");
-     * 
+     *
      * if (clienteId == null) {
      * return "ERROR: Usuario no autenticado";
      * }
-     * 
+     *
      * try {
      * List<RoomBookingRequest> requestsConCliente = requests.stream()
      * .map(r -> new RoomBookingRequest(
@@ -205,11 +205,11 @@ public class Controller {
      * clienteId
      * ))
      * .toList();
-     * 
+     *
      * proxy.createBookings(requestsConCliente);
-     * 
+     *
      * return "OK";
-     * 
+     *
      * } catch (Exception e) {
      * return "ERROR: " + e.getMessage();
      * }
@@ -223,7 +223,7 @@ public class Controller {
      * null));
      * return "user/reserva-form";
      * }
-     * 
+     *
      * @PostMapping("/reservas/{id}")
      * public String updateBooking(@PathVariable Long id, RoomBookingRequest
      * request, Model model) {
@@ -297,6 +297,8 @@ public class Controller {
 
         if (role == null) {
             return "redirect:/login";
+        }else if (role == "RECEPTIONIST"){
+            return "redirect:/recepcion";
         }
 
         model.addAttribute("role", role);
@@ -454,6 +456,59 @@ public class Controller {
             model.addAttribute("error", e.getMessage());
             return "user/reservasPistas";
         }
+    }
+
+
+    @GetMapping("/recepcion")
+    public String showRecepcionReservas(HttpSession session, Model model) {
+
+        String role = (String) session.getAttribute("userRole");
+
+        if (role == null) {
+            return "redirect:/login";
+        }
+
+        if (!"RECEPTIONIST".equals(role)) {
+            return "redirect:/menu";
+        }
+
+        log.info("Mostrando reservas para recepcionista con userId: " + session.getAttribute("userId"));
+
+        try {
+            List<RoomBookingResponse> roomBookings = proxy.getAllRoomBookings();
+            List<CourtBookingResponse> courtBookings = proxy.getAllCourtBookings();
+
+            System.out.println("Reservas de habitaciones para recepcionista: " + roomBookings);
+            System.out.println("Reservas de pistas para recepcionista: " + courtBookings);
+
+            model.addAttribute("roomBookings", roomBookings);
+            model.addAttribute("courtBookings", courtBookings);
+
+            log.info("Reservas de habitaciones para recepcionista: " + roomBookings);
+            log.info("Reservas de pistas para recepcionista: " + courtBookings);
+
+            return "user/recepcionista";
+
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            log.info("Error al cargar reservas para recepcionista: " + e.getMessage());
+            return "user/recepcionista";
+        }
+    }
+
+    // Llama al server para validar
+    @PostMapping ("recepcion/validar")
+    public String validarReserva(@RequestParam Long idReserva, HttpSession session, RedirectAttributes redirectAttributes) {
+        Long idRecepcionista = (Long) session.getAttribute("userId");
+
+        System.out.println("Intentando validar reserva con ID: " + idReserva + " por recepcionista con ID: " + idRecepcionista);
+        try {
+            proxy.validarReserva(idReserva, idRecepcionista);
+            redirectAttributes.addFlashAttribute("success", "Reserva validada correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al validar la reserva: " + e.getMessage());
+        }
+        return "redirect:/recepcion";
     }
 
 

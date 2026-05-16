@@ -376,8 +376,7 @@
                             <span th:if="${court.estado.name() == 'BLOQUEADA'}" class="badge badge-danger">Bloqueada</span>
                         </td>
                         <td>
-                            <!-- Botón de bloqueo solo si está disponible -->
-                            <form th:if="${court.estado.name() == 'DISPONIBLE'}" 
+                            <form th:if="${court.estado.name() == 'DISPONIBLE'}"
                                   th:action="@{/admin/courts/{id}/block(id=${court.id})}" 
                                   method="post" style="margin: 0;">
                                 <button type="submit" class="btn-outline">Bloquear Mantenimiento</button>
