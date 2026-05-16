@@ -1,8 +1,6 @@
 package com.example.deusto_hotel.unit.service;
 
 import com.example.deusto_hotel.dto.RoomBookingRequest;
-import com.example.deusto_hotel.dto.UserRequest;
-import com.example.deusto_hotel.exception.Excepciones;
 import com.example.deusto_hotel.model.*;
 import com.example.deusto_hotel.repository.RoomBookingRepository;
 import com.example.deusto_hotel.repository.RoomRepository;
@@ -358,115 +356,136 @@ public class RoomBookingServiceTest {
 
 
     @Test
-    void validarReservasSuccess() {
-        String email = "cliente@email.com";
+    void validarReservaSuccess() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
 
-        User cliente = new User();
-        cliente.setId(1L);
-        cliente.setNombre("Juan");
-        cliente.setEmail(email);
-
-        Room habitacion = new Room(10L, RoomType.INDIVIDUAL);
+        User recepcionista = new User();
+        recepcionista.setId(idRecepcionista);
+        recepcionista.setRol(Role.RECEPTIONIST);
 
         RoomBooking reservaPendiente = new RoomBooking();
-        reservaPendiente.setId(99L);
-        reservaPendiente.setCliente(cliente);
-        reservaPendiente.setHabitacion(habitacion);
-        reservaPendiente.setCheckIn(LocalDate.now().plusDays(1));
-        reservaPendiente.setCheckOut(LocalDate.now().plusDays(3));
+        reservaPendiente.setId(idReserva);
         reservaPendiente.setEstado(RoomBookingStatus.PENDIENTE);
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(cliente));
-        when(roomBookingRepository.findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(1L, RoomBookingStatus.PENDIENTE))
-                .thenReturn(Optional.of(reservaPendiente));
-        when(roomRepository.findRoomDisponibles(reservaPendiente.getCheckIn(), reservaPendiente.getCheckOut()))
-                .thenReturn(List.of(habitacion));
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.of(recepcionista));
+        when(roomBookingRepository.findById(idReserva)).thenReturn(Optional.of(reservaPendiente));
 
-        roomBookingService.validarReserva(email);
+        roomBookingService.validarReserva(idReserva, idRecepcionista);
 
         verify(roomBookingRepository).save(argThat(reserva ->
                 reserva.getEstado() == RoomBookingStatus.CONFIRMADA
-                        && reserva.getId().equals(99L)
+                        && reserva.getId().equals(idReserva)
         ));
-        verify(roomBookingRepository).findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(1L, RoomBookingStatus.PENDIENTE);
-        verify(roomRepository).findRoomDisponibles(reservaPendiente.getCheckIn(), reservaPendiente.getCheckOut());
+        verifyNoInteractions(roomRepository);
+    }
+
+    @Test
+    void validarReservaUsuarioNoAutenticado() {
+        Long idReserva = 99L;
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> roomBookingService.validarReserva(idReserva, null)
+        );
+
+        assertEquals("Usuario no autenticado", ex.getMessage());
+        verifyNoInteractions(userRepository);
+        verifyNoInteractions(roomBookingRepository);
+        verifyNoInteractions(roomRepository);
     }
 
     @Test
     void validarReservaUsuarioNoEncontrado() {
-        UserRequest request = new UserRequest("Juan", "mal@gmail.com", "12345678");
-        when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
 
-        Excepciones.UsuarioNoEncontradoException ex = assertThrows(
-                Excepciones.UsuarioNoEncontradoException.class,
-                () -> roomBookingService.validarReserva(request.email())
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> roomBookingService.validarReserva(idReserva, idRecepcionista)
         );
 
-        assertEquals("Cliente no encontrado", ex.getMessage());
-        verify(userRepository, times(1)).findByEmail(request.email());
+        assertEquals("Usuario no encontrado", ex.getMessage());
+        verify(userRepository, times(1)).findById(idRecepcionista);
 
         verifyNoInteractions(roomBookingRepository);
         verifyNoInteractions(roomRepository);
     }
 
     @Test
-    void validarReservaSinReservasPendientes() {
-        String email = "cliente@email.com";
-        User cliente = new User();
-        cliente.setId(1L);
-        cliente.setEmail(email);
+    void validarReservaUsuarioNoAutorizado() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(cliente));
-        when(roomBookingRepository.findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(1L, RoomBookingStatus.PENDIENTE))
-                .thenReturn(Optional.empty());
+        User usuarioNoAutorizado = new User();
+        usuarioNoAutorizado.setId(idRecepcionista);
+        usuarioNoAutorizado.setRol(Role.CLIENT);
+
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.of(usuarioNoAutorizado));
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> roomBookingService.validarReserva(email)
+                () -> roomBookingService.validarReserva(idReserva, idRecepcionista)
         );
 
-        assertEquals("No hay reservas pendientes para este cliente", ex.getMessage());
-        verify(userRepository, times(1)).findByEmail(email);
-        verify(roomBookingRepository, times(1)).findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(1L, RoomBookingStatus.PENDIENTE);
+        assertEquals("Usuario no autorizado", ex.getMessage());
+        verify(userRepository, times(1)).findById(idRecepcionista);
+        verifyNoInteractions(roomBookingRepository);
         verifyNoInteractions(roomRepository);
     }
 
     @Test
-    void validarReservaNoHabitacionesDisponibles() {
-        // GIVEN
-        String email = "cliente@email.com";
-        User cliente = new User();
-        cliente.setId(1L);
-        cliente.setEmail(email);
+    void validarReservaNoEncontrada() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
 
-        Room habitacion = new Room();
-        habitacion.setId(101L);
-        habitacion.setTipo(RoomType.INDIVIDUAL);
+        User recepcionista = new User();
+        recepcionista.setId(idRecepcionista);
+        recepcionista.setRol(Role.RECEPTIONIST);
 
-        RoomBooking reservaPendiente = new RoomBooking();
-        reservaPendiente.setId(50L);
-        reservaPendiente.setCliente(cliente);
-        reservaPendiente.setHabitacion(habitacion);
-        reservaPendiente.setCheckIn(LocalDate.now().plusDays(1));
-        reservaPendiente.setCheckOut(LocalDate.now().plusDays(3));
-        reservaPendiente.setEstado(RoomBookingStatus.PENDIENTE);
-
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(cliente));
-        when(roomBookingRepository.findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(1L, RoomBookingStatus.PENDIENTE))
-                .thenReturn(Optional.of(reservaPendiente));
-        when(roomRepository.findRoomDisponibles(reservaPendiente.getCheckIn(), reservaPendiente.getCheckOut()))
-                .thenReturn(Collections.emptyList());
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.of(recepcionista));
+        when(roomBookingRepository.findById(idReserva))
+                .thenReturn(Optional.empty());
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> roomBookingService.validarReserva(email)
+                () -> roomBookingService.validarReserva(idReserva, idRecepcionista)
         );
 
-        assertEquals("No hay habitaciones disponibles para confirmar", ex.getMessage());
-        verify(userRepository, times(1)).findByEmail(email);
-        verify(roomBookingRepository, times(1)).findFirstByClienteIdAndEstadoOrderByCreadaEnAsc(1L, RoomBookingStatus.PENDIENTE);
-        verify(roomRepository, times(1)).findRoomDisponibles(reservaPendiente.getCheckIn(), reservaPendiente.getCheckOut());
+        assertEquals("Reserva no encontrada", ex.getMessage());
+        verify(userRepository, times(1)).findById(idRecepcionista);
+        verify(roomBookingRepository, times(1)).findById(idReserva);
+        verifyNoInteractions(roomRepository);
+    }
+
+    @Test
+    void validarReservaNoEstaPendiente() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
+
+        User recepcionista = new User();
+        recepcionista.setId(idRecepcionista);
+        recepcionista.setRol(Role.RECEPTIONIST);
+
+        RoomBooking reservaConfirmada = new RoomBooking();
+        reservaConfirmada.setId(idReserva);
+        reservaConfirmada.setEstado(RoomBookingStatus.CONFIRMADA);
+
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.of(recepcionista));
+        when(roomBookingRepository.findById(idReserva)).thenReturn(Optional.of(reservaConfirmada));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> roomBookingService.validarReserva(idReserva, idRecepcionista)
+        );
+
+        assertEquals("La reserva no está en estado pendiente", ex.getMessage());
+        verify(userRepository, times(1)).findById(idRecepcionista);
+        verify(roomBookingRepository, times(1)).findById(idReserva);
         verify(roomBookingRepository, never()).save(any(RoomBooking.class));
+        verifyNoInteractions(roomRepository);
     }
 
 

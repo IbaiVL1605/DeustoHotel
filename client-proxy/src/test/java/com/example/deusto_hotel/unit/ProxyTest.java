@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.deusto_hotel.proxy.Proxy;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest;
@@ -781,6 +782,51 @@ class ProxyTest {
 
                 // Verificamos que la petición se ha enviado al menos una vez
                 verify(httpClient).send(any(HttpRequest.class), any());
+        }
+
+        @Test
+        void validarReserva_exito() throws Exception {
+                HttpResponse<String> response = mock(HttpResponse.class);
+                when(response.statusCode()).thenReturn(200);
+                when(response.body()).thenReturn("Reserva validada correctamente");
+
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn((HttpResponse) response);
+
+                ResponseEntity<String> result = proxy.validarReserva(99L, 7L);
+
+                assertEquals(200, result.getStatusCode().value());
+                assertEquals("Reserva validada correctamente", result.getBody());
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
+
+        @Test
+        void validarReserva_errorBackend() throws Exception {
+                HttpResponse<String> response = mock(HttpResponse.class);
+                when(response.statusCode()).thenReturn(403);
+                when(response.body()).thenReturn("Usuario no autorizado");
+
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn((HttpResponse) response);
+
+                ResponseEntity<String> result = proxy.validarReserva(99L, 7L);
+
+                assertEquals(403, result.getStatusCode().value());
+                assertEquals("Usuario no autorizado", result.getBody());
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
+
+        @Test
+        void validarReserva_errorTecnico() throws Exception {
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenThrow(new IOException("Conexion fallida"));
+
+                RuntimeException ex = assertThrows(RuntimeException.class,
+                                () -> proxy.validarReserva(99L, 7L));
+
+                assertEquals("Error al validar la reserva", ex.getMessage());
+                assertNotNull(ex.getCause());
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
         }
 
 }
