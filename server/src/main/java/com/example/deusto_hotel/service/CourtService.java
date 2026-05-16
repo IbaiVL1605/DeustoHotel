@@ -42,37 +42,37 @@ public class CourtService {
      */
     private final CourtBookingRepository courtBookingRepository;
 
-    /*
     @Transactional(readOnly = true)
     public List<CourtResponse> findAll() {
         return courtRepository.findAll().stream()
                 .map(c -> new CourtResponse(c.getId(), c.getNombre(), c.getTipo(), c.getPrecioPorHora(), c.getEstado()))
                 .toList();
     }
-
-    @Transactional(readOnly = true)
-    public CourtResponse findById(Long id) {
-        throw new UnsupportedOperationException();
-    }
-
-
-    public CourtResponse create(CourtRequest request) {
-        throw new UnsupportedOperationException();
-    }
-
-    public CourtResponse update(Long id, CourtRequest request) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void delete(Long id) {
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<CourtResponse> findAvailableCourts(String tipo, String fecha, String horaInicio, String horaFin) {
-    ...
-    }
+    /*
+     * @Transactional(readOnly = true)
+     * public CourtResponse findById(Long id) {
+     * throw new UnsupportedOperationException();
+     * }
+     * 
+     * 
+     * public CourtResponse create(CourtRequest request) {
+     * throw new UnsupportedOperationException();
+     * }
+     * 
+     * public CourtResponse update(Long id, CourtRequest request) {
+     * throw new UnsupportedOperationException();
+     * }
+     * 
+     * public void delete(Long id) {
+     * throw new UnsupportedOperationException();
+     * }
+     * 
+     * 
+     * @Transactional(readOnly = true)
+     * public List<CourtResponse> findAvailableCourts(String tipo, String fecha,
+     * String horaInicio, String horaFin) {
+     * ...
+     * }
      */
 
     /**
@@ -82,9 +82,9 @@ public class CourtService {
      * las franjas horarias disponibles para cada fecha.
      * </p>
      *
-     * @param year año a consultar
+     * @param year  año a consultar
      * @param month mes a consultar
-     * @param type tipo de pista a filtrar, o null para todas
+     * @param type  tipo de pista a filtrar, o null para todas
      * @return lista de semanas con disponibilidad diaria
      */
     @Transactional(readOnly = true)
@@ -133,7 +133,7 @@ public class CourtService {
      * intervalo horario de una hora.
      * </p>
      *
-     * @param date fecha a consultar
+     * @param date   fecha a consultar
      * @param courts lista de pistas disponibles
      * @return lista de franjas horarias disponibles
      */
@@ -149,30 +149,23 @@ public class CourtService {
             final LocalTime slotStart = current;
             final LocalTime slotEnd = current.plusHours(1);
 
-            List<Court> availableCourts = courts.stream().filter(court ->
-                    courtBookingRepository.findSolapamientos(
-                            court.getId(),
-                            date,
-                            slotStart,
-                            slotEnd
-                    ).isEmpty()
-            ).toList();
+            List<Court> availableCourts = courts.stream().filter(court -> courtBookingRepository.findSolapamientos(
+                    court.getId(),
+                    date,
+                    slotStart,
+                    slotEnd).isEmpty()).toList();
 
             if (!availableCourts.isEmpty()) {
 
-                List<CourtResponse> courtResponses = availableCourts.stream().map(c ->
-                        new CourtResponse(
-                                c.getId(),
-                                c.getNombre(),
-                                c.getTipo(),
-                                c.getPrecioPorHora(),
-                                c.getEstado()
-                        )
-                ).toList();
+                List<CourtResponse> courtResponses = availableCourts.stream().map(c -> new CourtResponse(
+                        c.getId(),
+                        c.getNombre(),
+                        c.getTipo(),
+                        c.getPrecioPorHora(),
+                        c.getEstado())).toList();
 
                 availableSlots.add(
-                        new AvailableSlot(slotStart, slotEnd, courtResponses)
-                );
+                        new AvailableSlot(slotStart, slotEnd, courtResponses));
             }
         }
 
@@ -180,16 +173,18 @@ public class CourtService {
     }
 
     /*
-    @Transactional(readOnly = true)
-    public List<CourtDayAvailability> findCourtDayAvailability(String tipo, String fecha) {
-    ...
-    }
-
-    @Transactional(readOnly = true)
-    public List<CourtDayAvailability> findCourtDayAvailabilityWithRange(String tipo, String fecha, String horaInicio, String horaFin) {
-    ...
-    }
-    */
+     * @Transactional(readOnly = true)
+     * public List<CourtDayAvailability> findCourtDayAvailability(String tipo,
+     * String fecha) {
+     * ...
+     * }
+     * 
+     * @Transactional(readOnly = true)
+     * public List<CourtDayAvailability> findCourtDayAvailabilityWithRange(String
+     * tipo, String fecha, String horaInicio, String horaFin) {
+     * ...
+     * }
+     */
 
     /**
      * Obtiene las reservas agrupadas por tipo de pista y semana.
@@ -198,10 +193,10 @@ public class CourtService {
      * dentro de un rango semanal calculado automáticamente.
      * </p>
      *
-     * @param tipo tipo de pista a consultar
+     * @param tipo   tipo de pista a consultar
      * @param semana número de semana relativa:
-     *                1 para la semana actual,
-     *                2 para la siguiente
+     *               1 para la semana actual,
+     *               2 para la siguiente
      * @return lista de disponibilidad agrupada por tipo de pista
      */
     @Transactional(readOnly = true)
@@ -246,8 +241,7 @@ public class CourtService {
 
                 courts = courtRepository.findByTipoAndEstado(
                         courtType,
-                        CourtStatus.DISPONIBLE
-                );
+                        CourtStatus.DISPONIBLE);
 
             } catch (Exception e) {
 
@@ -268,7 +262,8 @@ public class CourtService {
                     .filter(c -> c.getTipo() == courtType)
                     .toList();
 
-            if (courtsByType.isEmpty()) continue;
+            if (courtsByType.isEmpty())
+                continue;
 
             // Obtener reservas confirmadas y pendientes
             List<CourtBookingResponse> bookings = new ArrayList<>();
@@ -279,11 +274,9 @@ public class CourtService {
             for (Court court : courtsByType) {
 
                 List<CourtBookingResponse> courtBookings = court.getCourtBookings().stream()
-                        .filter(booking ->
-                                booking.getFecha().isAfter(finalStartDate.minusDays(1)) &&
-                                        booking.getFecha().isBefore(finalEndDate.plusDays(1)) &&
-                                        booking.getEstado() != CourtBookingStatus.CANCELADA
-                        )
+                        .filter(booking -> booking.getFecha().isAfter(finalStartDate.minusDays(1)) &&
+                                booking.getFecha().isBefore(finalEndDate.plusDays(1)) &&
+                                booking.getEstado() != CourtBookingStatus.CANCELADA)
                         .map(booking -> new CourtBookingResponse(
                                 booking.getId(),
                                 booking.getCliente().getId(),
@@ -295,8 +288,7 @@ public class CourtService {
                                 booking.getHoraFin(),
                                 booking.getEstado(),
                                 booking.getPrecioTotal(),
-                                booking.getCreadaEn()
-                        ))
+                                booking.getCreadaEn()))
                         .toList();
 
                 bookings.addAll(courtBookings);
@@ -309,11 +301,11 @@ public class CourtService {
     }
 
     /*
-    @Transactional(readOnly = true)
-    public List<CourtAvailabilityDTO> findAvailableByType(String tipo) {
-        return findAvailableByTypeAndWeek(tipo, null);
-    }
-    */
+     * @Transactional(readOnly = true)
+     * public List<CourtAvailabilityDTO> findAvailableByType(String tipo) {
+     * return findAvailableByTypeAndWeek(tipo, null);
+     * }
+     */
 
     /**
      * Obtiene las reservas disponibles para una fecha concreta.
@@ -363,7 +355,8 @@ public class CourtService {
                     .filter(c -> c.getTipo() == courtType)
                     .toList();
 
-            if (courtsByType.isEmpty()) continue;
+            if (courtsByType.isEmpty())
+                continue;
 
             // Obtener reservas para esa fecha específica
             List<CourtBookingResponse> bookings = new ArrayList<>();
@@ -371,10 +364,8 @@ public class CourtService {
             for (Court court : courtsByType) {
 
                 List<CourtBookingResponse> courtBookings = court.getCourtBookings().stream()
-                        .filter(booking ->
-                                booking.getFecha().equals(targetDate) &&
-                                        booking.getEstado() != CourtBookingStatus.CANCELADA
-                        )
+                        .filter(booking -> booking.getFecha().equals(targetDate) &&
+                                booking.getEstado() != CourtBookingStatus.CANCELADA)
                         .map(booking -> new CourtBookingResponse(
                                 booking.getId(),
                                 booking.getCliente().getId(),
@@ -386,8 +377,7 @@ public class CourtService {
                                 booking.getHoraFin(),
                                 booking.getEstado(),
                                 booking.getPrecioTotal(),
-                                booking.getCreadaEn()
-                        ))
+                                booking.getCreadaEn()))
                         .toList();
 
                 bookings.addAll(courtBookings);
@@ -398,4 +388,39 @@ public class CourtService {
 
         return result;
     }
+
+    // para bloquear pistas en mantenimiento
+    @Transactional
+    public CourtResponse blockCourt(Long id) {
+        Court court = courtRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Pista no encontrada con ID: " + id));
+
+        court.setEstado(CourtStatus.BLOQUEADA);
+        courtRepository.save(court);
+
+        return new CourtResponse(
+                court.getId(),
+                court.getNombre(),
+                court.getTipo(),
+                court.getPrecioPorHora(),
+                court.getEstado());
+    }
+
+    // para desbloquear pistas al terminar el mantenimiento
+    @Transactional
+    public CourtResponse unblockCourt(Long id) {
+        Court court = courtRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Pista no encontrada con ID: " + id));
+
+        court.setEstado(CourtStatus.DISPONIBLE);
+        courtRepository.save(court);
+
+        return new CourtResponse(
+                court.getId(),
+                court.getNombre(),
+                court.getTipo(),
+                court.getPrecioPorHora(),
+                court.getEstado());
+    }
+
 }

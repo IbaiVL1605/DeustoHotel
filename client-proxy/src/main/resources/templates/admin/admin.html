@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Habitación – Deusto Hotel</title>
+    <title>Panel de Administración – Deusto Hotel</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -33,7 +33,7 @@
             font-weight: 300;
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* Cambiado para no centrar verticalmente si hay mucho contenido */
             justify-content: center;
             padding: 2rem;
         }
@@ -61,33 +61,38 @@
         }
 
         /* ── MAIN CONTAINER ── */
-        .auth-container {
+        .admin-dashboard {
             width: 100%;
-            max-width: 420px;
+            max-width: 1200px;
+            margin-top: 5rem;
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 2rem;
+            align-items: flex-start;
         }
 
         /* ── CARD ── */
-        .auth-card {
+        .admin-card {
             background: var(--dark-2);
             border: 1px solid rgba(201, 168, 76, .2);
-            padding: 3rem 2.5rem;
+            padding: 2.5rem 2rem;
             backdrop-filter: blur(10px);
         }
 
-        .auth-header {
+        .admin-header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
-        .auth-title {
+        .admin-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 400;
             color: var(--cream);
             margin-bottom: .5rem;
         }
 
-        .auth-subtitle {
+        .admin-subtitle {
             font-size: .75rem;
             letter-spacing: .15em;
             text-transform: uppercase;
@@ -103,7 +108,7 @@
         }
 
         /* ── FORM ── */
-        .auth-form {
+        .admin-form {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
@@ -170,6 +175,7 @@
             cursor: pointer;
             transition: background .25s, transform .1s;
             margin-top: 1rem;
+            width: 100%;
         }
 
         .submit-btn:hover:not(:disabled) {
@@ -185,23 +191,108 @@
             cursor: not-allowed;
         }
 
+        /* ── TABLE Y BADGES ── */
+        .admin-table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(201, 168, 76, .1);
+        }
+
+        .admin-table th {
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+
+        .admin-table td {
+            color: var(--cream);
+            vertical-align: middle;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background-color: rgba(110, 231, 162, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(110, 231, 162, 0.3);
+        }
+
+        .badge-danger {
+            background-color: rgba(224, 85, 85, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(224, 85, 85, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 0.5rem 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .7rem;
+            font-weight: 500;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .25s;
+        }
+
+        .btn-outline:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        /* ── ALERTS ── */
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .alert-success {
+            background-color: rgba(110, 231, 162, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(110, 231, 162, 0.3);
+        }
+        
+        .alert-danger {
+            background-color: rgba(224, 85, 85, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(224, 85, 85, 0.3);
+        }
+
         /* ── RESPONSIVE ── */
-        @media (max-width: 480px) {
+        @media (max-width: 900px) {
+            .admin-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
             .logo-header {
                 left: 1.5rem;
                 font-size: 1.2rem;
-            }
-
-            .auth-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .auth-title {
-                font-size: 1.6rem;
-            }
-
-            body {
-                padding: 1rem;
             }
         }
     </style>
@@ -211,21 +302,22 @@
 <!-- LOGO HEADER -->
 <a href="/" class="logo-header">Deusto <span>Hotel</span></a>
 
-<!-- AUTH CONTAINER -->
-<div class="auth-container">
-    <div class="auth-card">
-        <!-- HEADER -->
-        <div class="auth-header">
-            <h1 class="auth-title">Nueva Habitación</h1>
-            <p class="auth-subtitle">Crear habitación del hotel</p>
+<!-- MAIN DASHBOARD -->
+<div class="admin-dashboard">
+
+    <!-- COLUMNA IZQUIERDA: CREAR HABITACIÓN -->
+    <div class="admin-card">
+        <div class="admin-header">
+            <h1 class="admin-title">Nueva Habitación</h1>
+            <p class="admin-subtitle">Añadir al sistema</p>
             <div class="divider"></div>
         </div>
 
         <!-- FORM -->
-        <form th:action="@{/admin}" method="post" id="roomForm" class="auth-form">
+        <form th:action="@{/admin}" method="post" id="roomForm" class="admin-form">
             <div class="form-group">
                 <label for="numero">Número</label>
-                <input type="text" name="numero" id="numero" placeholder="Número" required />
+                <input type="text" name="numero" id="numero" placeholder="Ej. 101" required />
             </div>
 
             <div class="form-group">
@@ -244,12 +336,66 @@
 
             <div class="form-group">
                 <label for="precioPorNoche">Precio por noche</label>
-                <input type="number" name="precioPorNoche" id="precioPorNoche" placeholder="Precio por noche" required />
+                <input type="number" name="precioPorNoche" id="precioPorNoche" placeholder="Precio" required />
             </div>
 
             <button type="submit" class="submit-btn">Crear Habitación</button>
         </form>
     </div>
+
+    <!-- COLUMNA DERECHA: GESTIÓN DE PISTAS -->
+    <div class="admin-card">
+        <div class="admin-header">
+            <h1 class="admin-title">Gestión de Pistas</h1>
+            <p class="admin-subtitle">Mantenimiento de instalaciones</p>
+            <div class="divider"></div>
+        </div>
+
+        <!-- Alertas de éxito o error -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="court : ${courts}">
+                        <td th:text="${court.id}"></td>
+                        <td th:text="${court.nombre}"></td>
+                        <td th:text="${court.tipo}"></td>
+                        <td>
+                            <span th:if="${court.estado.name() == 'DISPONIBLE'}" class="badge badge-success">Disponible</span>
+                            <span th:if="${court.estado.name() == 'BLOQUEADA'}" class="badge badge-danger">Bloqueada</span>
+                        </td>
+                        <td>
+                            <!-- Botón de bloqueo solo si está disponible -->
+                            <form th:if="${court.estado.name() == 'DISPONIBLE'}" 
+                                  th:action="@{/admin/courts/{id}/block(id=${court.id})}" 
+                                  method="post" style="margin: 0;">
+                                <button type="submit" class="btn-outline">Bloquear Mantenimiento</button>
+                            </form>
+                            <form th:if="${court.estado.name() == 'BLOQUEADA'}" 
+                                  th:action="@{/admin/courts/{id}/unblock(id=${court.id})}" 
+                                  method="post" style="margin: 0;">
+                                <button type="submit" class="btn-outline" style="color: var(--success); border-color: var(--success);">
+                                    Desbloquear
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -277,6 +423,8 @@
         if (tipo === 'SUITE') {
             capacidadInput.value = '';
             precioInput.value = '';
+            capacidadInput.readOnly = false;
+            precioInput.readOnly = false;
         }
     }
 

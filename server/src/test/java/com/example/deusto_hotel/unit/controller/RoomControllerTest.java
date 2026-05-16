@@ -142,7 +142,56 @@ class RoomControllerTest {
                 )
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void bloquearHabitacion_success() throws Exception {
 
+        mockMvc.perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .put("/api/v1/rooms/1/bloquear")
+                )
+                .andExpect(status().isOk());
 
+        verify(roomService).bloquearHabitacion(1L);
+    }
+
+    @Test
+    void bloquearHabitacion_notFound() throws Exception {
+
+        doThrow(new RuntimeException("Habitación no encontrada"))
+                .when(roomService)
+                .bloquearHabitacion(1L);
+
+        mockMvc.perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .put("/api/v1/rooms/1/bloquear")
+                )
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    void deleteRoom_success() throws Exception {
+
+        doNothing().when(roomService).delete(1L);
+
+        mockMvc.perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .delete("/api/v1/rooms/1")
+                )
+                .andExpect(status().isNoContent());
+
+        verify(roomService).delete(1L);
+    }
+
+    @Test
+    void deleteRoom_notFound() throws Exception {
+
+        doThrow(new RuntimeException("Habitación no encontrada"))
+                .when(roomService).delete(999L);
+
+        mockMvc.perform(
+                        org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                                .delete("/api/v1/rooms/999")
+                )
+                .andExpect(status().isNotFound());
+    }
 
 }

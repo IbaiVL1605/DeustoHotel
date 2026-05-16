@@ -1,15 +1,8 @@
 package com.example.deusto_hotel.unit;
 
 import com.example.deusto_hotel.dto.*;
-import com.example.deusto_hotel.dto.CourtResponse;
-import com.example.deusto_hotel.dto.WeekAvailability;
 import com.example.deusto_hotel.model.CourtType;
 import com.example.deusto_hotel.model.CourtStatus;
-
-import com.example.deusto_hotel.dto.RoomBookingRequest;
-import com.example.deusto_hotel.dto.RoomDisponibleResponse;
-import com.example.deusto_hotel.dto.RoomDisponiblesSimplesResponse;
-import com.example.deusto_hotel.dto.RoomDisponiblesSuitResponse;
 import com.example.deusto_hotel.model.RoomType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,29 +29,30 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 class ProxyTest {
 
-    @Mock
-    HttpClient httpClient;
+        @Mock
+        HttpClient httpClient;
 
-    @InjectMocks
-    Proxy proxy;
+        @InjectMocks
+        Proxy proxy;
 
-    @Test
-    void login_exito() throws Exception {
-        HttpResponse<String> response = mock(HttpResponse.class);
+        @Test
+        void login_exito() throws Exception {
+                HttpResponse<String> response = mock(HttpResponse.class);
 
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn("{\"mensaje\":\"Sesion iniciada correctamente\",\"usuario\":{\"id\":1,\"nombre\":\"Juan\",\"email\":\"juan@email.com\",\"rol\":\"CLIENT\",\"bloqueado\":false,\"creadoEn\":\"2026-04-25T10:00:00\"}}");
+                when(response.statusCode()).thenReturn(200);
+                when(response.body()).thenReturn(
+                                "{\"mensaje\":\"Sesion iniciada correctamente\",\"usuario\":{\"id\":1,\"nombre\":\"Juan\",\"email\":\"juan@email.com\",\"rol\":\"CLIENT\",\"bloqueado\":false,\"creadoEn\":\"2026-04-25T10:00:00\"}}");
 
-        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn((HttpResponse) response);
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn((HttpResponse) response);
 
-        var result = proxy.login("juan@email.com", "1234");
+                var result = proxy.login("juan@email.com", "1234");
 
-        assertEquals(1L, result.id());
-        assertEquals("Juan", result.nombre());
-        assertEquals("juan@email.com", result.email());
-        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
-    }
+                assertEquals(1L, result.id());
+                assertEquals("Juan", result.nombre());
+                assertEquals("juan@email.com", result.email());
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
 
         @Test
         void login_error_contrasenaIncorrecta() throws Exception {
@@ -201,22 +195,22 @@ class ProxyTest {
                 verify(httpClient).send(any(HttpRequest.class), any());
         }
 
-    @Test
-    void shouldNotRegisterUserIfEmailAlreadyExists() throws Exception {
-        HttpResponse<String> response = mock(HttpResponse.class);
-        when(response.statusCode()).thenReturn(400);
-        when(response.body()).thenReturn("Error: Email already in use");
+        @Test
+        void shouldNotRegisterUserIfEmailAlreadyExists() throws Exception {
+                HttpResponse<String> response = mock(HttpResponse.class);
+                when(response.statusCode()).thenReturn(400);
+                when(response.body()).thenReturn("Error: Email already in use");
 
-        when(httpClient.send(any(HttpRequest.class), any()))
-                .thenReturn((HttpResponse) response);
+                when(httpClient.send(any(HttpRequest.class), any()))
+                                .thenReturn((HttpResponse) response);
 
-        assertThrows(RuntimeException.class, () -> {
-            proxy.signup("Juan López", "juan@email.com", "juan123");
-        });
+                assertThrows(RuntimeException.class, () -> {
+                        proxy.signup("Juan López", "juan@email.com", "juan123");
+                });
 
-        // Verificamos que, aun fallando, se intentó hacer la petición una vez
-        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
-    }
+                // Verificamos que, aun fallando, se intentó hacer la petición una vez
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
 
         @Test
         void deleteCourtBooking_exito() throws Exception {
@@ -385,74 +379,56 @@ class ProxyTest {
                 assertTrue(exception.getMessage().contains("Internal Server Error"));
         }
 
-    @Test
-    void createCourtBooking_exito() throws Exception {
+        @Test
+        void createCourtBooking_exito() throws Exception {
 
+                HttpResponse<String> response = mock(HttpResponse.class);
 
-        HttpResponse<String> response = mock(HttpResponse.class);
+                when(response.statusCode()).thenReturn(201); // CREATED
 
+                when(httpClient.send(any(HttpRequest.class), any()))
+                                .thenReturn((HttpResponse) response);
 
-        when(response.statusCode()).thenReturn(201); // CREATED
+                CourtBookingRequest request = new CourtBookingRequest(
+                                1L,
+                                LocalDate.now(),
+                                java.time.LocalTime.of(10, 0),
+                                java.time.LocalTime.of(12, 0),
+                                1L);
 
+                proxy.createCourtBooking(request);
 
-        when(httpClient.send(any(HttpRequest.class), any()))
-                .thenReturn((HttpResponse) response);
+                verify(httpClient).send(any(HttpRequest.class), any());
+        }
 
+        @Test
+        void createCourtBooking_error() throws Exception {
 
-        CourtBookingRequest request = new CourtBookingRequest(
-                1L,
-                LocalDate.now(),
-                java.time.LocalTime.of(10, 0),
-                java.time.LocalTime.of(12, 0),
-                1L
-        );
+                HttpResponse<String> response = mock(HttpResponse.class);
 
+                when(response.statusCode()).thenReturn(400);
+                when(response.body()).thenReturn("Error en la petición");
 
-        proxy.createCourtBooking(request);
+                when(httpClient.send(any(HttpRequest.class), any()))
+                                .thenReturn((HttpResponse) response);
 
+                CourtBookingRequest request = new CourtBookingRequest(
+                                1L,
+                                LocalDate.now(),
+                                java.time.LocalTime.of(10, 0),
+                                java.time.LocalTime.of(12, 0),
+                                1L);
 
-        verify(httpClient).send(any(HttpRequest.class), any());
-    }
+                RuntimeException ex = assertThrows(
+                                RuntimeException.class,
+                                () -> proxy.createCourtBooking(request));
 
+                assertEquals("Error creando reserva de pista: Error en la petición", ex.getMessage());
 
-    @Test
-    void createCourtBooking_error() throws Exception {
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
 
-
-        HttpResponse<String> response = mock(HttpResponse.class);
-
-
-        when(response.statusCode()).thenReturn(400);
-        when(response.body()).thenReturn("Error en la petición");
-
-
-        when(httpClient.send(any(HttpRequest.class), any()))
-                .thenReturn((HttpResponse) response);
-
-
-        CourtBookingRequest request = new CourtBookingRequest(
-                1L,
-                LocalDate.now(),
-                java.time.LocalTime.of(10, 0),
-                java.time.LocalTime.of(12, 0),
-                1L
-        );
-
-
-        RuntimeException ex = assertThrows(
-                RuntimeException.class,
-                () -> proxy.createCourtBooking(request)
-        );
-
-
-        assertEquals("Error creando reserva de pista: Error en la petición", ex.getMessage());
-
-
-        verify(httpClient, times(1)).send(any(HttpRequest.class), any());
-    }
-
-
-@Test
+        @Test
         void getCourts_exito_sinFiltro() throws Exception {
                 // 1. Prepara el JSON que simula la respuesta del servidor
                 String jsonResponse = "[" +
@@ -595,133 +571,216 @@ class ProxyTest {
                 verify(httpClient).send(any(HttpRequest.class), any());
         }
 
-    @Test
-    void crearHabitacionSuccessfully() throws Exception{
-        RoomRequest request = new RoomRequest("777", RoomType.SUITE, 2, 200.0);
-        HttpResponse<String> response = mock(HttpResponse.class);
+        @Test
+        void crearHabitacionSuccessfully() throws Exception {
+                RoomRequest request = new RoomRequest("777", RoomType.SUITE, 2, 200.0);
+                HttpResponse<String> response = mock(HttpResponse.class);
 
-        when(response.statusCode()).thenReturn(201);
-        when(response.body()).thenReturn("OK");
+                when(response.statusCode()).thenReturn(201);
+                when(response.body()).thenReturn("OK");
 
-        when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(response);
+                when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(response);
 
-        proxy.crearHabitacion(request);
+                proxy.crearHabitacion(request);
 
-        verify(httpClient, times(1))
-                .send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
-    }
+                verify(httpClient, times(1))
+                                .send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+        }
 
-    @Test
-    void crearHabitacionError() throws Exception{
-        RoomRequest request = new RoomRequest("777", RoomType.SUITE, 2, 200.0);
-        HttpResponse<String> response = mock(HttpResponse.class);
+        @Test
+        void crearHabitacionError() throws Exception {
+                RoomRequest request = new RoomRequest("777", RoomType.SUITE, 2, 200.0);
+                HttpResponse<String> response = mock(HttpResponse.class);
 
-        when(response.statusCode()).thenReturn(400);
-        when(response.body()).thenReturn("Error creando habitación");
+                when(response.statusCode()).thenReturn(400);
+                when(response.body()).thenReturn("Error creando habitación");
 
-        when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(response);
+                when(httpClient.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(response);
 
-        assertThrows(RuntimeException.class, () -> {
-            proxy.crearHabitacion(request);
-        });
-    }
+                assertThrows(RuntimeException.class, () -> {
+                        proxy.crearHabitacion(request);
+                });
+        }
 
-    @Test
-    void getRoomBookingByClientIdSuccessfully() throws Exception{
-        Long clienteId = 1L;
-        HttpResponse<String> response = mock(HttpResponse.class);
+        @Test
+        void getRoomBookingByClientIdSuccessfully() throws Exception {
+                Long clienteId = 1L;
+                HttpResponse<String> response = mock(HttpResponse.class);
 
-        String json = """
-            [
-              {
-                "id": 1,
-                "clienteId": 1,
-                "clienteNombre": "Juan López",
-                "habitacionId": 101,
-                "habitacionNumero": "101A",
-                "checkIn": "2025-05-01",
-                "checkOut": "2025-05-05",
-                "estado": "CONFIRMADA",
-                "precioTotal": 500.0,
-                "creadaEn": "2025-04-01T10:00:00"
-              }
-            ]
-            """;
+                String json = """
+                                [
+                                  {
+                                    "id": 1,
+                                    "clienteId": 1,
+                                    "clienteNombre": "Juan López",
+                                    "habitacionId": 101,
+                                    "habitacionNumero": "101A",
+                                    "checkIn": "2025-05-01",
+                                    "checkOut": "2025-05-05",
+                                    "estado": "CONFIRMADA",
+                                    "precioTotal": 500.0,
+                                    "creadaEn": "2025-04-01T10:00:00"
+                                  }
+                                ]
+                                """;
 
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn(json);
+                when(response.statusCode()).thenReturn(200);
+                when(response.body()).thenReturn(json);
 
-        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(response);
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn(response);
 
-        List<RoomBookingResponse> result = proxy.getRoomBookingsByClienteId(clienteId);
+                List<RoomBookingResponse> result = proxy.getRoomBookingsByClienteId(clienteId);
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
+                assertNotNull(result);
+                assertEquals(1, result.size());
 
-        verify(httpClient).send(any(), any());
-    }
+                verify(httpClient).send(any(), any());
+        }
 
-    @Test
-    void getRoomBookingByClientIdError() throws Exception{
-        Long clienteId = 1L;
-        HttpResponse<String> response = mock(HttpResponse.class);
+        @Test
+        void getRoomBookingByClientIdError() throws Exception {
+                Long clienteId = 1L;
+                HttpResponse<String> response = mock(HttpResponse.class);
 
-        when(response.statusCode()).thenReturn(500);
-        when(response.body()).thenReturn("Error interno");
+                when(response.statusCode()).thenReturn(500);
+                when(response.body()).thenReturn("Error interno");
 
-        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(response);
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn(response);
 
-        assertThrows(RuntimeException.class, () -> {
-            proxy.getRoomBookingsByClienteId(clienteId);
-        });
-    }
+                assertThrows(RuntimeException.class, () -> {
+                        proxy.getRoomBookingsByClienteId(clienteId);
+                });
+        }
 
-    @Test
-    void getCourtBookingsByClientIdSuccessfully() throws Exception{
-        Long clienteId = 1L;
-        HttpResponse<String> response = mock(HttpResponse.class);
+        @Test
+        void getCourtBookingsByClientIdSuccessfully() throws Exception {
+                Long clienteId = 1L;
+                HttpResponse<String> response = mock(HttpResponse.class);
 
-        String json = """
-            [
-              {
-                "pistaId": "10",
-                "fecha": "2025-05-01",
-                "horaInicio": "13:30:00",
-                "horaFin": "14:30:00",
-                "clienteId": "1"
-              }
-            ]
-            """;
+                String json = """
+                                [
+                                  {
+                                    "pistaId": "10",
+                                    "fecha": "2025-05-01",
+                                    "horaInicio": "13:30:00",
+                                    "horaFin": "14:30:00",
+                                    "clienteId": "1"
+                                  }
+                                ]
+                                """;
 
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn(json);
+                when(response.statusCode()).thenReturn(200);
+                when(response.body()).thenReturn(json);
 
-        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(response);
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn(response);
 
-        List<CourtBookingResponse> result = proxy.getCourtBookingsByClienteId(clienteId);
+                List<CourtBookingResponse> result = proxy.getCourtBookingsByClienteId(clienteId);
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
+                assertNotNull(result);
+                assertEquals(1, result.size());
 
-        verify(httpClient).send(any(), any());
-    }
+                verify(httpClient).send(any(), any());
+        }
 
-    @Test
-    void getCourtBookingsByClientIdError() throws Exception{
-        Long clienteId = 1L;
-        HttpResponse<String> response = mock(HttpResponse.class);
+        @Test
+        void getCourtBookingsByClientIdError() throws Exception {
+                Long clienteId = 1L;
+                HttpResponse<String> response = mock(HttpResponse.class);
 
-        when(response.statusCode()).thenReturn(500);
-        when(response.body()).thenReturn("Error interno");
+                when(response.statusCode()).thenReturn(500);
+                when(response.body()).thenReturn("Error interno");
 
-        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(response);
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn(response);
 
-        assertThrows(RuntimeException.class, () -> {
-            proxy.getCourtBookingsByClienteId(clienteId);
-        });
-    }
+                assertThrows(RuntimeException.class, () -> {
+                        proxy.getCourtBookingsByClienteId(clienteId);
+                });
+        }
+
+        // Mensaje para Ibai: Si mi niño ve esto y dice "pero esto no lo tenia que hacer
+        // yo???" quiero que sepa
+        // que de forma totalmente voluntaria (Marta me da miedo) he decidido hace los
+        // teses, besitos.
+        @Test
+        void updateCourtBooking_exito() throws Exception {
+                HttpResponse<String> response = mock(HttpResponse.class);
+
+                String jsonResponse = """
+                                {
+                                  "pistaId": 1,
+                                  "fecha": "2026-05-20",
+                                  "horaInicio": "10:00:00",
+                                  "horaFin": "12:00:00",
+                                  "clienteId": 1
+                                }
+                                """;
+
+                when(response.statusCode()).thenReturn(200);
+                when(response.body()).thenReturn(jsonResponse);
+
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn((HttpResponse) response);
+
+                CourtBookingRequest request = new CourtBookingRequest(
+                                1L,
+                                LocalDate.of(2026, 5, 20),
+                                java.time.LocalTime.of(10, 0),
+                                java.time.LocalTime.of(12, 0),
+                                1L);
+
+                CourtBookingResponse result = proxy.updateCourtBooking(1L, request);
+
+                assertNotNull(result);
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
+
+        // Mensaje para Ibai: Si mi niño ve esto y dice "pero esto no lo tenia que hacer
+        // yo???" quiero que sepa
+        // que de forma totalmente voluntaria (Marta me da miedo) he decidido hace los
+        // teses, besitos.
+        @Test
+        void updateCourtBooking_error() throws Exception {
+                HttpResponse<String> response = mock(HttpResponse.class);
+
+                when(response.statusCode()).thenReturn(400);
+                when(response.body()).thenReturn("Error actualizando la reserva");
+
+                when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                                .thenReturn((HttpResponse) response);
+
+                CourtBookingRequest request = new CourtBookingRequest(
+                                1L,
+                                LocalDate.of(2026, 5, 20),
+                                java.time.LocalTime.of(10, 0),
+                                java.time.LocalTime.of(12, 0),
+                                1L);
+
+                RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+                        proxy.updateCourtBooking(1L, request);
+                });
+
+                assertEquals("Error actualizando la reserva: Error actualizando la reserva", ex.getMessage());
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
+
+        @Test
+        void unblockCourt_exito() throws Exception {
+                // Simulamos que el backend responde con un 200 OK
+                HttpResponse<String> response = mock(HttpResponse.class);
+                when(response.statusCode()).thenReturn(200);
+
+                when(httpClient.send(any(HttpRequest.class), any()))
+                                .thenReturn((HttpResponse) response);
+
+                // Ejecutamos el método del proxy
+                proxy.unblockCourt(1L);
+
+                // Verificamos que la petición se ha enviado al menos una vez
+                verify(httpClient).send(any(HttpRequest.class), any());
+        }
+
 }

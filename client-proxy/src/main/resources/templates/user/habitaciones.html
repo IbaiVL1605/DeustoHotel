@@ -718,6 +718,12 @@
         <span th:text="${error}"></span>
     </div>
 
+    <!-- SUCCESS ALERT -->
+    <div class="alert alert-success" th:if="${success}">
+        <span class="alert-icon">✓</span>
+        <span th:text="${success}"></span>
+    </div>
+
     <!-- ROOMS SECTION (only shown when dates were submitted) -->
     <div class="rooms-section" th:if="${habitacionSimple != null or habitacionDoble != null or habitacionSuite != null}">
 
@@ -748,12 +754,25 @@
                 <span>por noche</span>
             </div>
             <div class="room-qty-control">
-                <button class="qty-btn" onclick="changeQty('individual', -1)">−</button>
+                <button type="button" class="qty-btn" onclick="changeQty('individual', -1)">−</button>
                 <span class="qty-value" id="qtyIndividual">0</span>
-                <button class="qty-btn" id="btnAddIndividual" th:data-max="${habitacionSimple.numero_disponibles}" onclick="changeQty('individual', 1)">+</button>
+                <button type="button" class="qty-btn" id="btnAddIndividual" th:data-max="${habitacionSimple.numero_disponibles}" onclick="changeQty('individual', 1)">+</button>
             </div>
-            <button class="add-to-cart-btn" onclick="addSimple('INDIVIDUAL', 50)">Añadir</button>
+            <button type="button" class="add-to-cart-btn" onclick="addSimple('INDIVIDUAL', 50)">Añadir</button>
+
+            <form th:if="${role != null and role == 'ADMIN'}"
+                  th:action="@{/rooms/1/bloquear}"
+                  method="post">
+                <input type="hidden" name="fechaEntrada" th:value="${param.fechaEntrada != null ? param.fechaEntrada[0] : ''}">
+                <input type="hidden" name="fechaSalida" th:value="${param.fechaSalida != null ? param.fechaSalida[0] : ''}">
+
+                <button type="submit" class="add-to-cart-btn"
+                        style="margin-top:10px;background:#8b0000;color:white;border:none;">
+                    Bloquear
+                </button>
+            </form>
         </div>
+
 
         <!-- ── DOBLE ── -->
         <div th:if="${habitacionDoble != null}" class="room-row" id="rowDoble">
@@ -770,11 +789,23 @@
                 <span>por noche</span>
             </div>
             <div class="room-qty-control">
-                <button class="qty-btn" onclick="changeQty('doble', -1)">−</button>
+                <button type="button" class="qty-btn" onclick="changeQty('doble', -1)">−</button>
                 <span class="qty-value" id="qtyDoble">0</span>
-                <button class="qty-btn" id="btnAddDoble" th:data-max="${habitacionDoble.numero_disponibles}" onclick="changeQty('doble', 1)">+</button>
+                <button type="button" class="qty-btn" id="btnAddDoble" th:data-max="${habitacionDoble.numero_disponibles}" onclick="changeQty('doble', 1)">+</button>
             </div>
-            <button class="add-to-cart-btn" onclick="addSimple('DOBLE', 70)">Añadir</button>
+            <button type="button" class="add-to-cart-btn" onclick="addSimple('DOBLE', 70)">Añadir</button>
+            <form th:if="${role != null and role == 'ADMIN'}"
+                  th:action="@{/rooms/2/bloquear}"
+                  method="post">
+                <input type="hidden" name="fechaEntrada" th:value="${param.fechaEntrada != null ? param.fechaEntrada[0] : ''}">
+                <input type="hidden" name="fechaSalida" th:value="${param.fechaSalida != null ? param.fechaSalida[0] : ''}">
+
+                <button type="submit"
+                        class="add-to-cart-btn"
+                        style="margin-left:10px;background:#8b0000;color:white;border:none;">
+                    BLOQUEAR
+                </button>
+            </form>
         </div>
 
         <!-- ── SUITES ── -->
@@ -803,7 +834,19 @@
                     </div>
                     <div class="suite-price" th:text="${suite.precioPorNoche} + ' €'">0 €</div>
                     <div class="suite-price-label">por noche</div>
-                    <button class="suite-toggle-btn">Seleccionar suite</button>
+                    <button type="button" class="suite-toggle-btn" th:onclick="|toggleSuite(${suite.id}, ${suite.capacidad}, ${suite.precioPorNoche})|">Seleccionar suite</button>
+                    <form th:if="${role != null and role == 'ADMIN'}"
+                          th:action="@{/rooms/{id}/bloquear(id=${suite.id})}"
+                          method="post">
+                        <input type="hidden" name="fechaEntrada" th:value="${param.fechaEntrada != null ? param.fechaEntrada[0] : ''}">
+                        <input type="hidden" name="fechaSalida" th:value="${param.fechaSalida != null ? param.fechaSalida[0] : ''}">
+
+                        <button type="submit"
+                                class="suite-toggle-btn"
+                                style="background:#8b0000;color:white;border:none;margin-top:10px;">
+                            BLOQUEAR
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

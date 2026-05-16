@@ -384,90 +384,75 @@ class ControllerTest {
                 verifyNoInteractions(proxy);
         }
 
-    @Test
-    void createCourtBooking_noUser() throws Exception {
+        @Test
+        void createCourtBooking_noUser() throws Exception {
 
+                CourtBookingRequest request = new CourtBookingRequest(
+                                1L,
+                                LocalDate.now(),
+                                java.time.LocalTime.of(10, 0),
+                                java.time.LocalTime.of(12, 0),
+                                null);
 
-        CourtBookingRequest request = new CourtBookingRequest(
-                1L,
-                LocalDate.now(),
-                java.time.LocalTime.of(10, 0),
-                java.time.LocalTime.of(12, 0),
-                null
-        );
+                mockMvc.perform(post("/api/v1/court-bookings")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isOk())
+                                .andExpect(content().json(
+                                                "{\"status\":\"ERROR\", \"message\":\"Usuario no autenticado\"}"));
 
+                verify(proxy, never()).createCourtBooking(any());
+        }
 
-        mockMvc.perform(post("/api/v1/court-bookings")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().json("{\"status\":\"ERROR\", \"message\":\"Usuario no autenticado\"}"));
+        @Test
+        void createCourtBooking_exito() throws Exception {
 
+                MockHttpSession session = new MockHttpSession();
+                session.setAttribute("userId", 1L);
 
-        verify(proxy, never()).createCourtBooking(any());
-    }
+                CourtBookingRequest request = new CourtBookingRequest(
+                                1L,
+                                LocalDate.now(),
+                                java.time.LocalTime.of(10, 0),
+                                java.time.LocalTime.of(12, 0),
+                                null // el controller lo sustituye
+                );
 
+                mockMvc.perform(post("/api/v1/court-bookings")
+                                .session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isOk())
+                                .andExpect(content().json("{\"status\":\"OK\"}"));
 
-    @Test
-    void createCourtBooking_exito() throws Exception {
+                verify(proxy).createCourtBooking(any());
+        }
 
+        @Test
+        void createCourtBooking_error() throws Exception {
 
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
+                MockHttpSession session = new MockHttpSession();
+                session.setAttribute("userId", 1L);
 
+                doThrow(new RuntimeException("Error backend"))
+                                .when(proxy).createCourtBooking(any());
 
-        CourtBookingRequest request = new CourtBookingRequest(
-                1L,
-                LocalDate.now(),
-                java.time.LocalTime.of(10, 0),
-                java.time.LocalTime.of(12, 0),
-                null // el controller lo sustituye
-        );
+                CourtBookingRequest request = new CourtBookingRequest(
+                                1L,
+                                LocalDate.now(),
+                                java.time.LocalTime.of(10, 0),
+                                java.time.LocalTime.of(12, 0),
+                                null);
 
+                mockMvc.perform(post("/api/v1/court-bookings")
+                                .session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isOk())
+                                .andExpect(content().json("{\"status\":\"ERROR\", \"message\":\"Error backend\"}"));
 
-        mockMvc.perform(post("/api/v1/court-bookings")
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().json("{\"status\":\"OK\"}"));
-
-
-        verify(proxy).createCourtBooking(any());
-    }
-
-
-    @Test
-    void createCourtBooking_error() throws Exception {
-
-
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
-
-
-        doThrow(new RuntimeException("Error backend"))
-                .when(proxy).createCourtBooking(any());
-
-
-        CourtBookingRequest request = new CourtBookingRequest(
-                1L,
-                LocalDate.now(),
-                java.time.LocalTime.of(10, 0),
-                java.time.LocalTime.of(12, 0),
-                null
-        );
-
-
-        mockMvc.perform(post("/api/v1/court-bookings")
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().json("{\"status\":\"ERROR\", \"message\":\"Error backend\"}"));
-
-
-        verify(proxy).createCourtBooking(any());
-    }
+                verify(proxy).createCourtBooking(any());
+        }
 
         @Test
         void getPistas_exito_sinFiltro() throws Exception {
@@ -534,178 +519,265 @@ class ControllerTest {
 
         @Test
         void crearHabitacion() throws Exception {
-            RoomBookingRequest request = new RoomBookingRequest(
-                    RoomType.INDIVIDUAL,
-                    1L,
-                    1,
-                    1L,
-                    LocalDate.now(),
-                    LocalDate.now().plusDays(2));
+                RoomBookingRequest request = new RoomBookingRequest(
+                                RoomType.INDIVIDUAL,
+                                1L,
+                                1,
+                                1L,
+                                LocalDate.now(),
+                                LocalDate.now().plusDays(2));
 
-            ResponseEntity<String> response = ResponseEntity.ok("OK");
+                ResponseEntity<String> response = ResponseEntity.ok("OK");
 
-            when(proxy.crearReserva(any())).thenReturn(response);
+                when(proxy.crearReserva(any())).thenReturn(response);
 
-            mockMvc.perform(post("/reservas")
-                            .sessionAttr("userId", 1L)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(List.of(request))))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("OK"));
+                mockMvc.perform(post("/reservas")
+                                .sessionAttr("userId", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(List.of(request))))
+                                .andExpect(status().isOk())
+                                .andExpect(content().string("OK"));
 
-            verify(proxy).crearReserva(any());
+                verify(proxy).crearReserva(any());
 
         }
 
         @Test
         void crearHabitacion_error() throws Exception {
 
-            RoomBookingRequest request = new RoomBookingRequest(
-                    RoomType.INDIVIDUAL,
-                    1L,
-                    1,
-                    1L,
-                    LocalDate.now(),
-                    LocalDate.now().plusDays(2)
-            );
+                RoomBookingRequest request = new RoomBookingRequest(
+                                RoomType.INDIVIDUAL,
+                                1L,
+                                1,
+                                1L,
+                                LocalDate.now(),
+                                LocalDate.now().plusDays(2));
 
-            when(proxy.crearReserva(any()))
-                    .thenThrow(new RuntimeException("Error al crear reserva"));
+                when(proxy.crearReserva(any()))
+                                .thenThrow(new RuntimeException("Error al crear reserva"));
 
-            assertThrows(Exception.class, () -> {
-                mockMvc.perform(post("/reservas")
-                        .sessionAttr("userId", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(List.of(request))));
-            });
+                assertThrows(Exception.class, () -> {
+                        mockMvc.perform(post("/reservas")
+                                        .sessionAttr("userId", 1L)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(objectMapper.writeValueAsString(List.of(request))));
+                });
 
-            verify(proxy).crearReserva(any());
+                verify(proxy).crearReserva(any());
         }
 
         @Test
         void crearReserva_usuarioNoLogeado() throws Exception {
 
-            RoomBookingRequest request = new RoomBookingRequest(
-                    RoomType.INDIVIDUAL,
-                    1L,
-                    1,
-                    1L,
-                    LocalDate.now(),
-                    LocalDate.now().plusDays(2)
-            );
+                RoomBookingRequest request = new RoomBookingRequest(
+                                RoomType.INDIVIDUAL,
+                                1L,
+                                1,
+                                1L,
+                                LocalDate.now(),
+                                LocalDate.now().plusDays(2));
 
-            mockMvc.perform(post("/reservas")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(List.of(request))))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(content().string("Usuario no logeado"));
+                mockMvc.perform(post("/reservas")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(List.of(request))))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(content().string("Usuario no logeado"));
         }
 
         @Test
         void adminPage_exito() throws Exception {
-            mockMvc.perform(get("/admin")
-                            .sessionAttr("userRole", "ADMIN"))
-                    .andExpect(status().isOk())
-                    .andExpect(view().name("admin/admin"));
+                mockMvc.perform(get("/admin")
+                                .sessionAttr("userRole", "ADMIN"))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("admin/admin"));
         }
 
         @Test
         void adminPage_error() throws Exception {
-            mockMvc.perform(get("/admin"))
-                    .andExpect(status().is3xxRedirection())
-                    .andExpect(redirectedUrl("/login"));
+                mockMvc.perform(get("/admin"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/login"));
         }
 
         @Test
         void showMenu_exito() throws Exception {
 
-            mockMvc.perform(get("/menu")
-                            .sessionAttr("userRole", "CLIENT"))
-                    .andExpect(status().isOk())
-                    .andExpect(view().name("auth/menu"));
+                mockMvc.perform(get("/menu")
+                                .sessionAttr("userRole", "CLIENT"))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("auth/menu"));
         }
 
         @Test
         void showMenu_error() throws Exception {
 
-            mockMvc.perform(get("/menu"))
-                    .andExpect(status().is3xxRedirection())
-                    .andExpect(redirectedUrl("/login"));
+                mockMvc.perform(get("/menu"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/login"));
         }
 
-         @Test
+        @Test
         void showLoginForm_exito() throws Exception {
                 mockMvc.perform(get("/login"))
                                 .andExpect(status().isOk())
                                 .andExpect(view().name("auth/login"));
         }
 
-         @Test
+        @Test
         void showSignupForm_exito() throws Exception {
-             mockMvc.perform(get("/signup"))
-                     .andExpect(status().isOk())
-                     .andExpect(view().name("auth/signup"));
+                mockMvc.perform(get("/signup"))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("auth/signup"));
 
-         }
+        }
 
         @Test
         void verReservas_exito() throws Exception {
 
-            List<RoomBookingResponse> roomBookings = List.of();
-            List<CourtBookingResponse> courtBookings = List.of();
+                List<RoomBookingResponse> roomBookings = List.of();
+                List<CourtBookingResponse> courtBookings = List.of();
 
-            when(proxy.getRoomBookingsByClienteId(1L)).thenReturn(roomBookings);
-            when(proxy.getCourtBookingsByClienteId(1L)).thenReturn(courtBookings);
+                when(proxy.getRoomBookingsByClienteId(1L)).thenReturn(roomBookings);
+                when(proxy.getCourtBookingsByClienteId(1L)).thenReturn(courtBookings);
 
-            mockMvc.perform(get("/reservas")
-                            .sessionAttr("userId", 1L))
-                    .andExpect(status().isOk())
-                    .andExpect(view().name("user/reservas"))
-                    .andExpect(model().attributeExists("roomBookings"))
-                    .andExpect(model().attributeExists("courtBookings"));
+                mockMvc.perform(get("/reservas")
+                                .sessionAttr("userId", 1L))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("user/reservas"))
+                                .andExpect(model().attributeExists("roomBookings"))
+                                .andExpect(model().attributeExists("courtBookings"));
         }
 
-         @Test
-         void verReservas_fracaso() throws Exception {
-             mockMvc.perform(get("/reservas"))
-                     .andExpect(status().is3xxRedirection())
-                     .andExpect(redirectedUrl("/login"));
-         }
+        @Test
+        void verReservas_fracaso() throws Exception {
+                mockMvc.perform(get("/reservas"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/login"));
+        }
 
         @Test
         void getHabitacionesDisponibles_exito() throws Exception {
 
-            LocalDate entrada = LocalDate.of(2025, 5, 1);
-            LocalDate salida = LocalDate.of(2025, 5, 3);
+                LocalDate entrada = LocalDate.of(2025, 5, 1);
+                LocalDate salida = LocalDate.of(2025, 5, 3);
 
-            RoomDisponibleResponse responseMock = mock(RoomDisponibleResponse.class);
-            when(responseMock.getTipo()).thenReturn(RoomType.INDIVIDUAL);
+                RoomDisponibleResponse responseMock = mock(RoomDisponibleResponse.class);
+                when(responseMock.getTipo()).thenReturn(RoomType.INDIVIDUAL);
 
-            ArrayList<RoomDisponibleResponse> mockResponse = new ArrayList<>();
-            mockResponse.add(responseMock);
+                ArrayList<RoomDisponibleResponse> mockResponse = new ArrayList<>();
+                mockResponse.add(responseMock);
 
-            when(proxy.getHabitacionesDisponibles(entrada, salida))
-                    .thenReturn(mockResponse);
+                when(proxy.getHabitacionesDisponibles(entrada, salida))
+                                .thenReturn(mockResponse);
 
-            mockMvc.perform(get("/api/habitaciones/disponibles")
-                            .param("fechaEntrada", entrada.toString())
-                            .param("fechaSalida", salida.toString()))
-                    .andExpect(status().isOk());
+                mockMvc.perform(get("/api/habitaciones/disponibles")
+                                .param("fechaEntrada", entrada.toString())
+                                .param("fechaSalida", salida.toString()))
+                                .andExpect(status().isOk());
         }
 
         @Test
         void getHabitacionesDisponibles_error() throws Exception {
 
-            LocalDate entrada = LocalDate.of(2025, 5, 1);
-            LocalDate salida = LocalDate.of(2025, 5, 3);
+                LocalDate entrada = LocalDate.of(2025, 5, 1);
+                LocalDate salida = LocalDate.of(2025, 5, 3);
 
-            when(proxy.getHabitacionesDisponibles(any(), any()))
-                    .thenThrow(new RuntimeException("Error test"));
+                when(proxy.getHabitacionesDisponibles(any(), any()))
+                                .thenThrow(new RuntimeException("Error test"));
 
-            mockMvc.perform(get("/api/habitaciones/disponibles")
-                            .param("fechaEntrada", entrada.toString())
-                            .param("fechaSalida", salida.toString()))
-                    .andExpect(status().isInternalServerError());
+                mockMvc.perform(get("/api/habitaciones/disponibles")
+                                .param("fechaEntrada", entrada.toString())
+                                .param("fechaSalida", salida.toString()))
+                                .andExpect(status().isInternalServerError());
         }
+
+        @Test
+        void blockCourtFromAdmin_Success() throws Exception {
+                mockMvc.perform(post("/admin/courts/1/block"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/admin"))
+                                .andExpect(flash().attribute("success",
+                                                "Pista bloqueada por mantenimiento exitosamente."));
+
+                verify(proxy).blockCourt(1L);
+        }
+
+        @Test
+        void unblockCourtFromAdmin_Success() throws Exception {
+                // Simulamos la interacción desde la interfaz web (botón de desbloquear)
+                mockMvc.perform(post("/admin/courts/1/unblock"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/admin"))
+                                .andExpect(flash().attribute("success",
+                                                "Pista desbloqueada y disponible de nuevo."));
+
+                // Comprobamos que el controlador web ha llamado al método del proxy
+                verify(proxy).unblockCourt(1L);
+        }
+
+        @Test
+        void adminPage_MuestraPistasExito() throws Exception {
+                List<CourtResponse> courtsMock = List.of(
+                                new CourtResponse(1L, "Pista 1", CourtType.TENIS, 20.0, CourtStatus.DISPONIBLE));
+
+                when(proxy.getCourts(null)).thenReturn(courtsMock);
+
+                mockMvc.perform(get("/admin")
+                                .sessionAttr("userRole", "ADMIN"))
+                                .andExpect(status().isOk())
+                                .andExpect(view().name("admin/admin"))
+                                .andExpect(model().attributeExists("courts"));
+        }
+
+        @Test
+        void verReservasPistas_exito() throws Exception {
+            when(proxy.getCourtBookingsByClienteId(1L)).thenReturn(List.of());
+
+            mockMvc.perform(get("/pistas/reservadas")
+                            .sessionAttr("userId", 1L))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("user/reservasPistas"))
+                    .andExpect(model().attributeExists("courtBookings"));
+
+            verify(proxy).getCourtBookingsByClienteId(1L);
+        }
+
+    @Test
+    void updateCourtBooking_exito() throws Exception {
+        CourtBookingResponse responseMock = mock(CourtBookingResponse.class);
+
+        when(proxy.updateCourtBooking(eq(1L), any(CourtBookingRequest.class)))
+                .thenReturn(responseMock);
+
+        mockMvc.perform(post("/update/1")
+                        .param("pistaId", "2")
+                        .param("fecha", "2026-05-20")
+                        .param("horaInicio", "10:00")
+                        .param("horaFin", "12:00")
+                        .param("clienteId", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/mis-reservas"))
+                .andExpect(flash().attribute("success", "Reserva actualizada correctamente"));
+
+        verify(proxy).updateCourtBooking(eq(1L), any(CourtBookingRequest.class));
+    }
+
+    @Test
+    void updateCourtBooking_error() throws Exception {
+        doThrow(new RuntimeException("Error backend"))
+                .when(proxy).updateCourtBooking(eq(1L), any(CourtBookingRequest.class));
+
+        mockMvc.perform(post("/update/1")
+                        .param("pistaId", "2")
+                        .param("fecha", "2026-05-20")
+                        .param("horaInicio", "10:00")
+                        .param("horaFin", "12:00")
+                        .param("clienteId", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/mis-reservas"))
+                .andExpect(flash().attribute("error", "Error backend"));
+
+        verify(proxy).updateCourtBooking(eq(1L), any(CourtBookingRequest.class));
+    }
 
 }
