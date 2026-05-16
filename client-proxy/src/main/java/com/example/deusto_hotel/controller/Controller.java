@@ -403,7 +403,7 @@ public class Controller {
                     e.getMessage());
         }
 
-        return "redirect:/mis-reservas";
+        return "redirect:/pistas/reservadas";
     }
 
     @PostMapping("/rooms/{id}/bloquear")
@@ -445,11 +445,9 @@ public class Controller {
 
         try {
             log.info("Obteniendo reservas de pistas para clienteId: " + clienteId);
-            // Obtenemos solo las reservas de pistas mediante el proxy
             List<CourtBookingResponse> courtBookings = proxy.getCourtBookingsByClienteId(clienteId);
             model.addAttribute("courtBookings", courtBookings);
 
-            // Devolvemos el nombre del nuevo html que hemos creado
             return "user/reservasPistas";
 
         } catch (Exception e) {

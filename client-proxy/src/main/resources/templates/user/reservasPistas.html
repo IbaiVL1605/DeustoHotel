@@ -6,7 +6,6 @@
     <title>Mis Reservas de Pistas – Deusto Hotel</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        /* (Pega aquí exactamente el mismo bloque <style> que tienes en reservas.html) */
         :root {
             --gold: #C9A84C; --gold-light: #E8C97A; --dark: #0F0E0C;
             --dark-2: #1A1916; --dark-3: #252420; --cream: #F5F0E8;
@@ -35,13 +34,48 @@
         .detail-item { display: flex; flex-direction: column; gap: .3rem; }
         .detail-label { font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text-muted); }
         .detail-value { font-size: .95rem; color: var(--cream); }
+
+        /* NUEVO: fila fecha + botón */
+        .date-action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .btn-change {
+            display: inline-block;
+            padding: .65rem 1rem;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            font-size: .72rem;
+            font-weight: 500;
+            transition: .25s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-change:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
         .alert { padding: 1rem 1.2rem; border-radius: 2px; font-size: .9rem; margin-bottom: 2rem; background: rgba(224, 85, 85, .1); border: 1px solid var(--error); color: var(--error); }
-        @media (max-width: 768px) { .logo-header { left: 1.5rem; font-size: 1.2rem; } .container { margin-top: 5rem; } .page-title { font-size: 2rem; } .reserva-card { padding: 1.5rem; } }
+        @media (max-width: 768px) {
+            .logo-header { left: 1.5rem; font-size: 1.2rem; }
+            .container { margin-top: 5rem; }
+            .page-title { font-size: 2rem; }
+            .reserva-card { padding: 1.5rem; }
+            .date-action-row { flex-direction: column; align-items: flex-start; }
+            body { padding: 1rem; }
+        }
     </style>
 </head>
 <body>
 
-<!-- LOGO HEADER -->
 <a href="/menu" class="logo-header">Deusto <span>Hotel</span></a>
 
 <div class="container">
@@ -51,37 +85,45 @@
         <div class="divider"></div>
     </div>
 
-    <!-- ERROR ALERT -->
     <div th:if="${error}" class="alert">
         <span th:text="${error}"></span>
     </div>
 
-    <!-- RESERVAS DE PISTAS (Próximas) -->
     <div class="section">
         <h2 class="section-title">Pistas (Próximas)</h2>
         <div th:if="${courtBookings != null}" class="reservas-grid">
             <div th:each="booking : ${courtBookings}"
-                 th:if="${booking.fecha.isAfter(T(java.time.LocalDate).now())}"
+                 th:if="${booking.fecha.isAfter(T(java.time.LocalDate).now()) or booking.fecha.isEqual(T(java.time.LocalDate).now())}"
                  class="reserva-card">
                 <div class="reserva-header">
                     <span class="reserva-id">Reserva #<span th:text="${booking.id}"></span></span>
                     <span class="reserva-status" th:text="${booking.estado}"></span>
                 </div>
+
                 <div class="reserva-details">
                     <div class="detail-item">
                         <span class="detail-label">Pista</span>
                         <span class="detail-value" th:text="${booking.pistaNombre}"></span>
                     </div>
+
                     <div class="detail-item">
                         <span class="detail-label">Fecha</span>
-                        <span class="detail-value" th:text="${booking.fecha}"></span>
+                        <div class="date-action-row">
+                            <span class="detail-value" th:text="${booking.fecha}"></span>
+
+                            <button class="btn-change"
+                                    th:onclick="'openModal(' + ${booking.id} + ', ' + ${booking.pistaId} + ')'"
+                                    style="background: transparent; cursor: pointer;">
+                                Modificar reserva
+                            </button>
+
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- RESERVAS DE PISTAS (Pasadas) -->
     <div class="section">
         <h2 class="section-title">Pistas (Pasadas)</h2>
         <div th:if="${courtBookings != null}" class="reservas-grid">
@@ -92,6 +134,7 @@
                     <span class="reserva-id">Reserva #<span th:text="${booking.id}"></span></span>
                     <span class="reserva-status">FINALIZADA</span>
                 </div>
+
                 <div class="reserva-details">
                     <div class="detail-item">
                         <span class="detail-label">Pista</span>
@@ -106,6 +149,45 @@
         </div>
     </div>
 </div>
+<div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999;" onclick="closeModal()"></div>
+<div id="updateModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:var(--dark-2); padding:2rem; border:1px solid var(--gold); z-index:1000; width: 90%; max-width: 400px;">
+    <h3 class="section-title" style="margin-bottom: 1.5rem; font-size: 1.2rem;">Modificar Reserva</h3>
+
+    <form id="updateForm" method="POST" action="">
+        <input type="hidden" name="pistaId" id="pistaIdInput">
+
+        <div style="margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.3rem;">
+            <label class="detail-label">Fecha</label>
+            <input type="date" name="fecha" required style="padding:0.6rem; background:var(--dark); color:var(--cream); border:1px solid rgba(201,168,76,0.3);">
+        </div>
+
+        <div style="margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.3rem;">
+            <label class="detail-label">Hora de Inicio</label>
+            <input type="time" name="horaInicio" required style="padding:0.6rem; background:var(--dark); color:var(--cream); border:1px solid rgba(201,168,76,0.3);">
+        </div>
+
+        <div style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.3rem;">
+            <label class="detail-label">Hora de Fin</label>
+            <input type="time" name="horaFin" required style="padding:0.6rem; background:var(--dark); color:var(--cream); border:1px solid rgba(201,168,76,0.3);">
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-top: 2rem;">
+            <button type="button" onclick="closeModal()" class="btn-change" style="border-color: var(--error); color: var(--error); background: transparent; cursor: pointer;">Cancelar</button>
+            <button type="submit" class="btn-change" style="background: var(--gold); color: var(--dark); cursor: pointer;">Guardar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function openModal(bookingId, pistaId) {
+      document.getElementById('updateForm').action = '/update/' + bookingId;
+
+      document.getElementById('pistaIdInput').value = pistaId;
+
+      document.getElementById('updateModal').style.display = 'block';
+      document.getElementById('modalOverlay').style.display = 'block';
+  }
+</script>
 
 </body>
 </html>
