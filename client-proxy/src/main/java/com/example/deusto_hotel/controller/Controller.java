@@ -297,7 +297,7 @@ public class Controller {
 
         if (role == null) {
             return "redirect:/login";
-        }else if (role == "RECEPTIONIST"){
+        } else if (role == "RECEPTIONIST") {
             return "redirect:/recepcion";
         }
 
@@ -307,17 +307,21 @@ public class Controller {
     }
 
     @PostMapping("/admin")
-    public String crearHabitacion(@ModelAttribute RoomRequest request, Model model) {
+    public String crearHabitacion(@ModelAttribute RoomRequest request, RedirectAttributes redirectAttributes) {
         System.out.println("REQUEST RECIBIDA: " + request);
 
         try {
             proxy.crearHabitacion(request);
-            model.addAttribute("success", "Habitación creada correctamente");
+            // Con addFlashAttribute se consigue que el mensaje sobreviva a la redirección
+            // para evitar el bug de que desaparezca gestion pistas al crear
+            // habitaciones
+            redirectAttributes.addFlashAttribute("success", "Habitación creada correctamente");
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
-        return "admin/admin";
+        // redirigir al GET de /admin, para cargar pistas otra vez
+        return "redirect:/admin";
     }
 
     // Menu para ver reservas (tanto de habitaciones como de pistas)
@@ -458,7 +462,6 @@ public class Controller {
         }
     }
 
-
     @GetMapping("/recepcion")
     public String showRecepcionReservas(HttpSession session, Model model) {
 
@@ -497,11 +500,13 @@ public class Controller {
     }
 
     // Llama al server para validar
-    @PostMapping ("recepcion/validar")
-    public String validarReserva(@RequestParam Long idReserva, HttpSession session, RedirectAttributes redirectAttributes) {
+    @PostMapping("recepcion/validar")
+    public String validarReserva(@RequestParam Long idReserva, HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Long idRecepcionista = (Long) session.getAttribute("userId");
 
-        System.out.println("Intentando validar reserva con ID: " + idReserva + " por recepcionista con ID: " + idRecepcionista);
+        System.out.println(
+                "Intentando validar reserva con ID: " + idReserva + " por recepcionista con ID: " + idRecepcionista);
         try {
             proxy.validarReserva(idReserva, idRecepcionista);
             redirectAttributes.addFlashAttribute("success", "Reserva validada correctamente.");
@@ -510,6 +515,5 @@ public class Controller {
         }
         return "redirect:/recepcion";
     }
-
 
 }
