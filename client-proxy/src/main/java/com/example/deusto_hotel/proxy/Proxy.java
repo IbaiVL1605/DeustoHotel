@@ -21,6 +21,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -447,7 +448,73 @@ public class Proxy {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error al validar la reserva", e);
         }
-
     }
 
+    public CourtBookingResponse getCourtBookingById(Long id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/api/v1/court-bookings/" + id))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            log.info("Reserva de pista encontrada: " + response.body());
+            return objectMapper.readValue(response.body(), CourtBookingResponse.class);
+        } else {
+            log.info("No se encontró la reserva de pista con ID: " + id);
+            throw new RuntimeException("Error al obtener la reserva de pista: " + response.body());
+        }
+    }
+
+    public List<LocalTime> getHorasDisponibles(Long pistaId, LocalDate fecha) {
+        try {
+            String url = String.format(
+                    "http://localhost:8080/api/v1/courts/available?fecha=%s",
+                    fecha.toString()
+            );
+
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                log.error("Error del servidor: {}", response.body());
+                return List.of();
+            }
+
+            JsonNode rootNode = objectMapper.readTree(response.body());
+            List<LocalTime> horasDisponibles = new ArrayList<>();
+
+            if (rootNode.isArray()) {
+                for (JsonNode tipoBloque : rootNode) {
+                    JsonNode reservasNode = tipoBloque.get("reservas");
+                    if (reservasNode != null && reservasNode.isArray()) {
+                        for (JsonNode reserva : reservasNode) {
+
+                            if (reserva.get("pistaId").asLong() == pistaId) {
+                                String horaInicioStr = reserva.get("horaInicio").asText(); // Ej: "16:00" o "16:00:00"
+
+                                LocalTime hora = LocalTime.parse(horaInicioStr.substring(0, 5));
+                                horasDisponibles.add(hora);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Devolvemos la lista ordenada cronológicamente y sin elementos duplicados
+            return horasDisponibles.stream()
+                    .distinct()
+                    .sorted()
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            log.error("Excepción al mapear horas disponibles en el Proxy: ", e);
+            return List.of(); // Evitamos que el controlador falle devolviendo una lista vacía
+        }
+    }
 }

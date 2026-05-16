@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -393,7 +394,59 @@ public class Controller {
         }
     }
 
-    @PostMapping("/update/{id}")
+    @GetMapping("/reservas/pista/modificar/{id}")
+    public String showUpdateCourtBooking(
+            @PathVariable Long id,
+            Model model) {
+
+        try{
+            log.info("Cargando reserva de pista con id: " + id);
+            CourtBookingResponse booking =
+                    proxy.getCourtBookingById(id);
+
+            model.addAttribute("booking", booking);
+
+            log.info("Reserva cargada: " + booking);
+        }catch (Exception e){
+            model.addAttribute("error", "No se pudo cargar la reserva: " + e.getMessage());
+        }
+
+        return "user/modificarCourtBooking";
+    }
+
+    @PostMapping("/reservas/pista/disponibilidad")
+    public String consultarDisponibilidad(
+            @RequestParam Long id,
+            @ModelAttribute CourtBookingRequest request,
+            Model model) {
+
+        try {
+
+            CourtBookingResponse booking =
+                    proxy.getCourtBookingById(id);
+
+            List<LocalTime> horasDisponibles =
+                    proxy.getHorasDisponibles(
+                            request.pistaId(),
+                            request.fecha()
+                    );
+
+            model.addAttribute("booking", booking);
+
+            model.addAttribute("request", request);
+
+            model.addAttribute("horasDisponibles",
+                    horasDisponibles);
+
+        } catch (Exception e) {
+
+            model.addAttribute("error", e.getMessage());
+        }
+
+        return "user/modificarCourtBooking";
+    }
+
+    @PostMapping("/reservas/pista/modificar/{id}")
     public String updateCourtBooking(
             @PathVariable Long id,
             @ModelAttribute CourtBookingRequest request,
@@ -409,7 +462,7 @@ public class Controller {
                     e.getMessage());
         }
 
-        return "redirect:/pistas/reservadas";
+        return "redirect:/reservas";
     }
 
     @PostMapping("/rooms/{id}/bloquear")
@@ -515,5 +568,8 @@ public class Controller {
         }
         return "redirect:/recepcion";
     }
+
+
+
 
 }

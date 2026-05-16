@@ -288,4 +288,25 @@ public class CourtBookingService {
                 .map(courtBookingMapper::toResponse)
                 .toList();
     }
+
+    public CourtBookingResponse findById(Long id) {
+
+        CourtBooking booking = courtBookingRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Reserva no encontrada"));
+
+        return new CourtBookingResponse(
+                booking.getId(),
+                booking.getCliente().getId(),
+                booking.getCliente().getNombre(),
+                booking.getPista().getId(),
+                booking.getPista().getNombre(),
+                booking.getFecha(),
+                booking.getHoraInicio(),
+                booking.getHoraFin(),
+                booking.getEstado(),
+                booking.getPrecioTotal(),
+                booking.getCreadaEn()
+        );
+    }
 }

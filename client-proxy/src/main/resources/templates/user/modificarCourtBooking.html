@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Reserva de Pista – Deusto Hotel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8C97A;
+            --dark: #0F0E0C;
+            --dark-2: #1A1916;
+            --dark-3: #252420;
+            --cream: #F5F0E8;
+            --cream-2: #EDE8DC;
+            --text-muted: #8A8070;
+            --accent: #7C5C2E;
+            --error: #e05555;
+            --success: #6ee7a2;
+            --warning: #ffa500;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* ── HEADER ── */
+        .logo-header {
+            position: fixed;
+            top: 2rem;
+            left: 4rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            letter-spacing: .08em;
+            color: var(--gold);
+            text-decoration: none;
+            transition: color .25s;
+            z-index: 100;
+        }
+
+        .logo-header:hover {
+            color: var(--gold-light);
+        }
+
+        .logo-header span {
+            font-style: italic;
+            color: var(--cream);
+        }
+
+        /* ── BACK BUTTON ── */
+        .back-btn {
+            position: fixed;
+            top: 2rem;
+            right: 4rem;
+            padding: .6rem 1.2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .75rem;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: 1px solid var(--text-muted);
+            background: transparent;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all .25s;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* ── MAIN CONTAINER ── */
+        .container {
+            max-width: 800px;
+            margin: 8rem auto 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: var(--cream);
+            margin-bottom: .5rem;
+        }
+
+        .page-subtitle {
+            font-size: .75rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background: var(--gold);
+            margin: 1.5rem auto;
+            opacity: .6;
+        }
+
+        /* ── FORM CONTAINER ── */
+        .form-container {
+            background: var(--dark-2);
+            border: 1px solid rgba(201, 168, 76, .2);
+            padding: 2.5rem;
+            transition: all .25s;
+        }
+
+        .form-container:hover {
+            border-color: var(--gold);
+            background: var(--dark-3);
+        }
+
+        /* ── FORM SECTIONS ── */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            padding-bottom: .5rem;
+            border-bottom: 1px solid rgba(201, 168, 76, .15);
+        }
+
+        /* ── FORM FIELDS ── */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-size: .75rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: .8rem;
+            background: rgba(15, 14, 12, .5);
+            border: 1px solid rgba(201, 168, 76, .2);
+            color: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            transition: all .25s;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(201, 168, 76, .1);
+        }
+
+        .form-group select option {
+            background: var(--dark-2);
+            color: var(--cream);
+        }
+
+        /* ── FIELD INFO ── */
+        .field-info {
+            font-size: .7rem;
+            color: var(--text-muted);
+            margin-top: .3rem;
+        }
+
+        /* ── CURRENT BOOKING INFO ── */
+        .booking-info {
+            background: rgba(201, 168, 76, .08);
+            border-left: 3px solid var(--gold);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 2px;
+        }
+
+        .booking-info-title {
+            font-size: .75rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: .5rem;
+            font-weight: 500;
+        }
+
+        .booking-info-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            font-size: .9rem;
+        }
+
+        .booking-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+        }
+
+        .booking-info-label {
+            color: var(--text-muted);
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+        }
+
+        .booking-info-value {
+            color: var(--cream);
+        }
+
+        /* ── FORM ACTIONS ── */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(201, 168, 76, .15);
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 1.5rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .75rem;
+            font-weight: 500;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .25s;
+            border: 1px solid;
+            background: transparent;
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-submit {
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-submit:hover {
+            background: var(--success);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            color: var(--error);
+            border-color: var(--error);
+        }
+
+        .btn-cancel:hover {
+            background: var(--error);
+            color: var(--cream);
+            transform: translateY(-2px);
+        }
+
+        .btn-details {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .btn-details:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        .btn:active {
+            transform: scale(.98);
+        }
+
+        /* ── ALERTS ── */
+        .alert {
+            padding: 1rem 1.2rem;
+            border-radius: 2px;
+            font-size: .9rem;
+            margin-bottom: 2rem;
+            border-left: 3px solid;
+        }
+
+        .alert-error {
+            background: rgba(224, 85, 85, .08);
+            border-left-color: var(--error);
+            color: var(--error);
+        }
+
+        .alert-success {
+            background: rgba(110, 231, 162, .08);
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .logo-header {
+                left: 1.5rem;
+                font-size: 1.2rem;
+            }
+
+            .back-btn {
+                right: 1.5rem;
+                font-size: .65rem;
+                padding: .5rem .8rem;
+            }
+
+            .container {
+                margin-top: 6rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<a href="/menu" class="logo-header">Deusto <span>Hotel</span></a>
+
+<a href="/reservas" class="back-btn">← Volver</a>
+
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Modificar Reserva</h1>
+        <p class="page-subtitle">Actualiza los detalles de tu reserva de pista</p>
+        <div class="divider"></div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error">
+        <span th:text="${error}"></span>
+    </div>
+    <div th:if="${success}" class="alert alert-success">
+        <span th:text="${success}"></span>
+    </div>
+
+    <div th:if="${booking}" class="booking-info">
+        <div class="booking-info-title">Información Actual de la Reserva</div>
+        <div class="booking-info-row">
+            <div class="booking-info-item">
+                <span class="booking-info-label">Reserva #</span>
+                <span class="booking-info-value" th:text="${booking.id}"></span>
+            </div>
+            <div class="booking-info-item">
+                <span class="booking-info-label">Pista</span>
+                <span class="booking-info-value" th:text="${booking.pistaNombre}"></span>
+            </div>
+            <div class="booking-info-item">
+                <span class="booking-info-label">Estado</span>
+                <span class="booking-info-value" th:text="${booking.estado}"></span>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{/reservas/pista/modificar/{id}(id=${booking.id})}"
+          method="post"
+          class="form-container">
+
+        <input type="hidden" name="id" th:value="${booking.id}">
+        <input type="hidden" name="clienteId" th:value="${booking.clienteId}">
+
+        <div class="form-group">
+            <label for="pistaId">Pista</label>
+            <select id="pistaId" name="pistaId" required>
+                <option th:value="${booking.pistaId}" th:text="${booking.pistaNombre}" selected></option>
+                <option th:each="pista : ${pistas}"
+                        th:value="${pista.id}"
+                        th:text="${pista.nombre}"
+                        th:selected="${booking.pistaId == pista.id}">
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha">Fecha</label>
+            <div style="display: flex; gap: 1rem;">
+                <input type="date"
+                       id="fecha"
+                       name="fecha"
+                       th:value="${request != null && request.fecha() != null ? request.fecha() : booking.fecha}"
+                       required
+                       style="flex: 2;">
+
+                <button type="submit"
+                        th:formaction="@{/reservas/pista/disponibilidad}"
+                        class="btn btn-details"
+                        formnovalidate
+                        style="flex: 1; padding: 0.5rem;">
+                    Ver Horas
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="horaInicio">Hora inicio</label>
+            <select id="horaInicio" name="horaInicio">
+                <option value="" th:if="${horasDisponibles == null}">← Haz clic en 'Ver Horas' primero</option>
+                <option value="" th:if="${horasDisponibles != null && horasDisponibles.isEmpty()}">No hay horas libres para este día</option>
+
+                <option th:each="hora : ${horasDisponibles}"
+                        th:value="${hora}"
+                        th:text="${hora}">
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="horaFin">Hora fin</label>
+            <select id="horaFin" name="horaFin">
+                <option value="">Selecciona hora de inicio primero</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-submit">
+                Guardar cambios
+            </button>
+            <a href="/reservas" class="btn btn-cancel">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Sincronizar automáticamente la hora de finalización sumándole 1 hora al bloque seleccionado
+    document.getElementById('horaInicio').addEventListener('change', function() {
+        const horaInicioVal = this.value;
+        const horaFinSelect = document.getElementById('horaFin');
+
+        horaFinSelect.innerHTML = '';
+
+        if (horaInicioVal) {
+            const [horas, minutos] = horaInicioVal.split(':').map(Number);
+            let nuevaHora = horas + 1;
+
+            const horaFinStr = `${String(nuevaHora).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+
+            const option = document.createElement('option');
+            option.value = horaFinStr;
+            option.text = horaFinStr;
+            option.selected = true;
+
+            horaFinSelect.appendChild(option);
+        } else {
+            const option = document.createElement('option');
+            option.value = "";
+            option.text = "Selecciona hora de inicio primero";
+            horaFinSelect.appendChild(option);
+        }
+    });
+
+    // Validar en el envío definitivo
+    document.querySelector('form').addEventListener('submit', function(e) {
+        // Si el botón que envió el formulario es el de "Ver Horas", permitimos el envío sin validar horas
+        if (document.activeElement && document.activeElement.classList.contains('btn-details')) {
+            return true;
+        }
+
+        // Si es el de Guardar Cambios, obligamos a que se hayan seleccionado las horas
+        const horaInicio = document.getElementById('horaInicio').value;
+        const horaFin = document.getElementById('horaFin').value;
+
+        if (!horaInicio || !horaFin) {
+            e.preventDefault();
+            alert('Por favor, haz clic en "Ver Horas" y selecciona un horario válido antes de guardar.');
+            return false;
+        }
+
+        if (horaInicio >= horaFin) {
+            e.preventDefault();
+            alert('La hora de fin debe ser posterior a la hora de inicio');
+            return false;
+        }
+    });
+
+    // Validar que la fecha no sea anterior al día de hoy
+    document.getElementById('fecha').addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+            alert('No puedes seleccionar una fecha anterior a hoy');
+            this.value = '';
+        }
+    });
+</script>
+
+</body>
+</html>

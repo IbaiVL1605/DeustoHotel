@@ -127,4 +127,11 @@ public class CourtBookingController {
     public ResponseEntity<List<CourtBookingResponse>> getAll() {
         return ResponseEntity.ok(courtBookingService.findAll());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CourtBookingResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(courtBookingService.findById(id));
+    }
+
+
 }
