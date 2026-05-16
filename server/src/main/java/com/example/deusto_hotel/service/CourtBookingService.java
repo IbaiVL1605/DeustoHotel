@@ -281,4 +281,11 @@ public class CourtBookingService {
 
     }
      */
+
+    public List<CourtBookingResponse> findAll() {
+        return courtBookingRepository.findAll()
+                .stream()
+                .map(courtBookingMapper::toResponse)
+                .toList();
+    }
 }

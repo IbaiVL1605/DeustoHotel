@@ -122,4 +122,9 @@ public class CourtBookingController {
         );
     }
      */
+
+    @GetMapping
+    public ResponseEntity<List<CourtBookingResponse>> getAll() {
+        return ResponseEntity.ok(courtBookingService.findAll());
+    }
 }

@@ -298,7 +298,7 @@ public class Controller {
         if (role == null) {
             return "redirect:/login";
         }else if (role == "RECEPTIONIST"){
-            return "user/recepcionista";
+            return "redirect:/recepcion";
         }
 
         model.addAttribute("role", role);
@@ -461,14 +461,57 @@ public class Controller {
     }
 
 
-    // Endpoint para recepcionista
     @GetMapping("/recepcion")
-    public String showRecepcioj(HttpSession session) {
+    public String showRecepcionReservas(HttpSession session, Model model) {
+
         String role = (String) session.getAttribute("userRole");
-        if (role == null || !role.equals("RECEPTIONIST")) {
+
+        if (role == null) {
             return "redirect:/login";
         }
-        return "user/recepcionista";
+
+        if (!"RECEPTIONIST".equals(role)) {
+            return "redirect:/menu";
+        }
+
+        log.info("Mostrando reservas para recepcionista con userId: " + session.getAttribute("userId"));
+
+        try {
+            List<RoomBookingResponse> roomBookings = proxy.getAllRoomBookings();
+            List<CourtBookingResponse> courtBookings = proxy.getAllCourtBookings();
+
+            System.out.println("Reservas de habitaciones para recepcionista: " + roomBookings);
+            System.out.println("Reservas de pistas para recepcionista: " + courtBookings);
+
+            model.addAttribute("roomBookings", roomBookings);
+            model.addAttribute("courtBookings", courtBookings);
+
+            log.info("Reservas de habitaciones para recepcionista: " + roomBookings);
+            log.info("Reservas de pistas para recepcionista: " + courtBookings);
+
+            return "user/recepcionista";
+
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            log.info("Error al cargar reservas para recepcionista: " + e.getMessage());
+            return "user/recepcionista";
+        }
     }
+
+    // Llama al server para validar
+    @PostMapping ("recepcion/validar")
+    public String validarReserva(@RequestParam Long idReserva, HttpSession session, RedirectAttributes redirectAttributes) {
+        Long idRecepcionista = (Long) session.getAttribute("userId");
+
+        System.out.println("Intentando validar reserva con ID: " + idReserva + " por recepcionista con ID: " + idRecepcionista);
+        try {
+            proxy.validarReserva(idReserva, idRecepcionista);
+            redirectAttributes.addFlashAttribute("success", "Reserva validada correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al validar la reserva: " + e.getMessage());
+        }
+        return "redirect:/recepcion";
+    }
+
 
 }

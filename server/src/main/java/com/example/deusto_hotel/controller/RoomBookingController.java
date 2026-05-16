@@ -20,15 +20,6 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
-/**
- * Controlador REST para la gestión de reservas de habitaciones del hotel.
- *
- * Proporciona endpoints para crear, eliminar y consultar reservas de habitaciones.
- * Gestiona las solicitudes HTTP y delega la lógica de negocio al servicio de reservas.
- *
- * @author Deusto Hotel Team
- * @version 1.0
- */
 @RestController
 @RequestMapping("/api/v1/room-bookings")
 @RequiredArgsConstructor
@@ -222,17 +213,23 @@ public class RoomBookingController {
 
     // Validar reserva (Recepcionista)
     @PostMapping("/validar")
-    public ResponseEntity<String> validarReserva(@RequestParam String email) {
-
-        if (email == null || email.isBlank()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "El correo del cliente es obligatorio");
-        }
-
-        roomBookingService.validarReserva(email);
+    public ResponseEntity<String> validarReserva(@RequestParam Long idReserva, @RequestParam Long idRecepcionista) {
+        roomBookingService.validarReserva(idReserva, idRecepcionista);
 
         return ResponseEntity.ok("Reserva validada correctamente");
     }
 
+    /*
+    // Buscar por habitación
+    @GetMapping("/habitacion/{habitacionId}")
+    public ResponseEntity<List<RoomBookingResponse>> getByHabitacionId(@PathVariable Long habitacionId) {
+        return ResponseEntity.ok(roomBookingService.findByHabitacionId(habitacionId));
+    }
+    */
+
+    @GetMapping
+    public ResponseEntity<List<RoomBookingResponse>> getAll() {
+        return ResponseEntity.ok(roomBookingService.findAll());
+    }
 
 }

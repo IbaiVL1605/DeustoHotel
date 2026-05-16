@@ -493,22 +493,6 @@
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <!-- STATS BAR -->
-    <div class="stats-bar">
-        <div class="stat-card">
-            <div class="stat-number" th:text="${pendingRoomCount ?: 0}">0</div>
-            <div class="stat-label">Habitaciones Pendientes</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number" th:text="${pendingCourtCount ?: 0}">0</div>
-            <div class="stat-label">Pistas Pendientes</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number" th:text="${totalPending ?: 0}">0</div>
-            <div class="stat-label">Total Pendientes</div>
-        </div>
-    </div>
-
     <!-- RESERVAS PENDIENTES -->
     <div class="section">
         <h2 class="section-title">
@@ -520,13 +504,13 @@
 
             <!-- HABITACIONES PENDIENTES -->
             <div th:each="booking : ${roomBookings}"
-                 th:if="${booking.estado == 'PENDIENTE'}"
+                 th:if="${booking.estado.toString() == 'PENDIENTE'}"
                  class="reserva-card">
 
                 <div class="reserva-header">
                     <div class="reserva-left">
                         <span class="reserva-id">Reserva #<span th:text="${booking.id}"></span></span>
-                        <span class="reserva-client" th:text="${booking.nombreCliente}"></span>
+                        <span class="reserva-client" th:text="${booking.clienteNombre}"></span>
                         <span class="reserva-type-badge">Habitación</span>
                     </div>
                     <span class="reserva-status">PENDIENTE</span>
@@ -534,7 +518,7 @@
 
                 <div class="reserva-details">
                     <div class="detail-item">
-                        <span class="detail-label">Habitación</span>
+                        <span class="detail-label">Número de habitación</span>
                         <span class="detail-value highlight" th:text="${booking.habitacionNumero}"></span>
                     </div>
                     <div class="detail-item">
@@ -546,13 +530,18 @@
                         <span class="detail-value" th:text="${booking.checkOut}"></span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Noches</span>
-                        <span class="detail-value" th:text="${booking.noches}"></span>
+                        <span class="detail-label">Precio total</span>
+                        <span class="detail-value" th:text="${booking.precioTotal}"></span>
                     </div>
                 </div>
 
                 <div class="reserva-actions">
-                    <form th:action="@{/recepcion/confirmar/habitacion/{id}(id=${booking.id})}" method="post" style="flex: 1;">
+                    <form th:action="@{/recepcion/validar}"
+                          method="post"
+                          style="flex: 1;">
+                        <input type="hidden"
+                               name="idReserva"
+                               th:value="${booking.id}" />
                         <button type="submit" class="btn btn-confirm" onclick="return confirm('¿Confirmar esta reserva?')">
                             Confirmar
                         </button>
@@ -567,13 +556,13 @@
 
             <!-- PISTAS PENDIENTES -->
             <div th:each="booking : ${courtBookings}"
-                 th:if="${booking.estado == 'PENDIENTE'}"
+                 th:if="${booking.estado.toString() == 'PENDIENTE'}"
                  class="reserva-card">
 
                 <div class="reserva-header">
                     <div class="reserva-left">
                         <span class="reserva-id">Reserva #<span th:text="${booking.id}"></span></span>
-                        <span class="reserva-client" th:text="${booking.nombreCliente}"></span>
+                        <span class="reserva-client" th:text="${booking.clienteNombre}"></span>
                         <span class="reserva-type-badge">Pista</span>
                     </div>
                     <span class="reserva-status">PENDIENTE</span>
@@ -586,20 +575,20 @@
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Fecha</span>
-                        <span class="detail-value" th:text="${booking.fecha}"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Hora Inicio</span>
                         <span class="detail-value" th:text="${booking.horaInicio}"></span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Duración</span>
-                        <span class="detail-value" th:text="${booking.duracion}"></span>
+                        <span class="detail-label">Hora Fin</span>
+                        <span class="detail-value" th:text="${booking.horaFin}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Hora Inicio</span>
+                        <span class="detail-value" th:text="${booking.clienteNombre}"></span>
                     </div>
                 </div>
 
                 <div class="reserva-actions">
-                    <form th:action="@{/recepcion/confirmar/pista/{id}(id=${booking.id})}" method="post" style="flex: 1;">
+                    <form th:action="@{/recepcion/validar}" method="post" style="flex: 1;">
                         <button type="submit" class="btn btn-confirm" onclick="return confirm('¿Confirmar esta reserva?')">
                             Confirmar
                         </button>
