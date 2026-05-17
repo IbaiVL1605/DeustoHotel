@@ -31,17 +31,19 @@ public class CourtBookingController {
     private final CourtBookingService courtBookingService;
 
     /*
-    // GET ALL
-    @GetMapping
-    public ResponseEntity<List<CourtBookingResponse>> getAll() {
-        return ResponseEntity.ok(courtBookingService.findAll());
-    }
-
-    // GET BY ID
-    @GetMapping("/{id}")
-    public ResponseEntity<CourtBookingResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(courtBookingService.findById(id));
-    }
+     * // GET ALL
+     * 
+     * @GetMapping
+     * public ResponseEntity<List<CourtBookingResponse>> getAll() {
+     * return ResponseEntity.ok(courtBookingService.findAll());
+     * }
+     * 
+     * // GET BY ID
+     * 
+     * @GetMapping("/{id}")
+     * public ResponseEntity<CourtBookingResponse> getById(@PathVariable Long id) {
+     * return ResponseEntity.ok(courtBookingService.findById(id));
+     * }
      */
 
     /**
@@ -56,8 +58,7 @@ public class CourtBookingController {
             @RequestBody @Valid CourtBookingRequest request,
             HttpSession session) {
 
-        CourtBookingResponse response =
-                courtBookingService.create(request, session);
+        CourtBookingResponse response = courtBookingService.create(request, session);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -67,7 +68,7 @@ public class CourtBookingController {
     /**
      * Actualiza una reserva existente.
      *
-     * @param id identificador de la reserva
+     * @param id      identificador de la reserva
      * @param request nuevos datos de la reserva
      * @return reserva actualizada
      */
@@ -76,8 +77,7 @@ public class CourtBookingController {
             @PathVariable Long id,
             @RequestBody @Valid CourtBookingRequest request) {
 
-        CourtBookingResponse response =
-                courtBookingService.update(id, request);
+        CourtBookingResponse response = courtBookingService.update(id, request);
 
         return ResponseEntity.ok(response);
     }
@@ -107,20 +107,21 @@ public class CourtBookingController {
             @PathVariable Long clienteId) {
 
         return ResponseEntity.ok(
-                courtBookingService.findByClienteId(clienteId)
-        );
+                courtBookingService.findByClienteId(clienteId));
     }
 
     /*
-    // GET BY PISTA
-    @GetMapping("/pista/{pistaId}")
-    public ResponseEntity<List<CourtBookingResponse>> getByPistaId(
-            @PathVariable Long pistaId) {
-
-        return ResponseEntity.ok(
-                courtBookingService.findByPistaId(pistaId)
-        );
-    }
+     * // GET BY PISTA
+     * 
+     * @GetMapping("/pista/{pistaId}")
+     * public ResponseEntity<List<CourtBookingResponse>> getByPistaId(
+     * 
+     * @PathVariable Long pistaId) {
+     * 
+     * return ResponseEntity.ok(
+     * courtBookingService.findByPistaId(pistaId)
+     * );
+     * }
      */
 
     @GetMapping
@@ -133,5 +134,11 @@ public class CourtBookingController {
         return ResponseEntity.ok(courtBookingService.findById(id));
     }
 
+    // endpoint para cancelar reserva por parte del admin
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelBookingAdmin(@PathVariable Long id) {
+        courtBookingService.cancelBookingAdmin(id);
+        return ResponseEntity.ok().build();
+    }
 
 }

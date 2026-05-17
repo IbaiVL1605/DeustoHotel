@@ -807,7 +807,32 @@ class ControllerTest {
                 verify(proxy).validarReserva(99L, 7L);
         }
 
+        @Test
+        void bloquearHabitacion_exito() throws Exception {
 
+                mockMvc.perform(post("/rooms/1/bloquear"))
+                        .andExpect(status().is3xxRedirection())
+                        .andExpect(redirectedUrlPattern(
+                                "/habitaciones/disponibles?fechaEntrada=*&fechaSalida=*"
+                        ));
+
+                verify(proxy).bloquearHabitacion(1L);
+        }
+
+        @Test
+        void bloquearHabitacion_error() throws Exception {
+
+                doThrow(new RuntimeException("Error"))
+                        .when(proxy).bloquearHabitacion(1L);
+
+                mockMvc.perform(post("/rooms/1/bloquear"))
+                        .andExpect(status().is3xxRedirection())
+                        .andExpect(redirectedUrlPattern(
+                                "/habitaciones/disponibles?fechaEntrada=*&fechaSalida=*"
+                        ));
+
+                verify(proxy).bloquearHabitacion(1L);
+        }
     @Test
     void showRecepcionReservas_SinSesion() throws Exception {
         mockMvc.perform(post("/recepcion"));

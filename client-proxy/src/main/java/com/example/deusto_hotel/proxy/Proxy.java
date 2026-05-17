@@ -387,7 +387,6 @@ public class Proxy {
         }
     }
 
-
     public List<RoomBookingResponse> getAllRoomBookings()
             throws IOException, InterruptedException {
 
@@ -407,8 +406,8 @@ public class Proxy {
 
         return objectMapper.readValue(
                 response.body(),
-                new TypeReference<List<RoomBookingResponse>>() {}
-        );
+                new TypeReference<List<RoomBookingResponse>>() {
+                });
     }
 
     public List<CourtBookingResponse> getAllCourtBookings()
@@ -430,8 +429,8 @@ public class Proxy {
 
         return objectMapper.readValue(
                 response.body(),
-                new TypeReference<List<CourtBookingResponse>>() {}
-        );
+                new TypeReference<List<CourtBookingResponse>>() {
+                });
     }
 
     // validar reserva
@@ -474,8 +473,7 @@ public class Proxy {
 
             String url = String.format(
                     "http://localhost:8080/api/v1/courts/weekly-availability?year=%d&month=%d",
-                    year, month
-            );
+                    year, month);
 
             System.out.println("====== [PROXY] URL LLAMADA ======");
             System.out.println(url);
@@ -514,7 +512,8 @@ public class Proxy {
                                             for (JsonNode court : courtsNode) {
 
                                                 if (court.get("id").asLong() == pistaId) {
-                                                    // Cambiado a "start" que es el nombre real en tu JSON (ej: "08:00:00")
+                                                    // Cambiado a "start" que es el nombre real en tu JSON (ej:
+                                                    // "08:00:00")
                                                     String startTimeStr = slot.get("start").asText();
                                                     LocalTime hora = LocalTime.parse(startTimeStr.substring(0, 5));
                                                     horasDisponibles.add(hora);
@@ -536,6 +535,17 @@ public class Proxy {
         } catch (Exception e) {
             log.error("Excepción al procesar disponibilidad: ", e);
             return List.of();
+        }
+    }
+
+    public void cancelCourtBookingAdmin(Long id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/v1/court-bookings/" + id + "/cancel"))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new RuntimeException("Error al cancelar la reserva por el administrador: " + response.body());
         }
     }
 }

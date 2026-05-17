@@ -1,5 +1,8 @@
 site_name: Deusto Hotel API
 theme:
-  name: readthedocs
+  name: material
+
 nav:
-  - Introduction: 'index.md'
+  - Inicio: index.md
+  - JavaDoc: javadoc/index.html
+
