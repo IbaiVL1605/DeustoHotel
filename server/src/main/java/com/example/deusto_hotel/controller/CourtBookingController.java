@@ -134,6 +134,14 @@ public class CourtBookingController {
         return ResponseEntity.ok(courtBookingService.findById(id));
     }
 
+    @PostMapping("/validar")
+    public ResponseEntity<String> validarReserva(
+            @RequestParam Long idReserva,
+            @RequestParam Long idRecepcionista) {
+        courtBookingService.validarReserva(idReserva, idRecepcionista);
+        return ResponseEntity.ok("Reserva validada correctamente");
+    }
+
     // endpoint para cancelar reserva por parte del admin
     @PostMapping("/{id}/cancel")
     public ResponseEntity<Void> cancelBookingAdmin(@PathVariable Long id) {

@@ -5,6 +5,9 @@ import com.example.deusto_hotel.dto.CourtBookingResponse;
 import com.example.deusto_hotel.mapper.CourtBookingMapper;
 import com.example.deusto_hotel.model.Court;
 import com.example.deusto_hotel.model.CourtBooking;
+import com.example.deusto_hotel.model.CourtBookingStatus;
+import com.example.deusto_hotel.model.Role;
+import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
 import com.example.deusto_hotel.repository.CourtRepository;
 import com.example.deusto_hotel.repository.UserRepository;
@@ -200,6 +203,29 @@ public class CourtBookingService {
                 messagingTemplate.convertAndSend(
                                 "/topic/court-updates",
                                 payload);
+        }
+
+        public void validarReserva(Long idReserva, Long idRecepcionista) {
+                if (idRecepcionista == null) {
+                        throw new IllegalArgumentException("Usuario no autenticado");
+                }
+
+                User recepcionista = userRepository.findById(idRecepcionista)
+                                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+                if (recepcionista.getRol() != Role.RECEPTIONIST) {
+                        throw new IllegalArgumentException("Usuario no autorizado");
+                }
+
+                CourtBooking reserva = courtBookingRepository.findById(idReserva)
+                                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
+
+                if (reserva.getEstado() != CourtBookingStatus.PENDIENTE) {
+                        throw new IllegalArgumentException("La reserva no está en estado pendiente");
+                }
+
+                reserva.setEstado(CourtBookingStatus.CONFIRMADA);
+                courtBookingRepository.save(reserva);
         }
 
         /**
