@@ -124,6 +124,32 @@ public class RoomIntegrationTest {
 
         assertEquals(201, createResponse.getStatusCode().value());
     }
+    @Test
+    public void bloquearHabitacion_correcto() {
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                "/api/v1/rooms/1/bloquear",
+                HttpMethod.PUT,
+                null,
+                String.class
+        );
+
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Habitación bloqueada correctamente", response.getBody());
+    }
+
+    @Test
+    public void bloquearHabitacion_notFound() {
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                "/api/v1/rooms/999/bloquear",
+                HttpMethod.PUT,
+                null,
+                String.class
+        );
+
+        assertEquals(404, response.getStatusCode().value());
+    }
 
 
 
