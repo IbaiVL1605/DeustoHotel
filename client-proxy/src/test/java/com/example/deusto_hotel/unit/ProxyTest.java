@@ -828,5 +828,40 @@ class ProxyTest {
                 assertNotNull(ex.getCause());
                 verify(httpClient, times(1)).send(any(HttpRequest.class), any());
         }
+        @Test
+        void bloquearHabitacion_exito() throws Exception {
+
+                HttpResponse<String> response = mock(HttpResponse.class);
+
+                when(response.statusCode()).thenReturn(200);
+
+                when(httpClient.send(any(HttpRequest.class), any()))
+                        .thenReturn((HttpResponse) response);
+
+                proxy.bloquearHabitacion(1L);
+
+                verify(httpClient).send(any(HttpRequest.class), any());
+        }
+
+        @Test
+        void bloquearHabitacion_error() throws Exception {
+
+                HttpResponse<String> response = mock(HttpResponse.class);
+
+                when(response.statusCode()).thenReturn(500);
+                when(response.body()).thenReturn("Error backend");
+
+                when(httpClient.send(any(HttpRequest.class), any()))
+                        .thenReturn((HttpResponse) response);
+
+                RuntimeException ex = assertThrows(
+                        RuntimeException.class,
+                        () -> proxy.bloquearHabitacion(1L)
+                );
+
+                assertEquals("Error al bloquear habitación: Error backend", ex.getMessage());
+
+                verify(httpClient).send(any(HttpRequest.class), any());
+        }
 
 }
