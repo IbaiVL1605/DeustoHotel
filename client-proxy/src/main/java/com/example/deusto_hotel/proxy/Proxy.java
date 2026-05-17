@@ -469,10 +469,16 @@ public class Proxy {
 
     public List<LocalTime> getHorasDisponibles(Long pistaId, LocalDate fecha) {
         try {
+            int year = fecha.getYear();
+            int month = fecha.getMonthValue();
+
             String url = String.format(
-                    "http://localhost:8080/api/v1/courts/available?fecha=%s",
-                    fecha.toString()
+                    "http://localhost:8080/api/v1/courts/weekly-availability?year=%d&month=%d",
+                    year, month
             );
+
+            System.out.println("====== [PROXY] URL LLAMADA ======");
+            System.out.println(url);
 
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(java.net.URI.create(url))
@@ -481,40 +487,55 @@ public class Proxy {
 
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() != 200) {
-                log.error("Error del servidor: {}", response.body());
-                return List.of();
-            }
+            System.out.println("====== [PROXY] RESPUESTA DEL SERVIDOR ======");
+            System.out.println(response.body());
 
             JsonNode rootNode = objectMapper.readTree(response.body());
             List<LocalTime> horasDisponibles = new ArrayList<>();
 
             if (rootNode.isArray()) {
-                for (JsonNode tipoBloque : rootNode) {
-                    JsonNode reservasNode = tipoBloque.get("reservas");
-                    if (reservasNode != null && reservasNode.isArray()) {
-                        for (JsonNode reserva : reservasNode) {
+                for (JsonNode week : rootNode) {
+                    JsonNode daysNode = week.get("days");
+                    if (daysNode != null && daysNode.isArray()) {
+                        for (JsonNode day : daysNode) {
+                            String dateStr = day.get("date").asText();
 
-                            if (reserva.get("pistaId").asLong() == pistaId) {
-                                String horaInicioStr = reserva.get("horaInicio").asText(); // Ej: "16:00" o "16:00:00"
+                            if (dateStr.equals(fecha.toString())) {
+                                System.out.println("-> [PROXY] ¡Día encontrado!: " + dateStr);
 
-                                LocalTime hora = LocalTime.parse(horaInicioStr.substring(0, 5));
-                                horasDisponibles.add(hora);
+                                JsonNode slotsNode = day.get("slots");
+                                if (slotsNode != null && slotsNode.isArray()) {
+
+                                    for (JsonNode slot : slotsNode) {
+                                        // Cambiado a "availableCourts" que es el nombre real en tu JSON
+                                        JsonNode courtsNode = slot.get("availableCourts");
+
+                                        if (courtsNode != null && courtsNode.isArray()) {
+                                            for (JsonNode court : courtsNode) {
+
+                                                if (court.get("id").asLong() == pistaId) {
+                                                    // Cambiado a "start" que es el nombre real en tu JSON (ej: "08:00:00")
+                                                    String startTimeStr = slot.get("start").asText();
+                                                    LocalTime hora = LocalTime.parse(startTimeStr.substring(0, 5));
+                                                    horasDisponibles.add(hora);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
 
-            // Devolvemos la lista ordenada cronológicamente y sin elementos duplicados
-            return horasDisponibles.stream()
-                    .distinct()
-                    .sorted()
-                    .collect(Collectors.toList());
+            System.out.println("====== [PROXY] HORAS FINALES EXTRAÍDAS ======");
+            System.out.println(horasDisponibles);
+            return horasDisponibles;
 
         } catch (Exception e) {
-            log.error("Excepción al mapear horas disponibles en el Proxy: ", e);
-            return List.of(); // Evitamos que el controlador falle devolviendo una lista vacía
+            log.error("Excepción al procesar disponibilidad: ", e);
+            return List.of();
         }
     }
 }
