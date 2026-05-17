@@ -1,0 +1,8 @@
+com.example.deusto_hotel
+com.example.deusto_hotel.config
+com.example.deusto_hotel.controller
+com.example.deusto_hotel.exception
+com.example.deusto_hotel.mapper
+com.example.deusto_hotel.model
+com.example.deusto_hotel.repository
+com.example.deusto_hotel.service

@@ -1,134 +1,1291 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
-      <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>Deusto Hotel API</title>
-    <link rel="stylesheet" href="css/theme.css" />
-    <link rel="stylesheet" href="css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "Introduction";
-        var mkdocs_page_input_path = "index.md";
-        var mkdocs_page_url = null;
-      </script>
-    
-    <!--[if lt IE 9]>
-      <script src="js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href="." class="icon icon-home"> Deusto Hotel API
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
-
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">Introduction</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#project-layout">Project layout</a>
-    </li>
-    </ul>
-                </li>
-              </ul>
-      </div>
-    </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href=".">Deusto Hotel API</a>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+        <link rel="next" href="javadoc/">
+      
+      
         
-      </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Introduction</li>
-    <li class="wy-breadcrumbs-aside">
-    </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
-              
-                <h1 id="welcome-to-mkdocs">Welcome to MkDocs</h1>
-<p>For full documentation visit <a href="https://www.mkdocs.org">mkdocs.org</a>.</p>
-<h2 id="commands">Commands</h2>
-<ul>
-<li><code>mkdocs new [dir-name]</code> - Create a new project.</li>
-<li><code>mkdocs serve</code> - Start the live-reloading docs server.</li>
-<li><code>mkdocs build</code> - Build the documentation site.</li>
-<li><code>mkdocs -h</code> - Print help message and exit.</li>
-</ul>
-<h2 id="project-layout">Project layout</h2>
-<pre><code>mkdocs.yml    # The configuration file.
-docs/
-    index.md  # The documentation homepage.
-    ...       # Other markdown pages, images and other files.
-</code></pre>
-              
-            </div>
-          </div><footer>
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Deusto Hotel API</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+      
 
-  <hr/>
 
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
-          
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deustohotel" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Deusto Hotel API" class="md-header__button md-logo" aria-label="Deusto Hotel API" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Deusto Hotel API
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Inicio
+            
+          </span>
         </div>
       </div>
-
-    </section>
-
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
 
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Deusto Hotel API" class="md-nav__button md-logo" aria-label="Deusto Hotel API" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Deusto Hotel API
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
     
+      
+      
+  
+  
     
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
     
   </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tecnologias-utilizadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tecnologias utilizadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos-previos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisitos previos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#construccion-y-ejecucion-del-proyecto-primera-vez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Construccion y ejecucion del proyecto (primera vez)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Construccion y ejecucion del proyecto (primera vez)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#en-windows-powershell-cmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        En Windows (PowerShell / CMD)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#en-linuxmacos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        En Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejecucion-de-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecucion de tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecucion de tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-todos-los-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar todos los tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecutar todos los tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-tests-del-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar tests del server
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecutar tests del server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-un-test-especifico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar un test especifico
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cobertura-de-codigo-con-jacoco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cobertura de codigo con JaCoCo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cobertura de codigo con JaCoCo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-tests-generar-reporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar tests + generar reporte
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecutar tests + generar reporte">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acceder-al-reporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acceder al reporte
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integracion-continua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integracion continua
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integracion continua">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#que-hace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ¿Que hace?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejecucion-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecucion del sistema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecucion del sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terminal-1-server-puerto-8080" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal 1 - Server (puerto 8080)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Terminal 1 - Server (puerto 8080)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminal-2-client-proxy-puerto-8090" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal 2 - Client Proxy (puerto 8090)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Terminal 2 - Client Proxy (puerto 8090)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#funcionamiento-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Funcionamiento del proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notas-utiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notas utiles
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="javadoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    JavaDoc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tecnologias-utilizadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tecnologias utilizadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos-previos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisitos previos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#construccion-y-ejecucion-del-proyecto-primera-vez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Construccion y ejecucion del proyecto (primera vez)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Construccion y ejecucion del proyecto (primera vez)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#en-windows-powershell-cmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        En Windows (PowerShell / CMD)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#en-linuxmacos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        En Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejecucion-de-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecucion de tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecucion de tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-todos-los-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar todos los tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecutar todos los tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-tests-del-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar tests del server
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecutar tests del server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-un-test-especifico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar un test especifico
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cobertura-de-codigo-con-jacoco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cobertura de codigo con JaCoCo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cobertura de codigo con JaCoCo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-tests-generar-reporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar tests + generar reporte
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecutar tests + generar reporte">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acceder-al-reporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acceder al reporte
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integracion-continua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integracion continua
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integracion continua">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#que-hace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ¿Que hace?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejecucion-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecucion del sistema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejecucion del sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terminal-1-server-puerto-8080" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal 1 - Server (puerto 8080)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Terminal 1 - Server (puerto 8080)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminal-2-client-proxy-puerto-8090" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terminal 2 - Client Proxy (puerto 8090)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Terminal 2 - Client Proxy (puerto 8090)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linuxmacos_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux/macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#funcionamiento-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Funcionamiento del proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notas-utiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notas utiles
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="deustohotel">DeustoHotel</h1>
+<p>Este proyecto consiste en la gestion y administracion de un hotel, simulando historias de usuario reales que cualquier usuario podria encontrarse en la vida real.
+La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.</p>
+<hr />
+<h2 id="tecnologias-utilizadas">Tecnologias utilizadas</h2>
+<ul>
+<li>Java 21</li>
+<li>Spring Boot</li>
+<li>Gradle</li>
+<li>JUnit 5</li>
+<li>MySQL</li>
+</ul>
+<hr />
+<h2 id="requisitos-previos">Requisitos previos</h2>
+<p>Antes de construir y ejecutar el proyecto, asegurate de tener instalado:</p>
+<ul>
+<li>Java 21 o superior</li>
+<li>MySQL</li>
+<li>Gradle (opcional, si no se usa el wrapper)</li>
+</ul>
+<blockquote>
+<p>Recomendado: usar el wrapper incluido en el proyecto (<code>gradlew</code> / <code>gradlew.bat</code>), asi no es necesario instalar Gradle manualmente.</p>
+</blockquote>
+<hr />
+<h2 id="construccion-y-ejecucion-del-proyecto-primera-vez">Construccion y ejecucion del proyecto (primera vez)</h2>
+<ol>
+<li>Clonar el repositorio y entrar al proyecto.</li>
+</ol>
+<pre><code class="language-bash">git clone &lt;URL_DEL_REPOSITORIO&gt;
+cd DeustoHotel
+</code></pre>
+<ol>
+<li>
+<p>Abrir MySQL Workbench.</p>
+</li>
+<li>
+<p>Crear la base de datos.</p>
+</li>
+</ol>
+<pre><code class="language-sql">CREATE DATABASE deusto_hotel;
+</code></pre>
+<ol>
+<li>Crear usuario y darle privilegios.</li>
+</ol>
+<pre><code class="language-sql">CREATE USER 'a'@'localhost' IDENTIFIED BY 'a';
+GRANT ALL PRIVILEGES ON *.* TO 'a'@'localhost';
+FLUSH PRIVILEGES;
+</code></pre>
+<ol>
+<li>Verificar version de Java (debe ser 21 o superior).</li>
+</ol>
+<pre><code class="language-bash">java -version
+</code></pre>
+<ol>
+<li>Compilar el proyecto.</li>
+</ol>
+<h3 id="en-windows-powershell-cmd">En Windows (PowerShell / CMD)</h3>
+<pre><code class="language-powershell">.\gradlew.bat clean build
+</code></pre>
+<h3 id="en-linuxmacos">En Linux/macOS</h3>
+<pre><code class="language-bash">./gradlew clean build
+</code></pre>
+<hr />
+<h2 id="ejecucion-de-tests">Ejecucion de tests</h2>
+<p>El proyecto incluye tests automatizados con JUnit 5.</p>
+<h3 id="ejecutar-todos-los-tests">Ejecutar todos los tests</h3>
+<h4 id="windows">Windows</h4>
+<pre><code class="language-powershell">.\gradlew.bat test
+</code></pre>
+<h4 id="linuxmacos">Linux/macOS</h4>
+<pre><code class="language-bash">./gradlew test
+</code></pre>
+<h3 id="ejecutar-tests-del-server">Ejecutar tests del server</h3>
+<h4 id="windows_1">Windows</h4>
+<pre><code class="language-powershell">.\gradlew.bat :server:test
+</code></pre>
+<h4 id="linuxmacos_1">Linux/macOS</h4>
+<pre><code class="language-bash">./gradlew :server:test
+</code></pre>
+<h3 id="ejecutar-un-test-especifico">Ejecutar un test especifico</h3>
+<pre><code class="language-bash">./gradlew :server:test --tests &quot;com.tu.paquete.NombreDelTest&quot;
+</code></pre>
+<hr />
+<h2 id="cobertura-de-codigo-con-jacoco">Cobertura de codigo con JaCoCo</h2>
+<p>El proyecto utiliza JaCoCo para medir la cobertura de los tests.</p>
+<h3 id="ejecutar-tests-generar-reporte">Ejecutar tests + generar reporte</h3>
+<h4 id="windows_2">Windows</h4>
+<pre><code class="language-powershell">.\gradlew.bat :server:test :server:jacocoTestReport
+</code></pre>
+<h4 id="linuxmacos_2">Linux/macOS</h4>
+<pre><code class="language-bash">./gradlew :server:test :server:jacocoTestReport
+</code></pre>
+<h3 id="acceder-al-reporte">Acceder al reporte</h3>
+<p>Una vez generado, buscar en la carpeta build/repots/jacoco/test: Seleccionar el html de los test para ver la cobertura de todas las ramas.</p>
+<p>El reporte muestra:</p>
+<ul>
+<li>Cobertura de lineas</li>
+<li>Cobertura de metodos</li>
+<li>Clases no cubiertas</li>
+</ul>
+<hr />
+<h2 id="integracion-continua">Integracion continua</h2>
+<p>El proyecto incluye integracion continua mediante GitHub Actions.</p>
+<h3 id="que-hace">¿Que hace?</h3>
+<ul>
+<li>Ejecuta automaticamente los tests en cada push y pull request</li>
+<li>Verifica que el proyecto compila correctamente</li>
+<li>Ayuda a detectar errores antes de integrar cambios</li>
+</ul>
+<hr />
+<h2 id="ejecucion-del-sistema">Ejecucion del sistema</h2>
+<ol>
+<li>Ejecutar server y cliente en terminales separadas.</li>
+</ol>
+<h3 id="terminal-1-server-puerto-8080">Terminal 1 - Server (puerto 8080)</h3>
+<h4 id="windows_3">Windows</h4>
+<pre><code class="language-powershell">.\gradlew.bat :server:bootRun
+</code></pre>
+<h4 id="linuxmacos_3">Linux/macOS</h4>
+<pre><code class="language-bash">./gradlew :server:bootRun
+</code></pre>
+<h3 id="terminal-2-client-proxy-puerto-8090">Terminal 2 - Client Proxy (puerto 8090)</h3>
+<h4 id="windows_4">Windows</h4>
+<pre><code class="language-powershell">.\gradlew.bat :client-proxy:bootRun
+</code></pre>
+<h4 id="linuxmacos_4">Linux/macOS</h4>
+<pre><code class="language-bash">./gradlew :client-proxy:bootRun
+</code></pre>
+<hr />
+<h2 id="funcionamiento-del-proyecto">Funcionamiento del proyecto</h2>
+<ul>
+<li>El servidor se ejecuta en el puerto <code>8080</code>.</li>
+<li>Documentacion de la API (Swagger): <code>http://localhost:8080/swagger-ui/index.html</code></li>
+<li>El cliente se ejecuta en el puerto <code>8090</code> y proporciona la interfaz frontend.</li>
+<li>Acceso recomendado al frontend: <code>http://localhost:8090/login</code></li>
+</ul>
+<hr />
+<h2 id="notas-utiles">Notas utiles</h2>
+<ul>
+<li>Si no levanta Gradle, revisa que tu entorno este usando Java 21 (<code>JAVA_HOME</code> apuntando al JDK correcto).</li>
+<li>El proyecto incluye datos de ejemplo al arrancar por primera vez en base de datos vacia.</li>
+<li>Si no aparece el reporte de JaCoCo, asegúrate de ejecutar <code>jacocoTestReport</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script src="js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = ".";</script>
-    <script src="js/theme_extra.js"></script>
-    <script src="js/theme.js"></script>
-      <script src="search/main.js"></script>
-    <script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-
-</body>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
 </html>
-
-<!--
-MkDocs version : 1.6.1
-Build Date UTC : 2026-05-17 12:25:45.950427+00:00
--->
