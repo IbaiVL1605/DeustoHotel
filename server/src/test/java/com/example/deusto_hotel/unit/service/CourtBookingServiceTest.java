@@ -230,4 +230,41 @@ public class CourtBookingServiceTest {
     }
 
  */
+    @Test
+    void testCancelBookingAdmin() {
+        Long id = 1L;
+        CourtBooking booking = new CourtBooking();
+        booking.setId(id);
+        booking.setEstado(CourtBookingStatus.CONFIRMADA);
+
+        when(courtBookingRepository.findById(id)).thenReturn(Optional.of(booking));
+        when(courtBookingRepository.save(any(CourtBooking.class))).thenReturn(booking);
+
+        courtBookingService.cancelBookingAdmin(id);
+
+        assertEquals(CourtBookingStatus.CANCELADA, booking.getEstado());
+        verify(courtBookingRepository).save(booking);
+
+        Map<String, Object> expectedPayload = Map.of(
+                "action", "CANCELLED",
+                "bookingId", id
+        );
+
+        verify(messagingTemplate).convertAndSend(
+                eq("/topic/court-updates"),
+                eq((Object) expectedPayload)
+        );
+    }
+
+    @Test
+    void testCancelBookingAdmin_NotFound() {
+        Long id = 1L;
+        when(courtBookingRepository.findById(id)).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> courtBookingService.cancelBookingAdmin(id));
+        assertEquals("Reserva no encontrada", ex.getMessage());
+
+        verify(courtBookingRepository, never()).save(any());
+        verify(messagingTemplate, never()).convertAndSend(anyString(), any(Object.class));
+    }
 }

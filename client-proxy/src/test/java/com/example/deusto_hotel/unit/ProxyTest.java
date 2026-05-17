@@ -860,4 +860,32 @@ class ProxyTest {
                 verify(httpClient).send(any(HttpRequest.class), any());
         }
 
+        @Test
+        void cancelCourtBookingAdmin_exito() throws Exception {
+                HttpResponse<String> response = mock(HttpResponse.class);
+                when(response.statusCode()).thenReturn(200);
+
+                when(httpClient.send(any(HttpRequest.class), any()))
+                                .thenReturn((HttpResponse) response);
+
+                proxy.cancelCourtBookingAdmin(1L);
+
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
+
+        @Test
+        void cancelCourtBookingAdmin_error() throws Exception {
+                HttpResponse<String> response = mock(HttpResponse.class);
+                when(response.statusCode()).thenReturn(500);
+                when(response.body()).thenReturn("Error en el servidor");
+
+                when(httpClient.send(any(HttpRequest.class), any()))
+                                .thenReturn((HttpResponse) response);
+
+                RuntimeException ex = assertThrows(RuntimeException.class, () -> proxy.cancelCourtBookingAdmin(1L));
+                assertTrue(ex.getMessage().contains("Error al cancelar la reserva por el administrador: Error en el servidor"));
+
+                verify(httpClient, times(1)).send(any(HttpRequest.class), any());
+        }
+
 }

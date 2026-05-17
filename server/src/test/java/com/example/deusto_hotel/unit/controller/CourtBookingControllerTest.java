@@ -127,4 +127,11 @@ class CourtBookingControllerTest {
     }
 
  */
+    @Test
+    void testCancelBookingAdmin() throws Exception {
+        mockMvc.perform(post("/api/v1/court-bookings/1/cancel"))
+                .andExpect(status().isOk());
+
+        verify(courtBookingService).cancelBookingAdmin(1L);
+    }
 }
