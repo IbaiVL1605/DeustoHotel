@@ -6,6 +6,7 @@ import com.example.deusto_hotel.mapper.CourtBookingMapper;
 import com.example.deusto_hotel.model.Court;
 import com.example.deusto_hotel.model.CourtBooking;
 import com.example.deusto_hotel.model.CourtBookingStatus;
+import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
 import com.example.deusto_hotel.repository.CourtRepository;
@@ -197,6 +198,131 @@ public class CourtBookingServiceTest {
 
         assertEquals(1, result.size());
         verify(courtBookingRepository).findByClienteId(clienteId);
+    }
+
+    @Test
+    void validarReservaSuccess() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
+
+        User recepcionista = new User();
+        recepcionista.setId(idRecepcionista);
+        recepcionista.setRol(Role.RECEPTIONIST);
+
+        CourtBooking reservaPendiente = new CourtBooking();
+        reservaPendiente.setId(idReserva);
+        reservaPendiente.setEstado(CourtBookingStatus.PENDIENTE);
+
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.of(recepcionista));
+        when(courtBookingRepository.findById(idReserva)).thenReturn(Optional.of(reservaPendiente));
+
+        courtBookingService.validarReserva(idReserva, idRecepcionista);
+
+        verify(courtBookingRepository).save(argThat(reserva ->
+                reserva.getEstado() == CourtBookingStatus.CONFIRMADA
+                        && reserva.getId().equals(idReserva)
+        ));
+    }
+
+    @Test
+    void validarReservaUsuarioNoAutenticado() {
+        Long idReserva = 99L;
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> courtBookingService.validarReserva(idReserva, null)
+        );
+
+        assertEquals("Usuario no autenticado", ex.getMessage());
+        verifyNoInteractions(userRepository);
+        verifyNoInteractions(courtBookingRepository);
+    }
+
+    @Test
+    void validarReservaUsuarioNoEncontrado() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
+
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> courtBookingService.validarReserva(idReserva, idRecepcionista)
+        );
+
+        assertEquals("Usuario no encontrado", ex.getMessage());
+        verify(userRepository, times(1)).findById(idRecepcionista);
+        verifyNoInteractions(courtBookingRepository);
+    }
+
+    @Test
+    void validarReservaUsuarioNoAutorizado() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
+
+        User usuarioNoAutorizado = new User();
+        usuarioNoAutorizado.setId(idRecepcionista);
+        usuarioNoAutorizado.setRol(Role.CLIENT);
+
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.of(usuarioNoAutorizado));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> courtBookingService.validarReserva(idReserva, idRecepcionista)
+        );
+
+        assertEquals("Usuario no autorizado", ex.getMessage());
+        verify(userRepository, times(1)).findById(idRecepcionista);
+        verifyNoInteractions(courtBookingRepository);
+    }
+
+    @Test
+    void validarReservaNoEncontrada() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
+
+        User recepcionista = new User();
+        recepcionista.setId(idRecepcionista);
+        recepcionista.setRol(Role.RECEPTIONIST);
+
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.of(recepcionista));
+        when(courtBookingRepository.findById(idReserva)).thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> courtBookingService.validarReserva(idReserva, idRecepcionista)
+        );
+
+        assertEquals("Reserva no encontrada", ex.getMessage());
+        verify(userRepository, times(1)).findById(idRecepcionista);
+        verify(courtBookingRepository, times(1)).findById(idReserva);
+    }
+
+    @Test
+    void validarReservaNoEstaPendiente() {
+        Long idReserva = 99L;
+        Long idRecepcionista = 7L;
+
+        User recepcionista = new User();
+        recepcionista.setId(idRecepcionista);
+        recepcionista.setRol(Role.RECEPTIONIST);
+
+        CourtBooking reservaConfirmada = new CourtBooking();
+        reservaConfirmada.setId(idReserva);
+        reservaConfirmada.setEstado(CourtBookingStatus.CONFIRMADA);
+
+        when(userRepository.findById(idRecepcionista)).thenReturn(Optional.of(recepcionista));
+        when(courtBookingRepository.findById(idReserva)).thenReturn(Optional.of(reservaConfirmada));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> courtBookingService.validarReserva(idReserva, idRecepcionista)
+        );
+
+        assertEquals("La reserva no está en estado pendiente", ex.getMessage());
+        verify(userRepository, times(1)).findById(idRecepcionista);
+        verify(courtBookingRepository, times(1)).findById(idReserva);
+        verify(courtBookingRepository, never()).save(any(CourtBooking.class));
     }
 /*
     @Test
