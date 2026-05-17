@@ -510,26 +510,6 @@ public class Controller {
                 + salida;
     }
 
-    @GetMapping("/pistas/reservadas")
-    public String verReservasPistas(HttpSession session, Model model) {
-        Long clienteId = (Long) session.getAttribute("userId");
-        if (clienteId == null) {
-            return "redirect:/login";
-        }
-
-        try {
-            log.info("Obteniendo reservas de pistas para clienteId: " + clienteId);
-            List<CourtBookingResponse> courtBookings = proxy.getCourtBookingsByClienteId(clienteId);
-            model.addAttribute("courtBookings", courtBookings);
-
-            return "user/reservasPistas";
-
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "user/reservasPistas";
-        }
-    }
-
     @GetMapping("/recepcion")
     public String showRecepcionReservas(HttpSession session, Model model) {
 

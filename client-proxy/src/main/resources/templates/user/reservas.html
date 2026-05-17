@@ -279,24 +279,19 @@
 </head>
 <body>
 
-<!-- LOGO HEADER -->
 <a href="/menu" class="logo-header">Deusto <span>Hotel</span></a>
 
-<!-- MAIN CONTAINER -->
 <div class="container">
-    <!-- PAGE HEADER -->
     <div class="page-header">
         <h1 class="page-title">Mis Reservas</h1>
         <p class="page-subtitle">Gestiona tus reservas</p>
         <div class="divider"></div>
     </div>
 
-    <!-- ERROR ALERT -->
     <div th:if="${error}" class="alert">
         <span th:text="${error}"></span>
     </div>
 
-    <!-- RESERVAS DE HABITACIONES -->
     <div class="section">
         <h2 class="section-title">Habitaciones (Próximas)</h2>
 
@@ -373,13 +368,12 @@
         </div>
     </div>
 
-    <!-- RESERVAS DE PISTAS -->
     <div class="section">
         <h2 class="section-title">Pistas (Próximas)</h2>
 
         <div th:if="${courtBookings != null && courtBookings.size() > 0}" class="reservas-grid">
             <div th:each="booking : ${courtBookings}"
-                 th:if="${booking.fecha.isAfter(T(java.time.LocalDate).now())}"
+                 th:if="${booking.fecha.isAfter(T(java.time.LocalDate).now()) || booking.fecha.isEqual(T(java.time.LocalDate).now())}"
                  class="reserva-card">
 
                 <div class="reserva-header">
@@ -395,6 +389,10 @@
                     <div class="detail-item">
                         <span class="detail-label">Fecha</span>
                         <span class="detail-value" th:text="${booking.fecha}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Horario</span>
+                        <span class="detail-value" th:text="${#strings.substring(booking.horaInicio,0,5) + ' - ' + #strings.substring(booking.horaFin,0,5)}"></span>
                     </div>
                 </div>
 
@@ -431,6 +429,10 @@
                     <div class="detail-item">
                         <span class="detail-label">Fecha</span>
                         <span class="detail-value" th:text="${booking.fecha}"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Horario</span>
+                        <span class="detail-value" th:text="${#strings.substring(booking.horaInicio,0,5) + ' - ' + #strings.substring(booking.horaFin,0,5)}"></span>
                     </div>
                 </div>
             </div>
