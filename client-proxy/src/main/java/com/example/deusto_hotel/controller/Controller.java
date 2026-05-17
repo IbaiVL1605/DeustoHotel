@@ -151,7 +151,26 @@ public class Controller {
             model.addAttribute("error", "No se pudieron cargar las pistas: " + e.getMessage());
         }
 
+        try {
+            // carga de reservas para listado del admin
+            List<CourtBookingResponse> courtBookings = proxy.getAllCourtBookings();
+            model.addAttribute("courtBookings", courtBookings);
+        } catch (Exception e) {
+            model.addAttribute("errorBookings", "No se pudieron cargar las reservas de pistas: " + e.getMessage());
+        }
+
         return "admin/admin";
+    }
+
+    @PostMapping("/admin/reservas/pista/{id}/cancelar")
+    public String cancelCourtBookingAdmin(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            proxy.cancelCourtBookingAdmin(id);
+            redirectAttributes.addFlashAttribute("success", "Reserva de pista cancelada exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cancelar la reserva: " + e.getMessage());
+        }
+        return "redirect:/admin";
     }
 
     @PostMapping("/admin/courts/{id}/block")
@@ -399,15 +418,14 @@ public class Controller {
             @PathVariable Long id,
             Model model) {
 
-        try{
+        try {
             log.info("Cargando reserva de pista con id: " + id);
-            CourtBookingResponse booking =
-                    proxy.getCourtBookingById(id);
+            CourtBookingResponse booking = proxy.getCourtBookingById(id);
 
             model.addAttribute("booking", booking);
 
             log.info("Reserva cargada: " + booking);
-        }catch (Exception e){
+        } catch (Exception e) {
             model.addAttribute("error", "No se pudo cargar la reserva: " + e.getMessage());
         }
 
@@ -422,14 +440,11 @@ public class Controller {
 
         try {
 
-            CourtBookingResponse booking =
-                    proxy.getCourtBookingById(id);
+            CourtBookingResponse booking = proxy.getCourtBookingById(id);
 
-            List<LocalTime> horasDisponibles =
-                    proxy.getHorasDisponibles(
-                            request.pistaId(),
-                            request.fecha()
-                    );
+            List<LocalTime> horasDisponibles = proxy.getHorasDisponibles(
+                    request.pistaId(),
+                    request.fecha());
 
             model.addAttribute("booking", booking);
 
@@ -568,8 +583,5 @@ public class Controller {
         }
         return "redirect:/recepcion";
     }
-
-
-
 
 }

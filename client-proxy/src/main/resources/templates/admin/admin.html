@@ -395,6 +395,58 @@
         </div>
     </div>
 
+    <!-- SECCIÓN: RESERVAS DE PISTAS -->
+    <div class="admin-card" style="grid-column: 1 / -1;">
+        <div class="admin-header">
+            <h1 class="admin-title">Reservas de Pistas</h1>
+            <p class="admin-subtitle">Listado general de usuarios</p>
+            <div class="divider"></div>
+        </div>
+
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Pista</th>
+                        <th>Fecha</th>
+                        <th>Horario</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="booking : ${courtBookings}">
+                        <td th:text="${booking.id}"></td>
+                        <td th:text="${booking.clienteNombre}"></td>
+                        <td th:text="${booking.pistaNombre}"></td>
+                        <td th:text="${booking.fecha}"></td>
+                        <td>
+                            <span th:text="${booking.horaInicio}"></span> - <span th:text="${booking.horaFin}"></span>
+                        </td>
+                        <td>
+                            <span th:if="${booking.estado.name() == 'PENDIENTE'}" class="badge" style="background: rgba(201,168,76,.1); color: var(--gold-light); border: 1px solid rgba(201,168,76,.3);">Pendiente</span>
+                            <span th:if="${booking.estado.name() == 'CONFIRMADA'}" class="badge badge-success">Confirmada</span>
+                            <span th:if="${booking.estado.name() == 'CANCELADA'}" class="badge badge-danger">Cancelada</span>
+                        </td>
+                        <td>
+                            <form th:if="${booking.estado.name() != 'CANCELADA'}"
+                                  th:action="@{/admin/reservas/pista/{id}/cancelar(id=${booking.id})}" 
+                                  method="post" style="margin: 0;"
+                                  onsubmit="return confirm('¿Seguro que deseas cancelar esta reserva? El usuario será notificado.');">
+                                <button type="submit" class="btn-outline" style="color: var(--error); border-color: var(--error);">Cancelar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${courtBookings == null || courtBookings.isEmpty()}">
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No hay reservas de pistas registradas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <script>
