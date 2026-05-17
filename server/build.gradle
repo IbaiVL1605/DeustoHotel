@@ -70,7 +70,9 @@ tasks.register('integrationTest', Test) {
         includeTags('integration')
     }
 }
-
+tasks.javadoc {
+    destinationDir = file("$rootProject.projectDir/documentacion/docs/javadoc")
+}
 /*
 tasks.named('test') {
     useJUnitPlatform()
