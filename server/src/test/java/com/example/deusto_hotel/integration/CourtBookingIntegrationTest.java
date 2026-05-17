@@ -1,12 +1,10 @@
 package com.example.deusto_hotel.integration;
 
-import com.example.deusto_hotel.dto.RoomBookingRequest;
-import com.example.deusto_hotel.dto.RoomBookingResponse;
-import com.example.deusto_hotel.model.RoomType;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import com.example.deusto_hotel.dto.CourtBookingResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.TestRestTemplate;
@@ -16,7 +14,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -28,84 +25,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestRestTemplate
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class RoomBokingIntegratonTest {
-
+public class CourtBookingIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Test
     @Order(1)
-    void deleteRoomBooking_ok() {
-
-        String fechaEntrada = LocalDate.now().plusDays(30).toString();
-        String fechaSalida = LocalDate.now().plusDays(35).toString();
-
-        ResponseEntity<List> response = restTemplate.getForEntity(
-                "/api/v1/rooms/disponibles?fechaEntrada={f1}&fechaSalida={f2}",
-                List.class,
-                fechaEntrada,
-                fechaSalida
-        );
-
-        List habitaciones = response.getBody();
-        Map suite = (Map) habitaciones.stream()
-                .filter(h -> ((Map) h).get("tipo").equals("SUITE"))
-                .findFirst()
-                .orElseThrow();
-
-        List suites = (List) suite.get("suites");
-        Map habitacion = (Map) suites.get(0);
-
-        Long habitacionId = Long.valueOf(habitacion.get("id").toString());
-
-        RoomBookingRequest request = new RoomBookingRequest(
-                RoomType.SUITE,
-                1L,
-                null,
-                habitacionId,
-                LocalDate.parse(fechaEntrada),
-                LocalDate.parse(fechaSalida)
-        );
-
-        // ✅ FIX AQUÍ
-        ResponseEntity<Void> createResponse = restTemplate.postForEntity(
-                "/api/v1/room-bookings",
-                List.of(request),
-                Void.class
-        );
-
-        assertEquals(201, createResponse.getStatusCode().value());
-
-        ResponseEntity<List<RoomBookingResponse>> bookingsResponse = restTemplate.exchange(
-                "/api/v1/room-bookings/cliente/{clienteId}",
-                org.springframework.http.HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<>() {},
-                1L
-        );
-
-        List<RoomBookingResponse> bookings = bookingsResponse.getBody();
-        Long bookingId = bookings.stream()
-                .filter(b -> habitacionId.equals(b.habitacionId()))
-                .findFirst()
-                .orElseThrow()
-                .id();
-
-        restTemplate.delete(
-                "/api/v1/room-bookings/{id}?userId={userId}",
-                bookingId,
-                1L
-        );
-    }
-
-    @Test
-    @Order(2)
-    void validarReservaHabitacion_usuarioNoEncontrado() {
-        Long idReservaPendiente = obtenerIdReservaPorEstadoHabitacion("PENDIENTE");
+    void validarReservaPista_usuarioNoEncontrado() {
+        Long idReservaPendiente = obtenerIdReservaPorEstadoPista("PENDIENTE");
 
         ResponseEntity<String> response = restTemplate.postForEntity(
-                "/api/v1/room-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
+                "/api/v1/court-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
                 null,
                 String.class,
                 idReservaPendiente,
@@ -117,13 +48,13 @@ public class RoomBokingIntegratonTest {
     }
 
     @Test
-    @Order(3)
-    void validarReservaHabitacion_usuarioNoAutorizado() {
-        Long idReservaPendiente = obtenerIdReservaPorEstadoHabitacion("PENDIENTE");
+    @Order(2)
+    void validarReservaPista_usuarioNoAutorizado() {
+        Long idReservaPendiente = obtenerIdReservaPorEstadoPista("PENDIENTE");
         Long idCliente = loginYObtenerId("juan@email.com", "juan123");
 
         ResponseEntity<String> response = restTemplate.postForEntity(
-                "/api/v1/room-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
+                "/api/v1/court-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
                 null,
                 String.class,
                 idReservaPendiente,
@@ -135,13 +66,13 @@ public class RoomBokingIntegratonTest {
     }
 
     @Test
-    @Order(4)
-    void validarReservaHabitacion_noEstaPendiente() {
+    @Order(3)
+    void validarReservaPista_noEstaPendiente() {
         Long idRecepcionista = loginRecepcionistaYObtenerId();
-        Long idReservaConfirmada = obtenerIdReservaPorEstadoHabitacion("CONFIRMADA");
+        Long idReservaConfirmada = obtenerIdReservaPorEstadoPista("CONFIRMADA");
 
         ResponseEntity<String> response = restTemplate.postForEntity(
-                "/api/v1/room-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
+                "/api/v1/court-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
                 null,
                 String.class,
                 idReservaConfirmada,
@@ -153,12 +84,12 @@ public class RoomBokingIntegratonTest {
     }
 
     @Test
-    @Order(5)
-    void validarReservaHabitacion_reservaNoEncontrada() {
+    @Order(4)
+    void validarReservaPista_reservaNoEncontrada() {
         Long idRecepcionista = loginRecepcionistaYObtenerId();
 
         ResponseEntity<String> response = restTemplate.postForEntity(
-                "/api/v1/room-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
+                "/api/v1/court-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
                 null,
                 String.class,
                 999999L,
@@ -170,12 +101,12 @@ public class RoomBokingIntegratonTest {
     }
 
     @Test
-    @Order(6)
-    void validarReservaHabitacion_ok() {
+    @Order(5)
+    void validarReservaPista_ok() {
         Long idRecepcionista = loginRecepcionistaYObtenerId();
 
-        ResponseEntity<List<RoomBookingResponse>> allResponse = restTemplate.exchange(
-                "/api/v1/room-bookings",
+        ResponseEntity<List<CourtBookingResponse>> allResponse = restTemplate.exchange(
+                "/api/v1/court-bookings",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<>() {
@@ -183,16 +114,16 @@ public class RoomBokingIntegratonTest {
         );
 
         assertEquals(200, allResponse.getStatusCode().value());
-        List<RoomBookingResponse> reservas = allResponse.getBody();
+        List<CourtBookingResponse> reservas = allResponse.getBody();
         assertNotNull(reservas);
 
-        RoomBookingResponse pendiente = reservas.stream()
+        CourtBookingResponse pendiente = reservas.stream()
                 .filter(r -> "PENDIENTE".equals(r.estado().name()))
                 .findFirst()
                 .orElseThrow();
 
         ResponseEntity<String> validarResponse = restTemplate.postForEntity(
-                "/api/v1/room-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
+                "/api/v1/court-bookings/validar?idReserva={idReserva}&idRecepcionista={idRecepcionista}",
                 null,
                 String.class,
                 pendiente.id(),
@@ -202,15 +133,15 @@ public class RoomBokingIntegratonTest {
         assertEquals(200, validarResponse.getStatusCode().value());
         assertEquals("Reserva validada correctamente", validarResponse.getBody());
 
-        ResponseEntity<List<RoomBookingResponse>> afterResponse = restTemplate.exchange(
-                "/api/v1/room-bookings",
+        ResponseEntity<List<CourtBookingResponse>> afterResponse = restTemplate.exchange(
+                "/api/v1/court-bookings",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<>() {
                 }
         );
 
-        RoomBookingResponse actualizada = afterResponse.getBody().stream()
+        CourtBookingResponse actualizada = afterResponse.getBody().stream()
                 .filter(r -> r.id().equals(pendiente.id()))
                 .findFirst()
                 .orElseThrow();
@@ -218,9 +149,9 @@ public class RoomBokingIntegratonTest {
         assertEquals("CONFIRMADA", actualizada.estado().name());
     }
 
-    private Long obtenerIdReservaPorEstadoHabitacion(String estado) {
-        ResponseEntity<List<RoomBookingResponse>> response = restTemplate.exchange(
-                "/api/v1/room-bookings",
+    private Long obtenerIdReservaPorEstadoPista(String estado) {
+        ResponseEntity<List<CourtBookingResponse>> response = restTemplate.exchange(
+                "/api/v1/court-bookings",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<>() {
@@ -228,7 +159,7 @@ public class RoomBokingIntegratonTest {
         );
 
         assertEquals(200, response.getStatusCode().value());
-        List<RoomBookingResponse> reservas = response.getBody();
+        List<CourtBookingResponse> reservas = response.getBody();
         assertNotNull(reservas);
 
         return reservas.stream()
@@ -259,3 +190,4 @@ public class RoomBokingIntegratonTest {
         return id.longValue();
     }
 }
+
