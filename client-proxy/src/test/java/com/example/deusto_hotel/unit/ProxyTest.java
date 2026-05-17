@@ -739,10 +739,6 @@ class ProxyTest {
                 verify(httpClient, times(1)).send(any(HttpRequest.class), any());
         }
 
-        // Mensaje para Ibai: Si mi niño ve esto y dice "pero esto no lo tenia que hacer
-        // yo???" quiero que sepa
-        // que de forma totalmente voluntaria (Marta me da miedo) he decidido hace los
-        // teses, besitos.
         @Test
         void updateCourtBooking_error() throws Exception {
                 HttpResponse<String> response = mock(HttpResponse.class);
