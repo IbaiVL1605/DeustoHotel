@@ -24,8 +24,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -127,4 +129,36 @@ class CourtBookingControllerTest {
     }
 
  */
+    @Test
+    void testCancelBookingAdmin() throws Exception {
+        mockMvc.perform(post("/api/v1/court-bookings/1/cancel"))
+                .andExpect(status().isOk());
+
+        verify(courtBookingService).cancelBookingAdmin(1L);
+    }
+
+    @Test
+    void testValidarReserva() throws Exception {
+        mockMvc.perform(post("/api/v1/court-bookings/validar")
+                        .param("idReserva", "99")
+                        .param("idRecepcionista", "7"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Reserva validada correctamente"));
+
+        verify(courtBookingService).validarReserva(99L, 7L);
+    }
+
+    @Test
+    void testValidarReserva_error() {
+        doThrow(new IllegalArgumentException("Usuario no autorizado"))
+                .when(courtBookingService).validarReserva(99L, 7L);
+
+        assertThrows(Exception.class, () ->
+                mockMvc.perform(post("/api/v1/court-bookings/validar")
+                        .param("idReserva", "99")
+                        .param("idRecepcionista", "7"))
+        );
+
+        verify(courtBookingService).validarReserva(99L, 7L);
+    }
 }

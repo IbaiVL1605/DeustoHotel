@@ -736,17 +736,20 @@ class ControllerTest {
         }
 
         @Test
-        void adminPage_MuestraPistasExito() throws Exception {
+        void adminPage_MuestraPistasYReservasExito() throws Exception {
                 List<CourtResponse> courtsMock = List.of(
                                 new CourtResponse(1L, "Pista 1", CourtType.TENIS, 20.0, CourtStatus.DISPONIBLE));
+                List<CourtBookingResponse> bookingsMock = List.of();
 
                 when(proxy.getCourts(null)).thenReturn(courtsMock);
+                when(proxy.getAllCourtBookings()).thenReturn(bookingsMock);
 
                 mockMvc.perform(get("/admin")
                                 .sessionAttr("userRole", "ADMIN"))
                                 .andExpect(status().isOk())
                                 .andExpect(view().name("admin/admin"))
-                                .andExpect(model().attributeExists("courts"));
+                                .andExpect(model().attributeExists("courts"))
+                                .andExpect(model().attributeExists("courtBookings"));
         }
 
     @Test
@@ -1054,5 +1057,27 @@ class ControllerTest {
         verify(proxy).getCourtBookingById(1L);
     }
 
+
+        @Test
+        void cancelCourtBookingAdmin_Success() throws Exception {
+                mockMvc.perform(post("/admin/reservas/pista/1/cancelar"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/admin"))
+                                .andExpect(flash().attribute("success", "Reserva de pista cancelada exitosamente."));
+
+                verify(proxy).cancelCourtBookingAdmin(1L);
+        }
+
+        @Test
+        void cancelCourtBookingAdmin_Error() throws Exception {
+                doThrow(new RuntimeException("Error simulado")).when(proxy).cancelCourtBookingAdmin(1L);
+
+                mockMvc.perform(post("/admin/reservas/pista/1/cancelar"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/admin"))
+                                .andExpect(flash().attribute("error", "Error al cancelar la reserva: Error simulado"));
+
+                verify(proxy).cancelCourtBookingAdmin(1L);
+        }
 
 }
