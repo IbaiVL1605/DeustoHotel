@@ -393,4 +393,99 @@ public class CourtBookingServiceTest {
         verify(courtBookingRepository, never()).save(any());
         verify(messagingTemplate, never()).convertAndSend(anyString(), any(Object.class));
     }
+
+    @Test
+    void findAll_exito() throws Exception{
+        CourtBooking booking = mock(CourtBooking.class);
+
+        CourtBookingResponse response = new CourtBookingResponse(
+                1L,
+                1L,
+                "Marta",
+                2L,
+                "Pista 1",
+                LocalDate.now(),
+                LocalTime.of(10,0),
+                LocalTime.of(11,0),
+                CourtBookingStatus.CONFIRMADA,
+                20.0,
+                LocalDateTime.now()
+        );
+
+        when(courtBookingRepository.findAll())
+                .thenReturn(List.of(booking));
+
+        when(courtBookingMapper.toResponse(booking))
+                .thenReturn(response);
+
+        List<CourtBookingResponse> result = courtBookingService.findAll();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        verify(courtBookingRepository).findAll();
+        verify(courtBookingMapper).toResponse(booking);
+    }
+
+    @Test
+    void findAll_error() throws Exception{
+        when(courtBookingRepository.findAll())
+                .thenReturn(List.of());
+
+        List<CourtBookingResponse> result = courtBookingService.findAll();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(courtBookingRepository).findAll();
+
+    }
+
+    @Test
+    void findById_exito() throws Exception{
+        User cliente = mock(User.class);
+        when(cliente.getId()).thenReturn(1L);
+        when(cliente.getNombre()).thenReturn("Marta");
+
+        Court pista = mock(Court.class);
+        when(pista.getId()).thenReturn(2L);
+        when(pista.getNombre()).thenReturn("Pista 1");
+
+        CourtBooking booking = mock(CourtBooking.class);
+
+        when(booking.getId()).thenReturn(1L);
+        when(booking.getCliente()).thenReturn(cliente);
+        when(booking.getPista()).thenReturn(pista);
+        when(booking.getFecha()).thenReturn(LocalDate.now());
+        when(booking.getHoraInicio()).thenReturn(LocalTime.of(10,0));
+        when(booking.getHoraFin()).thenReturn(LocalTime.of(11,0));
+        when(booking.getEstado()).thenReturn(CourtBookingStatus.CONFIRMADA);
+        when(booking.getPrecioTotal()).thenReturn(20.0);
+        when(booking.getCreadaEn()).thenReturn(LocalDateTime.now());
+
+        when(courtBookingRepository.findById(1L))
+                .thenReturn(Optional.of(booking));
+
+        CourtBookingResponse result = courtBookingService.findById(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.id());
+        assertEquals("Marta", result.clienteNombre());
+
+        verify(courtBookingRepository).findById(1L);
+    }
+
+    @Test
+    void findById_error() throws Exception{
+        when(courtBookingRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class,
+                        () -> courtBookingService.findById(1L));
+
+        assertEquals("Reserva no encontrada", exception.getMessage());
+
+        verify(courtBookingRepository).findById(1L);
+    }
 }
