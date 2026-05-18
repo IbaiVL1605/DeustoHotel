@@ -486,11 +486,11 @@
     </div>
 
     <!-- ALERTS -->
-    <div th:if="${successMessage}" class="alert alert-success">
-        <span th:text="${successMessage}"></span>
+    <div th:if="${success}" class="alert alert-success">
+        <span th:text="${success}"></span>
     </div>
-    <div th:if="${errorMessage}" class="alert alert-error">
-        <span th:text="${errorMessage}"></span>
+    <div th:if="${error}" class="alert alert-error">
+        <span th:text="${error}"></span>
     </div>
 
     <!-- RESERVAS PENDIENTES -->
@@ -536,7 +536,7 @@
                 </div>
 
                 <div class="reserva-actions">
-                    <form th:action="@{/recepcion/validar}"
+                    <form th:action="@{/recepcion/validar-habitacion}"
                           method="post"
                           style="flex: 1;">
                         <input type="hidden"
@@ -588,7 +588,12 @@
                 </div>
 
                 <div class="reserva-actions">
-                    <form th:action="@{/recepcion/validar}" method="post" style="flex: 1;">
+                    <form th:action="@{/recepcion/validar-pista}"
+                          method="post"
+                          style="flex: 1;">
+                        <input type="hidden"
+                               name="idReserva"
+                               th:value="${booking.id}" />
                         <button type="submit" class="btn btn-confirm" onclick="return confirm('¿Confirmar esta reserva?')">
                             Confirmar
                         </button>

@@ -548,18 +548,34 @@ public class Controller {
     }
 
     // Llama al server para validar
-    @PostMapping("recepcion/validar")
-    public String validarReserva(@RequestParam Long idReserva, HttpSession session,
+    @PostMapping("recepcion/validar-habitacion")
+    public String validarReservaHabitacion(@RequestParam Long idReserva, HttpSession session,
             RedirectAttributes redirectAttributes) {
         Long idRecepcionista = (Long) session.getAttribute("userId");
 
         System.out.println(
                 "Intentando validar reserva con ID: " + idReserva + " por recepcionista con ID: " + idRecepcionista);
         try {
-            proxy.validarReserva(idReserva, idRecepcionista);
+            proxy.validarReservaHabitacion(idReserva, idRecepcionista);
             redirectAttributes.addFlashAttribute("success", "Reserva validada correctamente.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al validar la reserva: " + e.getMessage());
+        }
+        return "redirect:/recepcion";
+    }
+
+    @PostMapping("recepcion/validar-pista")
+    public String validarReservaPista(@RequestParam Long idReserva, HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Long idRecepcionista = (Long) session.getAttribute("userId");
+
+        System.out.println(
+                "Intentando validar reserva de pista con ID: " + idReserva + " por recepcionista con ID: " + idRecepcionista);
+        try {
+            proxy.validarReservaPista(idReserva, idRecepcionista);
+            redirectAttributes.addFlashAttribute("success", "Reserva de pista validada correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al validar la reserva de pista: " + e.getMessage());
         }
         return "redirect:/recepcion";
     }

@@ -5,6 +5,8 @@ import com.example.deusto_hotel.dto.CourtBookingResponse;
 import com.example.deusto_hotel.service.CourtBookingService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourtBookingController {
 
+    private static final Logger log = LoggerFactory.getLogger(CourtBookingController.class);
     /**
      * Servicio encargado de la lógica de negocio
      * de reservas de pistas.
@@ -139,6 +142,7 @@ public class CourtBookingController {
             @RequestParam Long idReserva,
             @RequestParam Long idRecepcionista) {
         courtBookingService.validarReserva(idReserva, idRecepcionista);
+        log.info("Reserva con ID {} validada por recepcionista con ID {}", idReserva, idRecepcionista);
         return ResponseEntity.ok("Reserva validada correctamente");
     }
 

@@ -434,7 +434,7 @@ public class Proxy {
     }
 
     // validar reserva
-    public ResponseEntity<String> validarReserva(Long idReserva, Long idRecepcionista) {
+    public ResponseEntity<String> validarReservaHabitacion(Long idReserva, Long idRecepcionista) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(java.net.URI.create("http://localhost:8080/api/v1/room-bookings/validar?idReserva="
                         + idReserva + "&idRecepcionista=" + idRecepcionista))
@@ -544,6 +544,23 @@ public class Proxy {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw new RuntimeException("Error al cancelar la reserva por el administrador: " + response.body());
+        }
+    }
+
+    public ResponseEntity<String> validarReservaPista(Long idReserva, Long idRecepcionista) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/api/v1/court-bookings/validar?idReserva="
+                        + idReserva + "&idRecepcionista=" + idRecepcionista))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        log.info("Validando reserva de pista con ID: " + idReserva + " por recepcionista ID: " + idRecepcionista);
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return ResponseEntity.status(response.statusCode()).body(response.body());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Error al validar la reserva de pista", e);
         }
     }
 }
