@@ -3,6 +3,14 @@ package com.example.deusto_hotel.controller;
 import com.example.deusto_hotel.dto.*;
 import com.example.deusto_hotel.model.CourtType;
 import com.example.deusto_hotel.service.CourtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +25,17 @@ import java.util.List;
  * Expone endpoints para consultar disponibilidad semanal,
  * disponibilidad por fecha y filtrado por tipo de pista.
  * </p>
+ *
+ * @author Deusto Hotel Team
+ * @version 1.0
  */
 @RestController
 @RequestMapping("/api/v1/courts")
 @RequiredArgsConstructor
+@Tag(
+        name = "Pistas deportivas",
+        description = "Endpoints para la gestión y consulta de disponibilidad de pistas deportivas"
+)
 public class CourtController {
 
     /**
@@ -43,9 +58,50 @@ public class CourtController {
      * @return lista de disponibilidad de pistas
      */
     @GetMapping("/available")
+    @Operation(
+            summary = "Obtener pistas disponibles",
+            description = "Retorna la disponibilidad de pistas deportivas aplicando filtros opcionales " +
+                    "por tipo de pista, fecha específica o semana."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Disponibilidad obtenida correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CourtAvailabilityDTO.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Parámetros inválidos"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor"
+            )
+    })
     public ResponseEntity<List<CourtAvailabilityDTO>> getAvailableCourts(
+
+            @Parameter(
+                    description = "Tipo de pista a filtrar",
+                    required = false,
+                    example = "PADEL"
+            )
             @RequestParam(required = false) String tipo,
+
+            @Parameter(
+                    description = "Fecha específica para consultar disponibilidad. Formato yyyy-MM-dd",
+                    required = false,
+                    example = "2026-06-15"
+            )
             @RequestParam(required = false) String fecha,
+
+            @Parameter(
+                    description = "Semana a consultar (1 o 2)",
+                    required = false,
+                    example = "1"
+            )
             @RequestParam(required = false) Integer semana) {
 
         List<CourtAvailabilityDTO> result;
@@ -89,9 +145,50 @@ public class CourtController {
      * @return disponibilidad semanal agrupada por días
      */
     @GetMapping("/weekly-availability")
+    @Operation(
+            summary = "Obtener disponibilidad semanal",
+            description = "Retorna la disponibilidad semanal de pistas deportivas agrupada por días " +
+                    "para un año y mes concretos."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Disponibilidad semanal obtenida correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = WeekAvailability.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Parámetros inválidos"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor"
+            )
+    })
     public ResponseEntity<List<WeekAvailability>> getWeeklyAvailability(
+
+            @Parameter(
+                    description = "Año de consulta",
+                    required = true,
+                    example = "2026"
+            )
             @RequestParam int year,
+
+            @Parameter(
+                    description = "Mes de consulta",
+                    required = true,
+                    example = "6"
+            )
             @RequestParam int month,
+
+            @Parameter(
+                    description = "Tipo de pista",
+                    required = false,
+                    example = "TENIS"
+            )
             @RequestParam(required = false) String tipo) {
 
         CourtType courtType = null;
@@ -100,61 +197,150 @@ public class CourtController {
 
             try {
                 courtType = CourtType.valueOf(tipo.toUpperCase());
+
             } catch (Exception ignored) {
                 // Si el tipo no es válido, se mantiene null
             }
         }
 
-        List<WeekAvailability> availability = courtService.findWeeklyAvailability(year, month, courtType);
+        List<WeekAvailability> availability =
+                courtService.findWeeklyAvailability(year, month, courtType);
 
         return ResponseEntity.ok(availability);
     }
 
+    /**
+     * Bloquea una pista deportiva para impedir nuevas reservas.
+     *
+     * @param id identificador único de la pista
+     * @return pista bloqueada actualizada
+     */
     @PostMapping("/{id}/block")
-    public ResponseEntity<CourtResponse> blockCourt(@PathVariable Long id) {
+    @Operation(
+            summary = "Bloquear pista",
+            description = "Bloquea una pista deportiva para impedir que pueda reservarse."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Pista bloqueada correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CourtResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Pista no encontrada"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor"
+            )
+    })
+    public ResponseEntity<CourtResponse> blockCourt(
+
+            @Parameter(
+                    description = "ID de la pista a bloquear",
+                    required = true,
+                    example = "1"
+            )
+            @PathVariable Long id) {
+
         CourtResponse response = courtService.blockCourt(id);
+
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Desbloquea una pista deportiva para permitir reservas nuevamente.
+     *
+     * @param id identificador único de la pista
+     * @return pista desbloqueada actualizada
+     */
     @PostMapping("/{id}/unblock")
-    public ResponseEntity<CourtResponse> unblockCourt(@PathVariable Long id) {
+    @Operation(
+            summary = "Desbloquear pista",
+            description = "Desbloquea una pista deportiva para permitir nuevas reservas."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Pista desbloqueada correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CourtResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Pista no encontrada"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor"
+            )
+    })
+    public ResponseEntity<CourtResponse> unblockCourt(
+
+            @Parameter(
+                    description = "ID de la pista a desbloquear",
+                    required = true,
+                    example = "1"
+            )
+            @PathVariable Long id) {
+
         CourtResponse response = courtService.unblockCourt(id);
+
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Obtiene todas las pistas registradas en el sistema.
+     * <p>
+     * Permite aplicar un filtro opcional por tipo de pista.
+     * </p>
+     *
+     * @param tipo tipo de pista (opcional)
+     * @return lista de pistas registradas
+     */
     @GetMapping
-    public ResponseEntity<List<CourtResponse>> getAll(@RequestParam(required = false) String tipo) {
+    @Operation(
+            summary = "Obtener todas las pistas",
+            description = "Retorna todas las pistas registradas en el sistema, " +
+                    "permitiendo filtrar opcionalmente por tipo."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Listado de pistas obtenido correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CourtResponse.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor"
+            )
+    })
+    public ResponseEntity<List<CourtResponse>> getAll(
+
+            @Parameter(
+                    description = "Tipo de pista para filtrar resultados",
+                    required = false,
+                    example = "FUTBOL"
+            )
+            @RequestParam(required = false) String tipo) {
+
         List<CourtResponse> courts = courtService.findAll();
+
         if (tipo != null && !tipo.trim().isEmpty()) {
-            courts = courts.stream().filter(c -> c.tipo().name().equalsIgnoreCase(tipo)).toList();
+            courts = courts.stream()
+                    .filter(c -> c.tipo().name().equalsIgnoreCase(tipo))
+                    .toList();
         }
+
         return ResponseEntity.ok(courts);
     }
-
-    /*
-     * @GetMapping("/{id}")
-     * public ResponseEntity<CourtResponse> getById(@PathVariable Long id) {
-     * throw new UnsupportedOperationException();
-     * }
-     * 
-     * @PostMapping
-     * public ResponseEntity<CourtResponse> create(@RequestBody @Valid CourtRequest
-     * request) {
-     * throw new UnsupportedOperationException();
-     * }
-     * 
-     * @PutMapping("/{id}")
-     * public ResponseEntity<CourtResponse> update(
-     * 
-     * @PathVariable Long id,
-     * 
-     * @RequestBody @Valid CourtRequest request) {
-     * throw new UnsupportedOperationException();
-     * }
-     * 
-     * @DeleteMapping("/{id}")
-     * public ResponseEntity<Void> delete(@PathVariable Long id) {
-     * throw new UnsupportedOperationException();
-     * }
-     */
 }
