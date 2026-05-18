@@ -46,6 +46,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 
+    implementation 'de.siegmar:logback-gelf:6.1.2'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+
 }
 
 test {

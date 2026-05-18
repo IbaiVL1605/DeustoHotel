@@ -5,11 +5,13 @@ import com.example.deusto_hotel.dto.UserResponse;
 import com.example.deusto_hotel.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +31,8 @@ public class UserController {
      * relacionada con usuarios.
      */
     private final UserService userService;
+
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     /*
     @GetMapping
@@ -52,12 +56,25 @@ public class UserController {
     public ResponseEntity<UserResponse> create(
             @RequestBody @Valid UserRequest request) {
 
-        UserResponse response = userService.create(request);
+        MDC.put("endpoint", "POST /api/v1/users");
+        MDC.put("email", request.email());
 
-        return ResponseEntity
-                .status(201)
-                .body(response);
+        try {
+            log.info("Solicitud de creación de nuevo usuario recibida");
+
+            UserResponse response = userService.create(request);
+
+
+
+            return ResponseEntity
+                    .status(201)
+                    .body(response);
+        } finally {
+            MDC.remove("endpoint");
+            MDC.remove("email");
+        }
     }
+
 
     /**
      * Inicia sesión de un usuario en el sistema.
@@ -79,35 +96,51 @@ public class UserController {
             @RequestParam String contrasena
     ) {
 
-        if (correo == null || correo.isBlank()) {
+        MDC.put("endpoint", "POST /api/v1/users/login");
+        MDC.put("email", correo);
+        MDC.put("sessionId", session.getId());
 
-            throw new IllegalArgumentException(
-                    "El correo es obligatorio."
+        try {
+            log.info("Solicitud de login recibida");
+
+            if (correo == null || correo.isBlank()) {
+                log.warn("Validación fallida - Email es obligatorio");
+                throw new IllegalArgumentException(
+                        "El correo es obligatorio."
+                );
+            }
+
+            if (contrasena == null || contrasena.isBlank()) {
+                log.warn("Validación fallida - Contraseña es obligatoria");
+                throw new IllegalArgumentException(
+                        "La contrasena es obligatoria."
+                );
+            }
+
+            UserResponse response =
+                    userService.login(correo, contrasena);
+
+            // Guardar datos en sesión
+            session.setAttribute("userId", response.id());
+            session.setAttribute("username", response.nombre());
+            session.setAttribute("userEmail", response.email());
+            session.setAttribute("userRole", response.rol());
+
+            MDC.put("userId", String.valueOf(response.id()));
+            log.info("Sesión HTTP establecida para usuario");
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "mensaje", "Sesion iniciada correctamente",
+                            "usuario", response
+                    )
             );
+        } finally {
+            MDC.remove("endpoint");
+            MDC.remove("email");
+            MDC.remove("sessionId");
+            MDC.remove("userId");
         }
-
-        if (contrasena == null || contrasena.isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "La contrasena es obligatoria."
-            );
-        }
-
-        UserResponse response =
-                userService.login(correo, contrasena);
-
-        // Guardar datos en sesión
-        session.setAttribute("userId", response.id());
-        session.setAttribute("username", response.nombre());
-        session.setAttribute("userEmail", response.email());
-        session.setAttribute("userRole", response.rol());
-
-        return ResponseEntity.ok(
-                Map.of(
-                        "mensaje", "Sesion iniciada correctamente",
-                        "usuario", response
-                )
-        );
     }
 
     /*

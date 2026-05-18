@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ import java.util.List;
  * @author Deusto Hotel Team
  * @version 1.0
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/court-bookings")
 @RequiredArgsConstructor
@@ -41,7 +43,6 @@ import java.util.List;
 )
 public class CourtBookingController {
 
-    private static final Logger log = LoggerFactory.getLogger(CourtBookingController.class);
     /**
      * Servicio encargado de la lógica de negocio
      * de reservas de pistas.
@@ -50,14 +51,14 @@ public class CourtBookingController {
 
     /*
      * // GET ALL
-     *
+     * 
      * @GetMapping
      * public ResponseEntity<List<CourtBookingResponse>> getAll() {
      * return ResponseEntity.ok(courtBookingService.findAll());
      * }
-     *
+     * 
      * // GET BY ID
-     *
+     * 
      * @GetMapping("/{id}")
      * public ResponseEntity<CourtBookingResponse> getById(@PathVariable Long id) {
      * return ResponseEntity.ok(courtBookingService.findById(id));
@@ -107,7 +108,9 @@ public class CourtBookingController {
             @RequestBody @Valid CourtBookingRequest request,
             HttpSession session) {
 
+        log.info("Creando nueva reserva de pista");
         CourtBookingResponse response = courtBookingService.create(request, session);
+        log.info("Reserva de pista creada exitosamente con ID: {}", response.id());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -164,7 +167,9 @@ public class CourtBookingController {
             )
             @RequestBody @Valid CourtBookingRequest request) {
 
+        log.info("Actualizando reserva de pista con ID: {}", id);
         CourtBookingResponse response = courtBookingService.update(id, request);
+        log.info("Reserva de pista con ID: {} actualizada exitosamente", id);
 
         return ResponseEntity.ok(response);
     }
@@ -203,7 +208,9 @@ public class CourtBookingController {
             )
             @PathVariable Long id) {
 
+        log.info("Eliminando reserva de pista con ID: {}", id);
         courtBookingService.delete(id);
+        log.info("Reserva de pista con ID: {} eliminada exitosamente", id);
 
         return ResponseEntity.noContent().build();
     }
@@ -246,8 +253,11 @@ public class CourtBookingController {
             )
             @PathVariable Long clienteId) {
 
-        return ResponseEntity.ok(
-                courtBookingService.findByClienteId(clienteId));
+        log.info("Obteniendo reservas de pista para el cliente con ID: {}", clienteId);
+        List<CourtBookingResponse> reservas = courtBookingService.findByClienteId(clienteId);
+        log.info("Se encontraron {} reservas para el cliente con ID: {}", reservas.size(), clienteId);
+
+        return ResponseEntity.ok(reservas);
     }
 
     /*
@@ -289,8 +299,11 @@ public class CourtBookingController {
             )
     })
     public ResponseEntity<List<CourtBookingResponse>> getAll() {
+        log.info("Obteniendo todas las reservas de pista");
+        List<CourtBookingResponse> reservas = courtBookingService.findAll();
+        log.info("Se encontraron {} reservas de pista en total", reservas.size());
 
-        return ResponseEntity.ok(courtBookingService.findAll());
+        return ResponseEntity.ok(reservas);
     }
 
     /**
@@ -299,7 +312,6 @@ public class CourtBookingController {
      * @param id identificador de la reserva
      * @return reserva encontrada
      */
-    @GetMapping("/{id}")
     @Operation(
             summary = "Obtener reserva por ID",
             description = "Retorna una reserva específica a partir de su identificador."
@@ -322,6 +334,7 @@ public class CourtBookingController {
                     description = "Error interno del servidor"
             )
     })
+    @GetMapping("/{id}")
     public ResponseEntity<CourtBookingResponse> getById(
 
             @Parameter(
@@ -330,14 +343,19 @@ public class CourtBookingController {
                     example = "1"
             )
             @PathVariable Long id) {
+        log.info("Obteniendo reserva de pista con ID: {}", id);
+        CourtBookingResponse response = courtBookingService.findById(id);
+        log.info("Reserva de pista con ID: {} obtenida exitosamente", id);
 
-        return ResponseEntity.ok(courtBookingService.findById(id));
+        return ResponseEntity.ok(response);
+
     }
 
     @PostMapping("/validar")
     public ResponseEntity<String> validarReserva(
             @RequestParam Long idReserva,
             @RequestParam Long idRecepcionista) {
+        log.info("Validando reserva con ID: {} por recepcionista con ID: {}", idReserva, idRecepcionista);
         courtBookingService.validarReserva(idReserva, idRecepcionista);
         log.info("Reserva con ID {} validada por recepcionista con ID {}", idReserva, idRecepcionista);
         return ResponseEntity.ok("Reserva validada correctamente");
@@ -378,6 +396,7 @@ public class CourtBookingController {
             @PathVariable Long id) {
 
         courtBookingService.cancelBookingAdmin(id);
+        log.info("Reserva de pista con ID: {} cancelada por administrador exitosamente", id);
 
         return ResponseEntity.ok().build();
     }

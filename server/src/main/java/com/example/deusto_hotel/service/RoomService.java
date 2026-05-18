@@ -9,11 +9,13 @@ import com.example.deusto_hotel.model.RoomStatus;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +35,8 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final RoomMapper roomMapper;
+
+    private static final Logger log = LoggerFactory.getLogger(RoomService.class);
 
     /**
      * Obtiene la lista de habitaciones disponibles en un rango de fechas específico.
@@ -55,9 +59,23 @@ public class RoomService {
     @Transactional(readOnly = true)
     public List<RoomDisponibleResponse> getDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {
 
-        List<Room> disponibles = roomRepository.findRoomDisponibles(fechaEntrada, fechaSalida);
+        MDC.put("operation", "getDisponibles");
+        MDC.put("fechaEntrada", fechaEntrada.toString());
+        MDC.put("fechaSalida", fechaSalida.toString());
 
-        return roomMapper.toRoomDisponiblesResponse(disponibles);
+        try {
+            log.info("Búsqueda de habitaciones disponibles");
+
+            List<Room> disponibles = roomRepository.findRoomDisponibles(fechaEntrada, fechaSalida);
+
+            log.info("Búsqueda completada. Habitaciones disponibles encontradas: {}", disponibles.size());
+
+            return roomMapper.toRoomDisponiblesResponse(disponibles);
+        } finally {
+            MDC.remove("operation");
+            MDC.remove("fechaEntrada");
+            MDC.remove("fechaSalida");
+        }
     }
 
     /**
@@ -86,34 +104,52 @@ public class RoomService {
      */
     public RoomResponse create(RoomRequest request) {
 
-        if (roomRepository.existsByNumero(request.numero())) {
-            throw new IllegalArgumentException("Ya existe una habitación con ese número");
+        MDC.put("operation", "createRoom");
+        MDC.put("roomNumber", request.numero());
+        MDC.put("roomType", request.tipo().toString());
+
+        try {
+            log.info("Intento de creación de nueva habitación");
+
+            if (roomRepository.existsByNumero(request.numero())) {
+                log.warn("Intento de creación fallido - Número de habitación ya existe");
+                throw new IllegalArgumentException("Ya existe una habitación con ese número");
+            }
+
+            Room room = new Room();
+
+            room.setTipo(request.tipo());
+            room.setNumero(request.numero());
+
+            if (request.tipo() == RoomType.SUITE) {
+                room.setCapacidad(request.capacidad());
+                room.setPrecioPorNoche(request.precioPorNoche().intValue());
+            } else if (request.tipo() == RoomType.INDIVIDUAL) {
+            } else if (request.tipo() == RoomType.DOBLE) {
+            } else {
+                log.error("Tipo de habitación no válido");
+                throw new IllegalArgumentException("Tipo de habitación no válido");
+            }
+
+            Room saved = roomRepository.save(room);
+
+            MDC.put("roomId", saved.getId().toString());
+            log.info("Habitación creada exitosamente");
+
+            return new RoomResponse(
+                    saved.getId(),
+                    saved.getNumero(),
+                    saved.getTipo(),
+                    saved.getCapacidad(),
+                    (double) saved.getPrecioPorNoche(),
+                    saved.getEstado()
+            );
+        } finally {
+            MDC.remove("operation");
+            MDC.remove("roomNumber");
+            MDC.remove("roomType");
+            MDC.remove("roomId");
         }
-
-        Room room = new Room();
-
-        room.setTipo(request.tipo());
-        room.setNumero(request.numero());
-
-        if (request.tipo() == RoomType.SUITE) {
-            room.setCapacidad(request.capacidad());
-            room.setPrecioPorNoche(request.precioPorNoche().intValue());
-        } else if (request.tipo() == RoomType.INDIVIDUAL) {
-        } else if (request.tipo() == RoomType.DOBLE) {
-        } else {
-            throw new IllegalArgumentException("Tipo de habitación no válido");
-        }
-
-        Room saved = roomRepository.save(room);
-
-        return new RoomResponse(
-                saved.getId(),
-                saved.getNumero(),
-                saved.getTipo(),
-                saved.getCapacidad(),
-                (double) saved.getPrecioPorNoche(),
-                saved.getEstado()
-        );
     }
 
     /**
@@ -127,21 +163,46 @@ public class RoomService {
      * @throws RuntimeException Si la habitación con el ID especificado no existe en el sistema.
      */
     public void delete(Long id) {
-        if (!roomRepository.existsById(id)) {
-            throw new RuntimeException("Habitación no encontrada");
+        MDC.put("operation", "deleteRoom");
+        MDC.put("roomId", id.toString());
+
+        try {
+            log.info("Intento de eliminación de habitación");
+
+            if (!roomRepository.existsById(id)) {
+                log.warn("Intento de eliminación fallido - Habitación no encontrada");
+                throw new RuntimeException("Habitación no encontrada");
+            }
+            roomRepository.deleteById(id);
+
+            log.info("Habitación eliminada exitosamente");
+        } finally {
+            MDC.remove("operation");
+            MDC.remove("roomId");
         }
-        roomRepository.deleteById(id);
     }
 
     public void bloquearHabitacion(Long id) {
 
-        Room room = roomRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Habitación no encontrada"));
+        MDC.put("operation", "bloquearHabitacion");
 
-        room.setEstado(RoomStatus.BLOQUEADA);
+        try {
+            log.info("Intento de bloqueo de habitación");
 
-        roomRepository.save(room);
+            Room room = roomRepository.findById(id)
+                    .orElseThrow(() -> {
+                        log.warn("Intento de bloqueo fallido - Habitación no encontrada");
+                        return new RuntimeException("Habitación no encontrada");
+                    });
+
+            room.setEstado(RoomStatus.BLOQUEADA);
+
+            roomRepository.save(room);
+
+            log.info("Habitación bloqueada exitosamente");
+        } finally {
+            MDC.remove("operation");
+        }
     }
 
 }

@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequestMapping("/api/v1/room-bookings")
 @RequiredArgsConstructor
 @Tag(name = "Room Booking", description = "Gestión de reservas de habitaciones del hotel")
+@Slf4j
 public class RoomBookingController {
 
     private final RoomBookingService roomBookingService;
@@ -87,11 +90,22 @@ public class RoomBookingController {
     public ResponseEntity<Void> create(
             @RequestBody @Valid List<RoomBookingRequest> request
     ) {
-        request.forEach(RoomBookingRequest::validate);
+        try {
+            MDC.put("endpoint", "POST /api/v1/room-bookings");
+            MDC.put("requestSize", String.valueOf(request.size()));
 
-        roomBookingService.create(request);
+            log.info("Solicitud de creación de {} reservas recibida", request.size());
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+            request.forEach(RoomBookingRequest::validate);
+
+            roomBookingService.create(request);
+
+            log.info("Respuesta HTTP 201 enviada - Reservas creadas");
+
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } finally {
+            MDC.clear();
+        }
     }
 
     /**
@@ -165,10 +179,21 @@ public class RoomBookingController {
             )
             @RequestParam Long userId
     ) {
+        try {
+            MDC.put("endpoint", "DELETE /api/v1/room-bookings/{id}");
+            MDC.put("bookingId", String.valueOf(id));
+            MDC.put("userId", String.valueOf(userId));
 
-        roomBookingService.delete(id, userId);
+            log.info("Solicitud de eliminación de reserva {} por usuario {}", id, userId);
 
-        return ResponseEntity.noContent().build();
+            roomBookingService.delete(id, userId);
+
+            log.info("Respuesta HTTP 204 enviada - Reserva eliminada");
+
+            return ResponseEntity.noContent().build();
+        } finally {
+            MDC.clear();
+        }
     }
 
     /**
@@ -208,15 +233,40 @@ public class RoomBookingController {
             )
             @PathVariable Long clienteId
     ) {
-        return ResponseEntity.ok(roomBookingService.findByClienteId(clienteId));
+        try {
+            MDC.put("endpoint", "GET /api/v1/room-bookings/cliente/{clienteId}");
+            MDC.put("clienteId", String.valueOf(clienteId));
+
+            log.info("Solicitud de obtención de reservas para cliente {}", clienteId);
+
+            List<RoomBookingResponse> reservas = roomBookingService.findByClienteId(clienteId);
+
+            log.info("Respuesta HTTP 200 enviada - {} reserva(s) encontrada(s)", reservas.size());
+
+            return ResponseEntity.ok(reservas);
+        } finally {
+            MDC.clear();
+        }
     }
 
     // Validar reserva (Recepcionista)
     @PostMapping("/validar")
     public ResponseEntity<String> validarReserva(@RequestParam Long idReserva, @RequestParam Long idRecepcionista) {
-        roomBookingService.validarReserva(idReserva, idRecepcionista);
+        try {
+            MDC.put("endpoint", "POST /api/v1/room-bookings/validar");
+            MDC.put("bookingId", String.valueOf(idReserva));
+            MDC.put("receptionistId", String.valueOf(idRecepcionista));
 
-        return ResponseEntity.ok("Reserva validada correctamente");
+            log.info("Solicitud de validación de reserva {} por recepcionista {}", idReserva, idRecepcionista);
+
+            roomBookingService.validarReserva(idReserva, idRecepcionista);
+
+            log.info("Respuesta HTTP 200 enviada - Reserva validada");
+
+            return ResponseEntity.ok("Reserva validada correctamente");
+        } finally {
+            MDC.clear();
+        }
     }
 
     /*
@@ -229,7 +279,19 @@ public class RoomBookingController {
 
     @GetMapping
     public ResponseEntity<List<RoomBookingResponse>> getAll() {
-        return ResponseEntity.ok(roomBookingService.findAll());
+        try {
+            MDC.put("endpoint", "GET /api/v1/room-bookings");
+
+            log.info("Solicitud de obtención de todas las reservas");
+
+            List<RoomBookingResponse> reservas = roomBookingService.findAll();
+
+            log.info("Respuesta HTTP 200 enviada - {} reserva(s) total(es)", reservas.size());
+
+            return ResponseEntity.ok(reservas);
+        } finally {
+            MDC.clear();
+        }
     }
 
 }

@@ -8,6 +8,8 @@ import com.example.deusto_hotel.model.CourtType;
 import com.example.deusto_hotel.repository.CourtBookingRepository;
 import com.example.deusto_hotel.repository.CourtRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ import java.util.Locale;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class CourtService {
 
     /**
@@ -44,9 +47,21 @@ public class CourtService {
 
     @Transactional(readOnly = true)
     public List<CourtResponse> findAll() {
-        return courtRepository.findAll().stream()
-                .map(c -> new CourtResponse(c.getId(), c.getNombre(), c.getTipo(), c.getPrecioPorHora(), c.getEstado()))
-                .toList();
+        try {
+            MDC.put("operationType", "find_all_courts");
+
+            log.info("Obteniendo todas las pistas del sistema");
+
+            List<CourtResponse> courts = courtRepository.findAll().stream()
+                    .map(c -> new CourtResponse(c.getId(), c.getNombre(), c.getTipo(), c.getPrecioPorHora(), c.getEstado()))
+                    .toList();
+
+            log.info("Total de pistas obtenidas: {}", courts.size());
+
+            return courts;
+        } finally {
+            MDC.clear();
+        }
     }
     /*
      * @Transactional(readOnly = true)
@@ -89,41 +104,55 @@ public class CourtService {
      */
     @Transactional(readOnly = true)
     public List<WeekAvailability> findWeeklyAvailability(int year, int month, CourtType type) {
+        try {
+            MDC.put("operationType", "find_weekly_availability");
+            MDC.put("year", String.valueOf(year));
+            MDC.put("month", String.valueOf(month));
+            MDC.put("courtType", type != null ? type.toString() : "ALL");
 
-        YearMonth yearMonth = YearMonth.of(year, month);
-        LocalDate startOfMonth = yearMonth.atDay(1);
-        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+            log.info("Consultando disponibilidad semanal para {}-{}, tipo: {}", year, month, type);
 
-        List<Court> courts;
+            YearMonth yearMonth = YearMonth.of(year, month);
+            LocalDate startOfMonth = yearMonth.atDay(1);
+            LocalDate endOfMonth = yearMonth.atEndOfMonth();
 
-        if (type != null) {
-            courts = courtRepository.findByTipoAndEstado(type, CourtStatus.DISPONIBLE);
-        } else {
-            courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
-        }
+            List<Court> courts;
 
-        List<WeekAvailability> weeks = new ArrayList<>();
-        LocalDate current = startOfMonth;
-
-        while (!current.isAfter(endOfMonth)) {
-
-            int weekNumber = current.get(WeekFields.of(Locale.getDefault()).weekOfYear());
-
-            List<DayAvailability> days = new ArrayList<>();
-
-            for (int i = 0; i < 7 && !current.isAfter(endOfMonth); i++) {
-
-                List<AvailableSlot> slots = getAvailableSlotsForDay(current, courts);
-
-                days.add(new DayAvailability(current, slots));
-
-                current = current.plusDays(1);
+            if (type != null) {
+                courts = courtRepository.findByTipoAndEstado(type, CourtStatus.DISPONIBLE);
+                log.info("Se encontraron {} pistas disponibles de tipo {}", courts.size(), type);
+            } else {
+                courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
+                log.info("Se encontraron {} pistas disponibles en total", courts.size());
             }
 
-            weeks.add(new WeekAvailability(weekNumber, days));
-        }
+            List<WeekAvailability> weeks = new ArrayList<>();
+            LocalDate current = startOfMonth;
 
-        return weeks;
+            while (!current.isAfter(endOfMonth)) {
+
+                int weekNumber = current.get(WeekFields.of(Locale.getDefault()).weekOfYear());
+
+                List<DayAvailability> days = new ArrayList<>();
+
+                for (int i = 0; i < 7 && !current.isAfter(endOfMonth); i++) {
+
+                    List<AvailableSlot> slots = getAvailableSlotsForDay(current, courts);
+
+                    days.add(new DayAvailability(current, slots));
+
+                    current = current.plusDays(1);
+                }
+
+                weeks.add(new WeekAvailability(weekNumber, days));
+            }
+
+            log.info("Se procesaron {} semanas de disponibilidad", weeks.size());
+
+            return weeks;
+        } finally {
+            MDC.clear();
+        }
     }
 
     /**
@@ -201,103 +230,121 @@ public class CourtService {
      */
     @Transactional(readOnly = true)
     public List<CourtAvailabilityDTO> findAvailableByTypeAndWeek(String tipo, Integer semana) {
+        try {
+            MDC.put("operationType", "find_available_by_type_and_week");
+            MDC.put("courtType", tipo != null ? tipo : "ALL");
+            MDC.put("week", semana != null ? String.valueOf(semana) : "CURRENT");
 
-        LocalDate today = LocalDate.now();
+            log.info("Consultando disponibilidad por tipo: {}, semana: {}", tipo, semana);
 
-        LocalDate startDate;
-        LocalDate endDate;
+            LocalDate today = LocalDate.now();
 
-        // Calcular rango de fechas basado en la semana del mes
-        if (semana != null && (semana == 1 || semana == 2)) {
+            LocalDate startDate;
+            LocalDate endDate;
 
-            startDate = today.plusDays((semana - 1) * 7);
-            endDate = startDate.plusDays(6);
+            // Calcular rango de fechas basado en la semana del mes
+            if (semana != null && (semana == 1 || semana == 2)) {
 
-        } else {
+                startDate = today.plusDays((semana - 1) * 7);
+                endDate = startDate.plusDays(6);
 
-            startDate = today;
-            endDate = today.plusDays(6);
-        }
+            } else {
 
-        // Si estamos en 2026, solo mostrar hasta fin de año + siguiente año
-        if (today.getYear() == 2026) {
+                startDate = today;
+                endDate = today.plusDays(6);
+            }
 
-            LocalDate endOfYear2026 = LocalDate.of(2026, 12, 31);
-            LocalDate endOf2027 = LocalDate.of(2027, 12, 31);
+            // Si estamos en 2026, solo mostrar hasta fin de año + siguiente año
+            if (today.getYear() == 2026) {
 
-            endDate = endDate.isAfter(endOf2027)
-                    ? endOf2027
-                    : endDate;
-        }
+                LocalDate endOfYear2026 = LocalDate.of(2026, 12, 31);
+                LocalDate endOf2027 = LocalDate.of(2027, 12, 31);
 
-        // Filtrar por tipo de pista si se proporciona
-        List<Court> courts;
+                endDate = endDate.isAfter(endOf2027)
+                        ? endOf2027
+                        : endDate;
+            }
 
-        if (tipo != null && !tipo.trim().isEmpty()) {
+            log.debug("Rango de fechas calculado: {} a {}", startDate, endDate);
 
-            try {
+            // Filtrar por tipo de pista si se proporciona
+            List<Court> courts;
 
-                CourtType courtType = CourtType.valueOf(tipo.toUpperCase());
+            if (tipo != null && !tipo.trim().isEmpty()) {
 
-                courts = courtRepository.findByTipoAndEstado(
-                        courtType,
-                        CourtStatus.DISPONIBLE);
+                try {
 
-            } catch (Exception e) {
+                    CourtType courtType = CourtType.valueOf(tipo.toUpperCase());
+
+                    courts = courtRepository.findByTipoAndEstado(
+                            courtType,
+                            CourtStatus.DISPONIBLE);
+
+                    log.info("Se encontraron {} pistas de tipo {}", courts.size(), courtType);
+
+                } catch (Exception e) {
+
+                    log.warn("Tipo de pista inválido: {}, retornando todas las pistas disponibles", tipo);
+                    courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
+                }
+
+            } else {
 
                 courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
+                log.info("Se encontraron {} pistas disponibles en total", courts.size());
             }
 
-        } else {
+            // Agrupar reservas por tipo de pista
+            List<CourtAvailabilityDTO> result = new ArrayList<>();
 
-            courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
-        }
+            for (CourtType courtType : CourtType.values()) {
 
-        // Agrupar reservas por tipo de pista
-        List<CourtAvailabilityDTO> result = new ArrayList<>();
-
-        for (CourtType courtType : CourtType.values()) {
-
-            List<Court> courtsByType = courts.stream()
-                    .filter(c -> c.getTipo() == courtType)
-                    .toList();
-
-            if (courtsByType.isEmpty())
-                continue;
-
-            // Obtener reservas confirmadas y pendientes
-            List<CourtBookingResponse> bookings = new ArrayList<>();
-
-            final LocalDate finalStartDate = startDate;
-            final LocalDate finalEndDate = endDate;
-
-            for (Court court : courtsByType) {
-
-                List<CourtBookingResponse> courtBookings = court.getCourtBookings().stream()
-                        .filter(booking -> booking.getFecha().isAfter(finalStartDate.minusDays(1)) &&
-                                booking.getFecha().isBefore(finalEndDate.plusDays(1)) &&
-                                booking.getEstado() != CourtBookingStatus.CANCELADA)
-                        .map(booking -> new CourtBookingResponse(
-                                booking.getId(),
-                                booking.getCliente().getId(),
-                                booking.getCliente().getNombre(),
-                                booking.getPista().getId(),
-                                booking.getPista().getNombre(),
-                                booking.getFecha(),
-                                booking.getHoraInicio(),
-                                booking.getHoraFin(),
-                                booking.getEstado(),
-                                booking.getPrecioTotal(),
-                                booking.getCreadaEn()))
+                List<Court> courtsByType = courts.stream()
+                        .filter(c -> c.getTipo() == courtType)
                         .toList();
 
-                bookings.addAll(courtBookings);
+                if (courtsByType.isEmpty())
+                    continue;
+
+                // Obtener reservas confirmadas y pendientes
+                List<CourtBookingResponse> bookings = new ArrayList<>();
+
+                final LocalDate finalStartDate = startDate;
+                final LocalDate finalEndDate = endDate;
+
+                for (Court court : courtsByType) {
+
+                    List<CourtBookingResponse> courtBookings = court.getCourtBookings().stream()
+                            .filter(booking -> booking.getFecha().isAfter(finalStartDate.minusDays(1)) &&
+                                    booking.getFecha().isBefore(finalEndDate.plusDays(1)) &&
+                                    booking.getEstado() != CourtBookingStatus.CANCELADA)
+                            .map(booking -> new CourtBookingResponse(
+                                    booking.getId(),
+                                    booking.getCliente().getId(),
+                                    booking.getCliente().getNombre(),
+                                    booking.getPista().getId(),
+                                    booking.getPista().getNombre(),
+                                    booking.getFecha(),
+                                    booking.getHoraInicio(),
+                                    booking.getHoraFin(),
+                                    booking.getEstado(),
+                                    booking.getPrecioTotal(),
+                                    booking.getCreadaEn()))
+                            .toList();
+
+                    bookings.addAll(courtBookings);
+                }
+
+                result.add(new CourtAvailabilityDTO(courtType, bookings));
+                log.info("Tipo: {}, reservas encontradas: {}", courtType, bookings.size());
             }
 
-            result.add(new CourtAvailabilityDTO(courtType, bookings));
-        }
+            log.info("Disponibilidad procesada: {} tipos de pista con reservas", result.size());
 
-        return result;
+            return result;
+        } finally {
+            MDC.clear();
+        }
     }
 
     /*
@@ -319,108 +366,151 @@ public class CourtService {
      */
     @Transactional(readOnly = true)
     public List<CourtAvailabilityDTO> findAvailableByDate(String fecha) {
-
-        LocalDate targetDate;
-
         try {
+            MDC.put("operationType", "find_available_by_date");
+            MDC.put("fecha", fecha != null ? fecha : "INVALID");
 
-            targetDate = LocalDate.parse(fecha);
+            log.info("Consultando disponibilidad para fecha: {}", fecha);
 
-        } catch (Exception e) {
+            LocalDate targetDate;
 
-            return List.of();
-        }
+            try {
 
-        LocalDate today = LocalDate.now();
+                targetDate = LocalDate.parse(fecha);
+                log.debug("Fecha parseada correctamente: {}", targetDate);
 
-        // Si estamos en 2026, validar que la fecha sea válida
-        if (today.getYear() == 2026) {
+            } catch (Exception e) {
 
-            LocalDate endOf2027 = LocalDate.of(2027, 12, 31);
-
-            if (targetDate.isAfter(endOf2027)) {
-
+                log.warn("Formato de fecha inválido: {}", fecha);
                 return List.of();
             }
-        }
 
-        List<Court> courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
+            LocalDate today = LocalDate.now();
 
-        // Agrupar reservas por tipo de pista
-        List<CourtAvailabilityDTO> result = new ArrayList<>();
+            // Si estamos en 2026, validar que la fecha sea válida
+            if (today.getYear() == 2026) {
 
-        for (CourtType courtType : CourtType.values()) {
+                LocalDate endOf2027 = LocalDate.of(2027, 12, 31);
 
-            List<Court> courtsByType = courts.stream()
-                    .filter(c -> c.getTipo() == courtType)
-                    .toList();
+                if (targetDate.isAfter(endOf2027)) {
 
-            if (courtsByType.isEmpty())
-                continue;
-
-            // Obtener reservas para esa fecha específica
-            List<CourtBookingResponse> bookings = new ArrayList<>();
-
-            for (Court court : courtsByType) {
-
-                List<CourtBookingResponse> courtBookings = court.getCourtBookings().stream()
-                        .filter(booking -> booking.getFecha().equals(targetDate) &&
-                                booking.getEstado() != CourtBookingStatus.CANCELADA)
-                        .map(booking -> new CourtBookingResponse(
-                                booking.getId(),
-                                booking.getCliente().getId(),
-                                booking.getCliente().getNombre(),
-                                booking.getPista().getId(),
-                                booking.getPista().getNombre(),
-                                booking.getFecha(),
-                                booking.getHoraInicio(),
-                                booking.getHoraFin(),
-                                booking.getEstado(),
-                                booking.getPrecioTotal(),
-                                booking.getCreadaEn()))
-                        .toList();
-
-                bookings.addAll(courtBookings);
+                    log.warn("Fecha {} excede el límite permitido (2027-12-31)", targetDate);
+                    return List.of();
+                }
             }
 
-            result.add(new CourtAvailabilityDTO(courtType, bookings));
-        }
+            List<Court> courts = courtRepository.findByEstado(CourtStatus.DISPONIBLE);
+            log.info("Se encontraron {} pistas disponibles para la fecha {}", courts.size(), targetDate);
 
-        return result;
+            // Agrupar reservas por tipo de pista
+            List<CourtAvailabilityDTO> result = new ArrayList<>();
+
+            for (CourtType courtType : CourtType.values()) {
+
+                List<Court> courtsByType = courts.stream()
+                        .filter(c -> c.getTipo() == courtType)
+                        .toList();
+
+                if (courtsByType.isEmpty())
+                    continue;
+
+                // Obtener reservas para esa fecha específica
+                List<CourtBookingResponse> bookings = new ArrayList<>();
+
+                for (Court court : courtsByType) {
+
+                    List<CourtBookingResponse> courtBookings = court.getCourtBookings().stream()
+                            .filter(booking -> booking.getFecha().equals(targetDate) &&
+                                    booking.getEstado() != CourtBookingStatus.CANCELADA)
+                            .map(booking -> new CourtBookingResponse(
+                                    booking.getId(),
+                                    booking.getCliente().getId(),
+                                    booking.getCliente().getNombre(),
+                                    booking.getPista().getId(),
+                                    booking.getPista().getNombre(),
+                                    booking.getFecha(),
+                                    booking.getHoraInicio(),
+                                    booking.getHoraFin(),
+                                    booking.getEstado(),
+                                    booking.getPrecioTotal(),
+                                    booking.getCreadaEn()))
+                            .toList();
+
+                    bookings.addAll(courtBookings);
+                }
+
+                result.add(new CourtAvailabilityDTO(courtType, bookings));
+                log.info("Tipo: {}, reservas para {}: {}", courtType, targetDate, bookings.size());
+            }
+
+            log.info("Disponibilidad para fecha {} procesada: {} tipos de pista", targetDate, result.size());
+
+            return result;
+        } finally {
+            MDC.clear();
+        }
     }
 
     // para bloquear pistas en mantenimiento
     @Transactional
     public CourtResponse blockCourt(Long id) {
-        Court court = courtRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Pista no encontrada con ID: " + id));
+        try {
+            MDC.put("operationType", "block_court");
+            MDC.put("courtId", String.valueOf(id));
 
-        court.setEstado(CourtStatus.BLOQUEADA);
-        courtRepository.save(court);
+            log.info("Iniciando bloqueo de pista con ID: {}", id);
 
-        return new CourtResponse(
-                court.getId(),
-                court.getNombre(),
-                court.getTipo(),
-                court.getPrecioPorHora(),
-                court.getEstado());
+            Court court = courtRepository.findById(id)
+                    .orElseThrow(() -> {
+                        log.warn("Pista con ID {} no encontrada para bloqueo", id);
+                        return new IllegalArgumentException("Pista no encontrada con ID: " + id);
+                    });
+
+            court.setEstado(CourtStatus.BLOQUEADA);
+            courtRepository.save(court);
+
+            log.info("Pista {} bloqueada exitosamente", id);
+
+            return new CourtResponse(
+                    court.getId(),
+                    court.getNombre(),
+                    court.getTipo(),
+                    court.getPrecioPorHora(),
+                    court.getEstado());
+        } finally {
+            MDC.clear();
+        }
     }
 
     // para desbloquear pistas al terminar el mantenimiento
     @Transactional
     public CourtResponse unblockCourt(Long id) {
-        Court court = courtRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Pista no encontrada con ID: " + id));
+        try {
+            MDC.put("operationType", "unblock_court");
+            MDC.put("courtId", String.valueOf(id));
 
-        court.setEstado(CourtStatus.DISPONIBLE);
-        courtRepository.save(court);
+            log.info("Iniciando desbloqueo de pista con ID: {}", id);
 
-        return new CourtResponse(
-                court.getId(),
-                court.getNombre(),
-                court.getTipo(),
-                court.getPrecioPorHora(),
-                court.getEstado());
+            Court court = courtRepository.findById(id)
+                    .orElseThrow(() -> {
+                        log.warn("Pista con ID {} no encontrada para desbloqueo", id);
+                        return new IllegalArgumentException("Pista no encontrada con ID: " + id);
+                    });
+
+            court.setEstado(CourtStatus.DISPONIBLE);
+            courtRepository.save(court);
+
+            log.info("Pista {} desbloqueada exitosamente", id);
+
+            return new CourtResponse(
+                    court.getId(),
+                    court.getNombre(),
+                    court.getTipo(),
+                    court.getPrecioPorHora(),
+                    court.getEstado());
+        } finally {
+            MDC.clear();
+        }
     }
 
 }

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,10 +91,24 @@ public class RoomController {
     public ResponseEntity<RoomResponse> create(
             @RequestBody @Valid RoomRequest request
     ) {
-        RoomResponse created = roomService.create(request);
-        log.info("Habitación creada: {}", created);
+        MDC.put("endpoint", "POST /api/v1/rooms");
+        MDC.put("roomNumber", request.numero());
+        MDC.put("roomType", request.tipo().toString());
 
-        return ResponseEntity.status(201).body(created);
+        try {
+            log.info("Solicitud de creación de habitación recibida");
+
+            RoomResponse created = roomService.create(request);
+
+            MDC.put("roomId", String.valueOf(created.id()));
+
+            return ResponseEntity.status(201).body(created);
+        } finally {
+            MDC.remove("endpoint");
+            MDC.remove("roomNumber");
+            MDC.remove("roomType");
+            MDC.remove("roomId");
+        }
     }
 
     /**
@@ -131,12 +146,22 @@ public class RoomController {
     })
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 
+        MDC.put("endpoint", "DELETE /api/v1/rooms/{id}");
+        MDC.put("roomId", id.toString());
+
         try {
+            log.info("Solicitud de eliminación de habitación recibida");
+
             roomService.delete(id);
+
             return ResponseEntity.noContent().build();
 
         } catch (RuntimeException e) {
+            log.warn("Habitación no encontrada para eliminación");
             return ResponseEntity.notFound().build();
+        } finally {
+            MDC.remove("endpoint");
+            MDC.remove("roomId");
         }
     }
 
@@ -207,23 +232,41 @@ public class RoomController {
             @RequestParam LocalDate fechaSalida
     ) {
 
-        if(!fechaEntrada.isBefore(fechaSalida)) {
-            throw new IllegalArgumentException("La fecha de salida debe de ser posterior a la fecha de entrada.");
+        MDC.put("endpoint", "GET /api/v1/rooms/disponibles");
+        MDC.put("fechaEntrada", fechaEntrada.toString());
+        MDC.put("fechaSalida", fechaSalida.toString());
 
-        } else if(fechaEntrada.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("La fecha de entrada no puede ser anterior a la fecha actual.");
+        try {
+            log.info("Solicitud de búsqueda de habitaciones disponibles recibida");
 
+            if(!fechaEntrada.isBefore(fechaSalida)) {
+                log.warn("Validación fallida - Fecha de salida no es posterior a fecha de entrada");
+                throw new IllegalArgumentException("La fecha de salida debe de ser posterior a la fecha de entrada.");
+
+            } else if(fechaEntrada.isBefore(LocalDate.now())) {
+                log.warn("Validación fallida - Fecha de entrada es anterior a la actual");
+                throw new IllegalArgumentException("La fecha de entrada no puede ser anterior a la fecha actual.");
+
+            }
+
+            List<RoomDisponibleResponse> resultado = roomService.getDisponibles(fechaEntrada, fechaSalida);
+
+            return ResponseEntity.ok(resultado);
+        } finally {
+            MDC.remove("endpoint");
+            MDC.remove("fechaEntrada");
+            MDC.remove("fechaSalida");
         }
-
-        return ResponseEntity.ok(
-                roomService.getDisponibles(fechaEntrada, fechaSalida)
-        );
     }
 
     @PutMapping("/{id}/bloquear")
     public ResponseEntity<String> bloquearHabitacion(@PathVariable Long id) {
+        MDC.put("endpoint", "GET /api/v1/rooms/bloquearHabitacion");
+        MDC.put("roomId", id.toString());
 
         try {
+            log.info("Solicitud de bloquear habitacion recibida");
+
             roomService.bloquearHabitacion(id);
 
             return ResponseEntity.ok("Habitación bloqueada correctamente");
@@ -231,6 +274,10 @@ public class RoomController {
         } catch (RuntimeException e) {
 
             return ResponseEntity.notFound().build();
+        } finally {
+            MDC.remove("endpoint");
+            MDC.remove("roomId");
+
         }
     }
 }

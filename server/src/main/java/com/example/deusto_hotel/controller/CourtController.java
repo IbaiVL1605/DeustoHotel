@@ -12,10 +12,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 /**
@@ -29,6 +30,7 @@ import java.util.List;
  * @author Deusto Hotel Team
  * @version 1.0
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/courts")
 @RequiredArgsConstructor
@@ -104,35 +106,48 @@ public class CourtController {
             )
             @RequestParam(required = false) Integer semana) {
 
-        List<CourtAvailabilityDTO> result;
+        try {
+            MDC.put("endpoint", "GET /api/v1/courts/available");
+            MDC.put("courtType", tipo != null ? tipo : "ALL");
+            MDC.put("fecha", fecha != null ? fecha : "NONE");
+            MDC.put("week", semana != null ? String.valueOf(semana) : "CURRENT");
 
-        if (tipo != null && !tipo.trim().isEmpty()
-                && fecha != null && !fecha.trim().isEmpty()) {
+            log.info("Solicitud de disponibilidad: tipo={}, fecha={}, semana={}", tipo, fecha, semana);
 
-            // Caso: tipo + fecha
-            List<CourtAvailabilityDTO> byDate = courtService.findAvailableByDate(fecha);
+            List<CourtAvailabilityDTO> result;
 
-            result = byDate.stream()
-                    .filter(dto -> dto.tipo().name().equalsIgnoreCase(tipo))
-                    .toList();
+            if (tipo != null && !tipo.trim().isEmpty()
+                    && fecha != null && !fecha.trim().isEmpty()) {
 
-        } else if (tipo != null && !tipo.trim().isEmpty()) {
+                // Caso: tipo + fecha
+                List<CourtAvailabilityDTO> byDate = courtService.findAvailableByDate(fecha);
 
-            // Solo tipo
-            result = courtService.findAvailableByTypeAndWeek(tipo, semana);
+                result = byDate.stream()
+                        .filter(dto -> dto.tipo().name().equalsIgnoreCase(tipo))
+                        .toList();
 
-        } else if (fecha != null && !fecha.trim().isEmpty()) {
+            } else if (tipo != null && !tipo.trim().isEmpty()) {
 
-            // Solo fecha
-            result = courtService.findAvailableByDate(fecha);
+                // Solo tipo
+                result = courtService.findAvailableByTypeAndWeek(tipo, semana);
 
-        } else {
+            } else if (fecha != null && !fecha.trim().isEmpty()) {
 
-            // Sin filtros: disponibilidad general por semana
-            result = courtService.findAvailableByTypeAndWeek(null, semana);
+                // Solo fecha
+                result = courtService.findAvailableByDate(fecha);
+
+            } else {
+
+                // Sin filtros: disponibilidad general por semana
+                result = courtService.findAvailableByTypeAndWeek(null, semana);
+            }
+
+            log.info("Respuesta HTTP 200 enviada - {} tipos de pista encontrados", result.size());
+
+            return ResponseEntity.ok(result);
+        } finally {
+            MDC.clear();
         }
-
-        return ResponseEntity.ok(result);
     }
 
     /**
@@ -191,22 +206,33 @@ public class CourtController {
             )
             @RequestParam(required = false) String tipo) {
 
-        CourtType courtType = null;
+        try {
+            MDC.put("endpoint", "GET /api/v1/courts/weekly-availability");
+            MDC.put("year", String.valueOf(year));
+            MDC.put("month", String.valueOf(month));
+            MDC.put("courtType", tipo != null ? tipo : "ALL");
 
-        if (tipo != null && !tipo.trim().isEmpty()) {
+            log.info("Solicitud de disponibilidad semanal: year={}, month={}, tipo={}", year, month, tipo);
 
-            try {
-                courtType = CourtType.valueOf(tipo.toUpperCase());
+            CourtType courtType = null;
 
-            } catch (Exception ignored) {
-                // Si el tipo no es válido, se mantiene null
+            if (tipo != null && !tipo.trim().isEmpty()) {
+
+                try {
+                    courtType = CourtType.valueOf(tipo.toUpperCase());
+                } catch (Exception ignored) {
+                    log.warn("Tipo de pista inválido: {}", tipo);
+                }
             }
+
+            List<WeekAvailability> availability = courtService.findWeeklyAvailability(year, month, courtType);
+
+            log.info("Respuesta HTTP 200 enviada - {} semana(s) procesadas", availability.size());
+
+            return ResponseEntity.ok(availability);
+        } finally {
+            MDC.clear();
         }
-
-        List<WeekAvailability> availability =
-                courtService.findWeeklyAvailability(year, month, courtType);
-
-        return ResponseEntity.ok(availability);
     }
 
     /**
@@ -247,9 +273,20 @@ public class CourtController {
             )
             @PathVariable Long id) {
 
-        CourtResponse response = courtService.blockCourt(id);
+        try {
+            MDC.put("endpoint", "POST /api/v1/courts/{id}/block");
+            MDC.put("courtId", String.valueOf(id));
 
-        return ResponseEntity.ok(response);
+            log.info("Solicitud de bloqueo de pista: id={}", id);
+
+            CourtResponse response = courtService.blockCourt(id);
+
+            log.info("Respuesta HTTP 200 enviada - Pista bloqueada");
+
+            return ResponseEntity.ok(response);
+        } finally {
+            MDC.clear();
+        }
     }
 
     /**
@@ -290,9 +327,20 @@ public class CourtController {
             )
             @PathVariable Long id) {
 
-        CourtResponse response = courtService.unblockCourt(id);
+        try {
+            MDC.put("endpoint", "POST /api/v1/courts/{id}/unblock");
+            MDC.put("courtId", String.valueOf(id));
 
-        return ResponseEntity.ok(response);
+            log.info("Solicitud de desbloqueo de pista: id={}", id);
+
+            CourtResponse response = courtService.unblockCourt(id);
+
+            log.info("Respuesta HTTP 200 enviada - Pista desbloqueada");
+
+            return ResponseEntity.ok(response);
+        } finally {
+            MDC.clear();
+        }
     }
 
     /**
@@ -333,14 +381,23 @@ public class CourtController {
             )
             @RequestParam(required = false) String tipo) {
 
-        List<CourtResponse> courts = courtService.findAll();
+        try {
+            MDC.put("endpoint", "GET /api/v1/courts");
+            MDC.put("courtType", tipo != null ? tipo : "ALL");
 
-        if (tipo != null && !tipo.trim().isEmpty()) {
-            courts = courts.stream()
-                    .filter(c -> c.tipo().name().equalsIgnoreCase(tipo))
-                    .toList();
+            log.info("Solicitud de obtención de todas las pistas: tipo={}", tipo);
+
+            List<CourtResponse> courts = courtService.findAll();
+
+            if (tipo != null && !tipo.trim().isEmpty()) {
+                courts = courts.stream().filter(c -> c.tipo().name().equalsIgnoreCase(tipo)).toList();
+            }
+
+            log.info("Respuesta HTTP 200 enviada - {} pista(s) total(es)", courts.size());
+
+            return ResponseEntity.ok(courts);
+        } finally {
+            MDC.clear();
         }
-
-        return ResponseEntity.ok(courts);
     }
 }
