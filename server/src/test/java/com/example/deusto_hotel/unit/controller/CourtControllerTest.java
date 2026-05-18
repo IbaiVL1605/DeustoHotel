@@ -217,4 +217,47 @@ public class CourtControllerTest {
                 .andExpect(jsonPath("$.estado").value("DISPONIBLE"));
     }
 
+    @Test
+    void getAll_exito() throws Exception {
+        when(courtService.findAll())
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/api/v1/courts"))
+                .andExpect(status().isOk());
+
+        verify(courtService).findAll();
+    }
+
+    @Test
+    void getAll_conFiltro_ok() throws Exception {
+
+        CourtResponse court = new CourtResponse(
+                1L,
+                "Pista 1",
+                CourtType.FUTBOL,
+                30.0,
+                CourtStatus.DISPONIBLE
+        );
+
+        when(courtService.findAll())
+                .thenReturn(List.of(court));
+
+        mockMvc.perform(get("/api/v1/courts")
+                        .param("tipo", "FUTBOL"))
+                .andExpect(status().isOk());
+
+        verify(courtService).findAll();
+    }
+
+    @Test
+    void getAll_error() throws Exception {
+        when(courtService.findAll())
+                .thenThrow(new RuntimeException("Error al obtener las pistas"));
+
+        mockMvc.perform(get("/api/v1/courts"))
+                .andExpect(status().isBadRequest());
+
+        verify(courtService).findAll();
+    }
+
 }

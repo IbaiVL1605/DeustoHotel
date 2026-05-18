@@ -787,7 +787,7 @@ class ProxyTest {
                 when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                                 .thenReturn((HttpResponse) response);
 
-                ResponseEntity<String> result = proxy.validarReserva(99L, 7L);
+                ResponseEntity<String> result = proxy.validarReservaHabitacion(99L, 7L);
 
                 assertEquals(200, result.getStatusCode().value());
                 assertEquals("Reserva validada correctamente", result.getBody());
@@ -803,7 +803,7 @@ class ProxyTest {
                 when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                                 .thenReturn((HttpResponse) response);
 
-                ResponseEntity<String> result = proxy.validarReserva(99L, 7L);
+                ResponseEntity<String> result = proxy.validarReservaHabitacion(99L, 7L);
 
                 assertEquals(403, result.getStatusCode().value());
                 assertEquals("Usuario no autorizado", result.getBody());
@@ -816,7 +816,7 @@ class ProxyTest {
                                 .thenThrow(new IOException("Conexion fallida"));
 
                 RuntimeException ex = assertThrows(RuntimeException.class,
-                                () -> proxy.validarReserva(99L, 7L));
+                                () -> proxy.validarReservaHabitacion(99L, 7L));
 
                 assertEquals("Error al validar la reserva", ex.getMessage());
                 assertNotNull(ex.getCause());

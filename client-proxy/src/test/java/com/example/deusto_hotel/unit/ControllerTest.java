@@ -797,23 +797,23 @@ class ControllerTest {
 
         @Test
         void validarReserva_exito() throws Exception {
-                when(proxy.validarReserva(99L, 7L)).thenReturn(ResponseEntity.ok("OK"));
+                when(proxy.validarReservaHabitacion(99L, 7L)).thenReturn(ResponseEntity.ok("OK"));
 
-                mockMvc.perform(post("/recepcion/validar")
+                mockMvc.perform(post("/recepcion/validar-habitacion")
                                 .sessionAttr("userId", 7L)
                                 .param("idReserva", "99"))
                                 .andExpect(status().is3xxRedirection())
                                 .andExpect(redirectedUrl("/recepcion"))
                                 .andExpect(flash().attribute("success", "Reserva validada correctamente."));
 
-                verify(proxy).validarReserva(99L, 7L);
+                verify(proxy).validarReservaHabitacion(99L, 7L);
         }
 
         @Test
         void validarReserva_error() throws Exception {
-                when(proxy.validarReserva(99L, 7L)).thenThrow(new RuntimeException("Usuario no autorizado"));
+                when(proxy.validarReservaHabitacion(99L, 7L)).thenThrow(new RuntimeException("Usuario no autorizado"));
 
-                mockMvc.perform(post("/recepcion/validar")
+                mockMvc.perform(post("/recepcion/validar-habitacion")
                                 .sessionAttr("userId", 7L)
                                 .param("idReserva", "99"))
                                 .andExpect(status().is3xxRedirection())
@@ -821,7 +821,7 @@ class ControllerTest {
                                 .andExpect(flash().attribute("error",
                                                 "Error al validar la reserva: Usuario no autorizado"));
 
-                verify(proxy).validarReserva(99L, 7L);
+                verify(proxy).validarReservaHabitacion(99L, 7L);
         }
 
         @Test
@@ -1078,6 +1078,32 @@ class ControllerTest {
                                 .andExpect(flash().attribute("error", "Error al cancelar la reserva: Error simulado"));
 
                 verify(proxy).cancelCourtBookingAdmin(1L);
+        }
+
+        @Test
+        void validarReservaPista() throws Exception {
+                mockMvc.perform(post("/recepcion/validar-pista")
+                                .sessionAttr("userId", 7L)
+                                .param("idReserva", "99"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/recepcion"))
+                                .andExpect(flash().attribute("success", "Reserva de pista validada correctamente."));
+
+                verify(proxy).validarReservaPista(99L, 7L);
+        }
+
+        @Test
+        void validarReservaPista_Error() throws Exception {
+                when(proxy.validarReservaPista(99L, 7L)).thenThrow(new RuntimeException("Usuario no autorizado"));
+
+                mockMvc.perform(post("/recepcion/validar-pista")
+                                .sessionAttr("userId", 7L)
+                                .param("idReserva", "99"))
+                                .andExpect(status().is3xxRedirection())
+                                .andExpect(redirectedUrl("/recepcion"))
+                                .andExpect(flash().attribute("error", "Error al validar la reserva de pista: Usuario no autorizado"));
+
+                verify(proxy).validarReservaPista(99L, 7L);
         }
 
 }

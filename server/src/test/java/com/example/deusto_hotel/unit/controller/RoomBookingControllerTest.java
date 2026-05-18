@@ -2,6 +2,8 @@ package com.example.deusto_hotel.unit.controller;
 
 import com.example.deusto_hotel.controller.RoomBookingController;
 import com.example.deusto_hotel.dto.RoomBookingRequest;
+import com.example.deusto_hotel.dto.RoomBookingResponse;
+import com.example.deusto_hotel.model.RoomBookingStatus;
 import com.example.deusto_hotel.model.RoomType;
 import com.example.deusto_hotel.service.RoomBookingService;
 import org.junit.jupiter.api.Tag;
@@ -14,13 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import tools.jackson.databind.ObjectMapper;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @Tag("unit")
 
@@ -134,6 +136,48 @@ class RoomBookingControllerTest {
                         .content(objectMapper.writeValueAsString(List.of(request))))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void getByClienteId_exito() throws Exception {
+        RoomBookingResponse response = new RoomBookingResponse(1L, 1L, "User", 1L, "Room", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), RoomBookingStatus.PENDIENTE, 100.0, LocalDateTime.now());
+        when(roomBookingService.findByClienteId(1L)).thenReturn(List.of(response));
+
+        mockMvc.perform(get("/api/v1/room-bookings/cliente/1"))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    void getByClienteId_error() throws Exception {
+        when(roomBookingService.findByClienteId(99L)).thenThrow(new IllegalArgumentException("Cliente no encontrado"));
+
+        mockMvc.perform(get("/api/v1/room-bookings/cliente/99"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void getAll_exito() throws Exception {
+        RoomBookingResponse response1 = new RoomBookingResponse(1L, 1L, "User", 1L, "Room", LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), RoomBookingStatus.PENDIENTE, 100.0, LocalDateTime.now());
+        RoomBookingResponse response2 = new RoomBookingResponse(2L, 2L, "User2", 2L, "Room2", LocalDate.now().plusDays(3), LocalDate.now().plusDays(4), RoomBookingStatus.PENDIENTE, 200.0, LocalDateTime.now());
+        when(roomBookingService.findAll()).thenReturn(List.of(response1, response2));
+
+        mockMvc.perform(get("/api/v1/room-bookings"))
+                .andExpect(status().isOk());
+
+        verify(roomBookingService).findAll();
+
+    }
+
+    @Test
+    void getAll_error() throws Exception {
+        when(roomBookingService.findAll()).thenThrow(new RuntimeException("Error interno"));
+
+        mockMvc.perform(get("/api/v1/room-bookings"))
+                .andExpect(status().isBadRequest());
+
+    }
+
 
 
 }
