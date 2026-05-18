@@ -17,15 +17,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProxyTest {
@@ -859,5 +857,280 @@ class ProxyTest {
 
                 verify(httpClient).send(any(HttpRequest.class), any());
         }
+
+    @Test
+    void getHorasDisponibles_Exito_DebeExtraerHorasCorrectamente() throws Exception {
+        Long pistaId = 1L;
+        LocalDate fechaTest = LocalDate.of(2026, 5, 17);
+
+        String jsonRespuesta = "[" +
+                "  {" +
+                "    \"days\": [" +
+                "      {" +
+                "        \"date\": \"2026-05-17\"," +
+                "        \"slots\": [" +
+                "          {" +
+                "            \"start\": \"08:00:00\"," +
+                "            \"availableCourts\": [" +
+                "              { \"id\": 1 }," +
+                "              { \"id\": 2 }" +
+                "            ]" +
+                "          }," +
+                "          {" +
+                "            \"start\": \"09:30:00\"," +
+                "            \"availableCourts\": [" +
+                "              { \"id\": 1 }" +
+                "            ]" +
+                "          }," +
+                "          {" +
+                "            \"start\": \"11:00:00\"," +
+                "            \"availableCourts\": [" +
+                "              { \"id\": 3 }" +
+                "            ]" +
+                "          }" +
+                "        ]" +
+                "      }" +
+                "    ]" +
+                "  }" +
+                "]";
+
+        // CORRECCIÓN: Definir explícitamente el tipo genérico <String>
+        HttpResponse<String> httpResponse = mock(HttpResponse.class);
+
+        // Forzamos que devuelva el String JSON cuando se invoque .body()
+        doReturn(jsonRespuesta).when(httpResponse).body();
+
+        // Mockeamos el envío pasándole cualquier HttpRequest y cualquier BodyHandler
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        List<LocalTime> resultado = proxy.getHorasDisponibles(pistaId, fechaTest);
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        assertEquals(LocalTime.of(8, 0), resultado.get(0));
+        assertEquals(LocalTime.of(9, 30), resultado.get(1));
+    }
+
+    @Test
+    void getHorasDisponibles_FechaNoCoincide() throws Exception {
+        Long pistaId = 1L;
+        LocalDate fechaTest = LocalDate.of(2026, 5, 17);
+
+        String jsonRespuesta = "[{\"days\": [{\"date\": \"2026-12-25\", \"slots\": []}]}]";
+
+        // CORRECCIÓN: Definir explícitamente el tipo genérico <String>
+        HttpResponse<String> httpResponse = mock(HttpResponse.class);
+
+        doReturn(jsonRespuesta).when(httpResponse).body();
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(httpResponse);
+
+        List<LocalTime> resultado = proxy.getHorasDisponibles(pistaId, fechaTest);
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void getHorasDisponibles_Error() throws Exception {
+        Long pistaId = 1L;
+        LocalDate fechaTest = LocalDate.of(2026, 5, 17);
+
+        // Forzamos un error de red o IOException al enviar la petición
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new java.io.IOException("Error de conexión"));
+
+        List<LocalTime> resultado = proxy.getHorasDisponibles(pistaId, fechaTest);
+
+        // El bloque catch captura el error y por contrato debe devolver una lista vacía inmputable
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void getCourtBookingById_exito() throws Exception {
+        Long bookingId = 1L;
+
+        String jsonResponse = """
+                {
+                  "id": 1,
+                  "clienteId": 1,
+                  "clienteNombre": "Juan López",
+                  "pistaId": 10,
+                  "pistaNombre": "Pista Central",
+                  "fecha": "2025-05-01",
+                  "horaInicio": "13:30:00",
+                  "horaFin": "14:30:00",
+                  "estado": "CONFIRMADA",
+                  "precioTotal": 20.0,
+                  "creadaEn": "2025-04-01T10:00:00"
+                }
+                """;
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn(jsonResponse);
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        CourtBookingResponse result = proxy.getCourtBookingById(bookingId);
+
+        assertNotNull(result);
+        assertEquals(bookingId, result.id());
+        assertEquals("Juan López", result.clienteNombre());
+        verify(httpClient).send(any(HttpRequest.class), any());
+    }
+
+    @Test
+    void getCourtBookingById_error() throws Exception {
+        Long bookingId = 1L;
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.statusCode()).thenReturn(404);
+        when(response.body()).thenReturn("Reserva no encontrada");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            proxy.getCourtBookingById(bookingId);
+        });
+
+        assertEquals("Error al obtener la reserva de pista: Reserva no encontrada", ex.getMessage());
+        verify(httpClient).send(any(HttpRequest.class), any());
+    }
+
+    @Test
+    void getAllRoomBookings_Exito() throws Exception {
+        String jsonResponse = """
+                [
+                  {
+                    "id": 1,
+                    "clienteId": 1,
+                    "clienteNombre": "Juan López",
+                    "habitacionId": 101,
+                    "habitacionNumero": "101A",
+                    "checkIn": "2025-05-01",
+                    "checkOut": "2025-05-05",
+                    "estado": "CONFIRMADA",
+                    "precioTotal": 500.0,
+                    "creadaEn": "2025-04-01T10:00:00"
+                  },
+                  {
+                    "id": 2,
+                    "clienteId": 2,
+                    "clienteNombre": "María García",
+                    "habitacionId": 102,
+                    "habitacionNumero": "102B",
+                    "checkIn": "2025-06-10",
+                    "checkOut": "2025-06-15",
+                    "estado": "CANCELADA",
+                    "precioTotal": 750.0,
+                    "creadaEn": "2025-05-01T12:00:00"
+                  }
+                ]
+                """;
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn(jsonResponse);
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        List<RoomBookingResponse> result = proxy.getAllRoomBookings();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Juan López", result.get(0).clienteNombre());
+        assertEquals("María García", result.get(1).clienteNombre());
+        verify(httpClient).send(any(HttpRequest.class), any());
+    }
+
+    @Test
+    void getAllCourtBookings_Error() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        doReturn(500).when(response).statusCode();
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            proxy.getAllCourtBookings();
+        });
+
+        assertEquals("Error obteniendo reservas de pistas", ex.getMessage());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+    }
+
+    @Test
+    void getAllCourtBookings_Exito() throws Exception {
+        String jsonResponse = """
+                [
+                  {
+                    "id": 1,
+                    "clienteId": 1,
+                    "clienteNombre": "Juan López",
+                    "pistaId": 10,
+                    "pistaNombre": "Pista Central",
+                    "fecha": "2025-05-01",
+                    "horaInicio": "13:30:00",
+                    "horaFin": "14:30:00",
+                    "estado": "CONFIRMADA",
+                    "precioTotal": 20.0,
+                    "creadaEn": "2025-04-01T10:00:00"
+                  },
+                  {
+                    "id": 2,
+                    "clienteId": 2,
+                    "clienteNombre": "María García",
+                    "pistaId": 11,
+                    "pistaNombre": "Pista Lateral",
+                    "fecha": "2025-06-10",
+                    "horaInicio": "15:00:00",
+                    "horaFin": "16:00:00",
+                    "estado": "CANCELADA",
+                    "precioTotal": 15.0,
+                    "creadaEn": "2025-05-01T12:00:00"
+                  }
+                ]
+                """;
+
+        HttpResponse<String> response = mock(HttpResponse.class);
+        when(response.statusCode()).thenReturn(200);
+        when(response.body()).thenReturn(jsonResponse);
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        List<CourtBookingResponse> result = proxy.getAllCourtBookings();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Juan López", result.get(0).clienteNombre());
+        assertEquals("María García", result.get(1).clienteNombre());
+        verify(httpClient).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+    }
+
+    @Test
+    void getAllRoomBookings_Error() throws Exception {
+        HttpResponse<String> response = mock(HttpResponse.class);
+
+        doReturn(500).when(response).statusCode();
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(response);
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            proxy.getAllRoomBookings();
+        });
+
+        assertEquals("Error obteniendo reservas de habitaciones", ex.getMessage());
+        verify(httpClient, times(1)).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+    }
 
 }

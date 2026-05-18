@@ -584,10 +584,24 @@ class ControllerTest {
 
         @Test
         void adminPage_exito() throws Exception {
-                mockMvc.perform(get("/admin")
-                                .sessionAttr("userRole", "ADMIN"))
-                                .andExpect(status().isOk())
-                                .andExpect(view().name("admin/admin"));
+            // 1. Preparar listas ficticias
+            List<CourtResponse> mockCourts = List.of(new CourtResponse(1L, "Pista 1", CourtType.TENIS, 20.0, CourtStatus.DISPONIBLE));
+            List<CourtBookingResponse> mockBookings = List.of(new CourtBookingResponse(1L, 1L, "Paco Gerte", 1L, "Pista 1", LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), CourtBookingStatus.PENDIENTE, 20.0, LocalDateTime.now()));
+
+            when(proxy.getCourts(null)).thenReturn(mockCourts);
+            when(proxy.getAllCourtBookings()).thenReturn(mockBookings);
+
+            mockMvc.perform(get("/admin")
+                            .sessionAttr("userRole", "ADMIN"))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("admin/admin"))
+                    .andExpect(model().attribute("courts", mockCourts))
+                    .andExpect(model().attribute("courtBookings", mockBookings))
+                    .andExpect(model().attributeDoesNotExist("error"))
+                    .andExpect(model().attributeDoesNotExist("errorBookings"));
+
+            verify(proxy, times(1)).getCourts(null);
+            verify(proxy, times(1)).getAllCourtBookings();
         }
 
         @Test
