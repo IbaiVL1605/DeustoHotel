@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @Tag("unit")
 
@@ -176,6 +177,32 @@ class RoomBookingControllerTest {
         mockMvc.perform(get("/api/v1/room-bookings"))
                 .andExpect(status().isBadRequest());
 
+    }
+
+    @Test
+    void validarReserva_success() throws Exception {
+        doNothing().when(roomBookingService).validarReserva(99L, 7L);
+
+        mockMvc.perform(post("/api/v1/room-bookings/validar")
+                        .param("idReserva", "99")
+                        .param("idRecepcionista", "7"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Reserva validada correctamente"));
+
+        verify(roomBookingService).validarReserva(99L, 7L);
+    }
+
+    @Test
+    void validarReserva_error_whenServiceThrows() throws Exception {
+        doThrow(new IllegalArgumentException("Usuario no autorizado"))
+                .when(roomBookingService).validarReserva(99L, 7L);
+
+        mockMvc.perform(post("/api/v1/room-bookings/validar")
+                        .param("idReserva", "99")
+                        .param("idRecepcionista", "7"))
+                .andExpect(status().isBadRequest());
+
+        verify(roomBookingService).validarReserva(99L, 7L);
     }
 
 
