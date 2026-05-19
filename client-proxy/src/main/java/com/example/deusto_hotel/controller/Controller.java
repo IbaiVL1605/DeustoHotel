@@ -369,7 +369,7 @@ public class Controller {
         }
     }
 
-    @PostMapping("/reservas/eliminar/pista/{id}")
+    @GetMapping("/reservas/eliminar/pista/{id}")
     public String deleteCourtBooking(@PathVariable Long id) {
         try {
             proxy.deleteCourtBooking(id);
