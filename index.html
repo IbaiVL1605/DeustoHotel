@@ -611,6 +611,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graylog-logging-centralizado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graylog (Logging centralizado)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graylog (Logging centralizado)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurar-el-archivo-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar el archivo .env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#levantar-graylog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Levantar Graylog
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acceder-a-la-interfaz-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acceder a la interfaz web
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#funcionamiento-del-proyecto" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1051,6 +1101,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#graylog-logging-centralizado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graylog (Logging centralizado)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Graylog (Logging centralizado)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurar-el-archivo-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar el archivo .env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#levantar-graylog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Levantar Graylog
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acceder-a-la-interfaz-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acceder a la interfaz web
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#funcionamiento-del-proyecto" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1090,8 +1190,8 @@
 
 
 <h1 id="deustohotel">DeustoHotel</h1>
-<p>Este proyecto consiste en la gestion y administracion de un hotel, simulando historias de usuario reales que cualquier usuario podria encontrarse en la vida real.
-La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.</p>
+<p>Este proyecto consiste en la gestion y administracion de un hotel, simulando historias de usuario reales que cualquier usuario podria encontrarse en la vida real.</p>
+<p>La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.</p>
 <hr />
 <h2 id="tecnologias-utilizadas">Tecnologias utilizadas</h2>
 <ul>
@@ -1100,6 +1200,7 @@ La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.</p>
 <li>Gradle</li>
 <li>JUnit 5</li>
 <li>MySQL</li>
+<li>Graylog (logging centralizado)</li>
 </ul>
 <hr />
 <h2 id="requisitos-previos">Requisitos previos</h2>
@@ -1108,6 +1209,7 @@ La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.</p>
 <li>Java 21 o superior</li>
 <li>MySQL</li>
 <li>Gradle (opcional, si no se usa el wrapper)</li>
+<li>Docker y Docker Compose (necesarios para Graylog)</li>
 </ul>
 <blockquote>
 <p>Recomendado: usar el wrapper incluido en el proyecto (<code>gradlew</code> / <code>gradlew.bat</code>), asi no es necesario instalar Gradle manualmente.</p>
@@ -1218,12 +1320,36 @@ FLUSH PRIVILEGES;
 <pre><code class="language-bash">./gradlew :client-proxy:bootRun
 </code></pre>
 <hr />
+<h2 id="graylog-logging-centralizado">Graylog (Logging centralizado)</h2>
+<p>El proyecto integra Graylog para la visualizacion y gestion centralizada de logs. Se ejecuta mediante Docker Compose.</p>
+<h3 id="configurar-el-archivo-env">Configurar el archivo <code>.env</code></h3>
+<p>Antes de levantar Graylog, es necesario crear un archivo <code>.env</code> en la raiz del proyecto con las siguientes variables.</p>
+<p>Generar <code>GRAYLOG_PASSWORD_SECRET</code>:</p>
+<pre><code class="language-bash">&lt; /dev/urandom tr -dc A-Z-a-z-0-9 | head -c${1:-96};echo;
+</code></pre>
+<p>Generar <code>GRAYLOG_ROOT_PASSWORD_SHA2</code> (hash SHA256 de tu contraseña de acceso):</p>
+<pre><code class="language-bash">echo -n &quot;Enter Password: &quot; &amp;&amp; head -1 &lt;/dev/stdin | tr -d '\n' | sha256sum | cut -d&quot; &quot; -f1
+</code></pre>
+<p>El <code>.env</code> debe tener este formato:</p>
+<pre><code class="language-env">GRAYLOG_PASSWORD_SECRET=&lt;valor generado arriba&gt;
+GRAYLOG_ROOT_PASSWORD_SHA2=&lt;hash generado arriba&gt;
+</code></pre>
+<h3 id="levantar-graylog">Levantar Graylog</h3>
+<pre><code class="language-bash">docker compose up
+</code></pre>
+<h3 id="acceder-a-la-interfaz-web">Acceder a la interfaz web</h3>
+<p>Una vez levantado, Graylog estara disponible en:</p>
+<pre><code>http://localhost:9000
+</code></pre>
+<p>Las credenciales son las que hayas configurado al generar el hash de contraseña.</p>
+<hr />
 <h2 id="funcionamiento-del-proyecto">Funcionamiento del proyecto</h2>
 <ul>
 <li>El servidor se ejecuta en el puerto <code>8080</code>.</li>
 <li>Documentacion de la API (Swagger): <code>http://localhost:8080/swagger-ui/index.html</code></li>
 <li>El cliente se ejecuta en el puerto <code>8090</code> y proporciona la interfaz frontend.</li>
 <li>Acceso recomendado al frontend: <code>http://localhost:8090/login</code></li>
+<li>Graylog (logging centralizado) se ejecuta en el puerto <code>9000</code>: <code>http://localhost:9000</code></li>
 </ul>
 <hr />
 <h2 id="notas-utiles">Notas utiles</h2>
@@ -1231,6 +1357,7 @@ FLUSH PRIVILEGES;
 <li>Si no levanta Gradle, revisa que tu entorno este usando Java 21 (<code>JAVA_HOME</code> apuntando al JDK correcto).</li>
 <li>El proyecto incluye datos de ejemplo al arrancar por primera vez en base de datos vacia.</li>
 <li>Si no aparece el reporte de JaCoCo, asegúrate de ejecutar <code>jacocoTestReport</code>.</li>
+<li>El archivo <code>.env</code> es obligatorio para levantar Graylog. Sin el, <code>docker compose up</code> fallara al no encontrar las variables de entorno necesarias.</li>
 </ul>
 
 
