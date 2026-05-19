@@ -182,28 +182,42 @@ public class RoomService {
         }
     }
 
-    public void bloquearHabitacion(Long id) {
+	/**
+	 * Bloquea una habitación para mantenimiento.
+	 * <p>
+	 * Cambia el estado de la habitación a BLOQUEADA, lo que impide que se
+	 * puedan realizar nuevas reservas en la misma hasta que sea desbloqueada.
+	 * Esta operación es típicamente utilizada cuando se requiere
+	 * mantenimiento o reparación de la habitación.
+	 * </p>
+	 *
+	 * @param id identificador de la habitación a bloquear
+	 * @throws IllegalArgumentException si la habitación con el ID especificado no existe
+	 */
+	public void bloquearHabitacion(Long id) {
 
-        MDC.put("operation", "bloquearHabitacion");
+		MDC.put("operation", "bloquearHabitacion");
+		MDC.put("roomId", id.toString());
 
-        try {
-            log.info("Intento de bloqueo de habitación");
+		try {
+			log.info("Intento de bloqueo de habitación");
 
-            Room room = roomRepository.findById(id)
-                    .orElseThrow(() -> {
-                        log.warn("Intento de bloqueo fallido - Habitación no encontrada");
-                        return new RuntimeException("Habitación no encontrada");
-                    });
+			Room room = roomRepository.findById(id)
+					.orElseThrow(() -> {
+						log.warn("Intento de bloqueo fallido - Habitación no encontrada");
+						return new IllegalArgumentException("Habitación no encontrada");
+					});
 
-            room.setEstado(RoomStatus.BLOQUEADA);
+			room.setEstado(RoomStatus.BLOQUEADA);
 
-            roomRepository.save(room);
+			roomRepository.save(room);
 
-            log.info("Habitación bloqueada exitosamente");
-        } finally {
-            MDC.remove("operation");
-        }
-    }
+			log.info("Habitación bloqueada exitosamente");
+		} finally {
+			MDC.remove("operation");
+			MDC.remove("roomId");
+		}
+	}
 
 }
 

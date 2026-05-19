@@ -257,43 +257,60 @@ public class CourtBookingService {
                 }
         }
 
-        public void validarReserva(Long idReserva, Long idRecepcionista) {
-                MDC.put("bookingId", String.valueOf(idReserva));
-                MDC.put("recepcionistaId", String.valueOf(idRecepcionista));
+	/**
+	 * Valida una reserva de pista existente.
+	 * <p>
+	 * Cambia el estado de la reserva de PENDIENTE a CONFIRMADA tras verificar que:
+	 * <ul>
+	 * <li>El recepcionista está autenticado y existe en el sistema</li>
+	 * <li>El recepcionista tiene rol de RECEPTIONIST</li>
+	 * <li>La reserva existe en el sistema</li>
+	 * <li>La reserva está en estado PENDIENTE</li>
+	 * </ul>
+	 *
+	 * @param idReserva         identificador de la reserva a validar
+	 * @param idRecepcionista   identificador del recepcionista que valida la reserva
+	 * @throws IllegalArgumentException si idRecepcionista es nulo,
+	 *                                   el recepcionista no existe o no tiene rol RECEPTIONIST,
+	 *                                   la reserva no existe o no está en estado PENDIENTE
+	 */
+	public void validarReserva(Long idReserva, Long idRecepcionista) {
+		MDC.put("bookingId", String.valueOf(idReserva));
+		MDC.put("recepcionistaId", String.valueOf(idRecepcionista));
 
-                try {
-                        log.info("Solicitando validación de reserva");
+		try {
+			log.info("Solicitando validación de reserva");
 
-                        if (idRecepcionista == null) {
-                                throw new IllegalArgumentException("Usuario no autenticado");
-                        }
+			if (idRecepcionista == null) {
+				throw new IllegalArgumentException("Usuario no autenticado");
+			}
 
-                        User recepcionista = userRepository.findById(idRecepcionista)
-                                        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+			User recepcionista = userRepository.findById(idRecepcionista)
+					.orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-                        if (recepcionista.getRol() != Role.RECEPTIONIST) {
-                                throw new IllegalArgumentException("Usuario no autorizado");
-                        }
+			if (recepcionista.getRol() != Role.RECEPTIONIST) {
+				throw new IllegalArgumentException("Usuario no autorizado");
+			}
 
-                        CourtBooking reserva = courtBookingRepository.findById(idReserva)
-                                        .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
+			CourtBooking reserva = courtBookingRepository.findById(idReserva)
+					.orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
 
-                        if (reserva.getEstado() != CourtBookingStatus.PENDIENTE) {
-                                throw new IllegalArgumentException("La reserva no está en estado pendiente");
-                        }
+			if (reserva.getEstado() != CourtBookingStatus.PENDIENTE) {
+				throw new IllegalArgumentException("La reserva no está en estado pendiente");
+			}
 
-                        reserva.setEstado(CourtBookingStatus.CONFIRMADA);
-                        courtBookingRepository.save(reserva);
+			reserva.setEstado(CourtBookingStatus.CONFIRMADA);
+			courtBookingRepository.save(reserva);
 
-                        log.info("Reserva validada");
-                } catch (IllegalArgumentException ex) {
-                        log.warn("Fallo en la validación de la reserva", ex);
-                        throw ex;
-                } finally {
-                        MDC.remove("bookingId");
-                        MDC.remove("recepcionistaId");
-                }
-        }
+			log.info("Reserva validada");
+		} catch (IllegalArgumentException ex) {
+			log.warn("Fallo en la validación de la reserva", ex);
+			throw ex;
+		} finally {
+			MDC.remove("bookingId");
+			MDC.remove("recepcionistaId");
+		}
+	}
 
         /**
          * Obtiene todas las reservas asociadas a un cliente.

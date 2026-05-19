@@ -259,25 +259,64 @@ public class RoomController {
         }
     }
 
-    @PutMapping("/{id}/bloquear")
-    public ResponseEntity<String> bloquearHabitacion(@PathVariable Long id) {
-        MDC.put("endpoint", "GET /api/v1/rooms/bloquearHabitacion");
-        MDC.put("roomId", id.toString());
+	/**
+	 * Bloquea una habitación para mantenimiento.
+	 * <p>
+	 * Cambia el estado de la habitación a BLOQUEADA, lo que impide que se
+	 * puedan realizar nuevas reservas en la misma hasta que sea desbloqueada.
+	 * Esta operación es típicamente utilizada cuando se requiere
+	 * mantenimiento o reparación de la habitación.
+	 * </p>
+	 *
+	 * @param id identificador de la habitación a bloquear
+	 * @return mensaje de éxito indicando que la habitación fue bloqueada correctamente
+	 * @throws IllegalArgumentException si la habitación con el ID especificado no existe.
+	 *                                   Se traduce a HTTP 400 (Bad Request)
+	 */
+	@PutMapping("/{id}/bloquear")
+	@Operation(
+			summary = "Bloquear una habitación",
+			description = "Bloquea una habitación para mantenimiento, cambiando su estado a BLOQUEADA. " +
+					"Esto impide que se realicen nuevas reservas en la misma."
+	)
+	@ApiResponses(value = {
+			@ApiResponse(
+					responseCode = "200",
+					description = "Habitación bloqueada correctamente",
+					content = @Content(
+							mediaType = "application/json",
+							schema = @Schema(type = "string", example = "Habitación bloqueada correctamente")
+					)
+			),
+			@ApiResponse(
+					responseCode = "400",
+					description = "Datos inválidos: habitación no encontrada"
+			),
+			@ApiResponse(
+					responseCode = "500",
+					description = "Error interno del servidor"
+			)
+	})
+	public ResponseEntity<String> bloquearHabitacion(
 
-        try {
-            log.info("Solicitud de bloquear habitacion recibida");
+			@Parameter(
+					description = "ID de la habitación a bloquear",
+					required = true,
+					example = "1"
+			)
+			@PathVariable Long id) {
+		MDC.put("endpoint", "PUT /api/v1/rooms/{id}/bloquear");
+		MDC.put("roomId", id.toString());
 
-            roomService.bloquearHabitacion(id);
+		try {
+			log.info("Solicitud de bloquear habitación recibida");
 
-            return ResponseEntity.ok("Habitación bloqueada correctamente");
+			roomService.bloquearHabitacion(id);
 
-        } catch (RuntimeException e) {
-
-            return ResponseEntity.notFound().build();
-        } finally {
-            MDC.remove("endpoint");
-            MDC.remove("roomId");
-
-        }
-    }
+			return ResponseEntity.ok("Habitación bloqueada correctamente");
+		} finally {
+			MDC.remove("endpoint");
+			MDC.remove("roomId");
+		}
+	}
 }

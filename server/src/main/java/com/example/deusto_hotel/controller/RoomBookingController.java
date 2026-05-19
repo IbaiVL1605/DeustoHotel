@@ -249,25 +249,74 @@ public class RoomBookingController {
         }
     }
 
-    // Validar reserva (Recepcionista)
-    @PostMapping("/validar")
-    public ResponseEntity<String> validarReserva(@RequestParam Long idReserva, @RequestParam Long idRecepcionista) {
-        try {
-            MDC.put("endpoint", "POST /api/v1/room-bookings/validar");
-            MDC.put("bookingId", String.valueOf(idReserva));
-            MDC.put("receptionistId", String.valueOf(idRecepcionista));
+	/**
+	 * Valida una reserva de habitación existente.
+	 * <p>
+	 * Cambia el estado de la reserva de PENDIENTE a CONFIRMADA. Solo un recepcionista
+	 * autorizado puede validar una reserva. Se valida que la reserva exista y esté
+	 * en estado pendiente antes de confirmarla.
+	 * </p>
+	 *
+	 * @param idReserva       identificador de la reserva a validar
+	 * @param idRecepcionista identificador del recepcionista que realiza la validación
+	 * @return mensaje de éxito indicando que la reserva fue validada correctamente
+	 */
+	@PostMapping("/validar")
+	@Operation(
+			summary = "Validar una reserva de habitación",
+			description = "Valida una reserva de habitación existente cambiando su estado de PENDIENTE a CONFIRMADA. " +
+					"Solo un recepcionista autorizado puede realizar esta operación."
+	)
+	@ApiResponses(value = {
+			@ApiResponse(
+					responseCode = "200",
+					description = "Reserva validada correctamente",
+					content = @Content(
+							mediaType = "application/json",
+							schema = @Schema(type = "string", example = "Reserva validada correctamente")
+					)
+			),
+			@ApiResponse(
+					responseCode = "400",
+					description = "Datos inválidos: usuario no autenticado, usuario no encontrado, usuario no autorizado, " +
+							"reserva no encontrada o reserva no está en estado pendiente"
+			),
+			@ApiResponse(
+					responseCode = "500",
+					description = "Error interno del servidor"
+			)
+	})
+	public ResponseEntity<String> validarReserva(
 
-            log.info("Solicitud de validación de reserva {} por recepcionista {}", idReserva, idRecepcionista);
+			@Parameter(
+					description = "ID de la reserva a validar",
+					required = true,
+					example = "1"
+			)
+			@RequestParam Long idReserva,
 
-            roomBookingService.validarReserva(idReserva, idRecepcionista);
+			@Parameter(
+					description = "ID del recepcionista que valida la reserva",
+					required = true,
+					example = "5"
+			)
+			@RequestParam Long idRecepcionista) {
+		try {
+			MDC.put("endpoint", "POST /api/v1/room-bookings/validar");
+			MDC.put("bookingId", String.valueOf(idReserva));
+			MDC.put("receptionistId", String.valueOf(idRecepcionista));
 
-            log.info("Respuesta HTTP 200 enviada - Reserva validada");
+			log.info("Solicitud de validación de reserva {} por recepcionista {}", idReserva, idRecepcionista);
 
-            return ResponseEntity.ok("Reserva validada correctamente");
-        } finally {
-            MDC.clear();
-        }
-    }
+			roomBookingService.validarReserva(idReserva, idRecepcionista);
+
+			log.info("Respuesta HTTP 200 enviada - Reserva validada");
+
+			return ResponseEntity.ok("Reserva validada correctamente");
+		} finally {
+			MDC.clear();
+		}
+	}
 
     /*
     // Buscar por habitación
@@ -277,21 +326,49 @@ public class RoomBookingController {
     }
     */
 
-    @GetMapping
-    public ResponseEntity<List<RoomBookingResponse>> getAll() {
-        try {
-            MDC.put("endpoint", "GET /api/v1/room-bookings");
+	/**
+	 * Obtiene todas las reservas de habitaciones del sistema.
+	 * <p>
+	 * Retorna una lista completa con todas las reservas registradas, sin aplicar
+	 * ningún tipo de filtro. Cada reserva incluye información del cliente, habitación,
+	 * fechas de entrada/salida, estado y precio total.
+	 * </p>
+	 *
+	 * @return lista completa de todas las reservas del sistema
+	 */
+	@GetMapping
+	@Operation(
+			summary = "Obtener todas las reservas de habitaciones",
+			description = "Retorna todas las reservas de habitaciones registradas en el sistema sin aplicar filtros."
+	)
+	@ApiResponses(value = {
+			@ApiResponse(
+					responseCode = "200",
+					description = "Listado de reservas obtenido correctamente",
+					content = @Content(
+							mediaType = "application/json",
+							schema = @Schema(implementation = RoomBookingResponse.class)
+					)
+			),
+			@ApiResponse(
+					responseCode = "500",
+					description = "Error interno del servidor"
+			)
+	})
+	public ResponseEntity<List<RoomBookingResponse>> getAll() {
+		try {
+			MDC.put("endpoint", "GET /api/v1/room-bookings");
 
-            log.info("Solicitud de obtención de todas las reservas");
+			log.info("Solicitud de obtención de todas las reservas");
 
-            List<RoomBookingResponse> reservas = roomBookingService.findAll();
+			List<RoomBookingResponse> reservas = roomBookingService.findAll();
 
-            log.info("Respuesta HTTP 200 enviada - {} reserva(s) total(es)", reservas.size());
+			log.info("Respuesta HTTP 200 enviada - {} reserva(s) total(es)", reservas.size());
 
-            return ResponseEntity.ok(reservas);
-        } finally {
-            MDC.clear();
-        }
-    }
+			return ResponseEntity.ok(reservas);
+		} finally {
+			MDC.clear();
+		}
+	}
 
 }

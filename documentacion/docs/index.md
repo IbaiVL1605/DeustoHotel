@@ -1,6 +1,7 @@
 # DeustoHotel
 
 Este proyecto consiste en la gestion y administracion de un hotel, simulando historias de usuario reales que cualquier usuario podria encontrarse en la vida real.
+
 La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.
 
 ---
@@ -12,6 +13,7 @@ La aplicacion esta desarrollada con Spring Boot y gestionada con Gradle.
 * Gradle
 * JUnit 5
 * MySQL
+* Graylog (logging centralizado)
 
 ---
 
@@ -22,6 +24,7 @@ Antes de construir y ejecutar el proyecto, asegurate de tener instalado:
 * Java 21 o superior
 * MySQL
 * Gradle (opcional, si no se usa el wrapper)
+* Docker y Docker Compose (necesarios para Graylog)
 
 > Recomendado: usar el wrapper incluido en el proyecto (`gradlew` / `gradlew.bat`), asi no es necesario instalar Gradle manualmente.
 
@@ -190,12 +193,58 @@ El proyecto incluye integracion continua mediante GitHub Actions.
 
 ---
 
+## Graylog (Logging centralizado)
+
+El proyecto integra Graylog para la visualizacion y gestion centralizada de logs. Se ejecuta mediante Docker Compose.
+
+### Configurar el archivo `.env`
+
+Antes de levantar Graylog, es necesario crear un archivo `.env` en la raiz del proyecto con las siguientes variables.
+
+Generar `GRAYLOG_PASSWORD_SECRET`:
+
+```bash
+< /dev/urandom tr -dc A-Z-a-z-0-9 | head -c${1:-96};echo;
+```
+
+Generar `GRAYLOG_ROOT_PASSWORD_SHA2` (hash SHA256 de tu contraseña de acceso):
+
+```bash
+echo -n "Enter Password: " && head -1 </dev/stdin | tr -d '\n' | sha256sum | cut -d" " -f1
+```
+
+El `.env` debe tener este formato:
+
+```env
+GRAYLOG_PASSWORD_SECRET=<valor generado arriba>
+GRAYLOG_ROOT_PASSWORD_SHA2=<hash generado arriba>
+```
+
+### Levantar Graylog
+
+```bash
+docker compose up
+```
+
+### Acceder a la interfaz web
+
+Una vez levantado, Graylog estara disponible en:
+
+```
+http://localhost:9000
+```
+
+Las credenciales son las que hayas configurado al generar el hash de contraseña.
+
+---
+
 ## Funcionamiento del proyecto
 
 * El servidor se ejecuta en el puerto `8080`.
 * Documentacion de la API (Swagger): `http://localhost:8080/swagger-ui/index.html`
 * El cliente se ejecuta en el puerto `8090` y proporciona la interfaz frontend.
 * Acceso recomendado al frontend: `http://localhost:8090/login`
+* Graylog (logging centralizado) se ejecuta en el puerto `9000`: `http://localhost:9000`
 
 ---
 
@@ -204,3 +253,4 @@ El proyecto incluye integracion continua mediante GitHub Actions.
 * Si no levanta Gradle, revisa que tu entorno este usando Java 21 (`JAVA_HOME` apuntando al JDK correcto).
 * El proyecto incluye datos de ejemplo al arrancar por primera vez en base de datos vacia.
 * Si no aparece el reporte de JaCoCo, asegúrate de ejecutar `jacocoTestReport`.
+* El archivo `.env` es obligatorio para levantar Graylog. Sin el, `docker compose up` fallara al no encontrar las variables de entorno necesarias.

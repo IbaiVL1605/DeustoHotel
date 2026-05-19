@@ -246,50 +246,67 @@ public class RoomBookingService {
         }
     }
 
-    public void validarReserva(Long idReserva, Long idRecepcionista) {
-        try {
-            MDC.put("operationType", "validate_booking");
-            MDC.put("bookingId", String.valueOf(idReserva));
-            MDC.put("receptionistId", String.valueOf(idRecepcionista));
+	/**
+	 * Valida una reserva de habitación existente.
+	 * <p>
+	 * Cambia el estado de la reserva de PENDIENTE a CONFIRMADA tras verificar que:
+	 * <ul>
+	 * <li>El recepcionista está autenticado y existe en el sistema</li>
+	 * <li>El recepcionista tiene rol de RECEPTIONIST</li>
+	 * <li>La reserva existe en el sistema</li>
+	 * <li>La reserva está en estado PENDIENTE</li>
+	 * </ul>
+	 *
+	 * @param idReserva         identificador de la reserva a validar
+	 * @param idRecepcionista   identificador del recepcionista que valida la reserva
+	 * @throws IllegalArgumentException si idRecepcionista es nulo,
+	 *                                   el recepcionista no existe o no tiene rol RECEPTIONIST,
+	 *                                   la reserva no existe o no está en estado PENDIENTE
+	 */
+	public void validarReserva(Long idReserva, Long idRecepcionista) {
+		try {
+			MDC.put("operationType", "validate_booking");
+			MDC.put("bookingId", String.valueOf(idReserva));
+			MDC.put("receptionistId", String.valueOf(idRecepcionista));
 
-            log.info("Iniciando validación de reserva {} por recepcionista {}", idReserva, idRecepcionista);
+			log.info("Iniciando validación de reserva {} por recepcionista {}", idReserva, idRecepcionista);
 
-            if (idRecepcionista == null) {
-                log.warn("Intento de validación de reserva sin recepcionista autenticado");
-                throw new IllegalArgumentException("Usuario no autenticado");
-            }
+			if (idRecepcionista == null) {
+				log.warn("Intento de validación de reserva sin recepcionista autenticado");
+				throw new IllegalArgumentException("Usuario no autenticado");
+			}
 
-            User recepcionista = userRepository.findById(idRecepcionista)
-                    .orElseThrow(() -> {
-                        log.warn("Recepcionista {} no encontrado", idRecepcionista);
-                        return new IllegalArgumentException("Usuario no encontrado");
-                    });
+			User recepcionista = userRepository.findById(idRecepcionista)
+					.orElseThrow(() -> {
+						log.warn("Recepcionista {} no encontrado", idRecepcionista);
+						return new IllegalArgumentException("Usuario no encontrado");
+					});
 
-            if (recepcionista.getRol() != Role.RECEPTIONIST) {
-                log.warn("Intento de validación por usuario {} sin rol de recepcionista", idRecepcionista);
-                throw new IllegalArgumentException("Usuario no autorizado");
-            }
+			if (recepcionista.getRol() != Role.RECEPTIONIST) {
+				log.warn("Intento de validación por usuario {} sin rol de recepcionista", idRecepcionista);
+				throw new IllegalArgumentException("Usuario no autorizado");
+			}
 
-            RoomBooking reserva = roomBookingRepository.findById(idReserva)
-                    .orElseThrow(() -> {
-                        log.warn("Reserva {} no encontrada para validación", idReserva);
-                        return new IllegalArgumentException("Reserva no encontrada");
-                    });
+			RoomBooking reserva = roomBookingRepository.findById(idReserva)
+					.orElseThrow(() -> {
+						log.warn("Reserva {} no encontrada para validación", idReserva);
+						return new IllegalArgumentException("Reserva no encontrada");
+					});
 
-            if (reserva.getEstado() != RoomBookingStatus.PENDIENTE) {
-                log.warn("Intento de validar reserva {} que no está en estado PENDIENTE: {}",
-                        idReserva, reserva.getEstado());
-                throw new IllegalArgumentException("La reserva no está en estado pendiente");
-            }
+			if (reserva.getEstado() != RoomBookingStatus.PENDIENTE) {
+				log.warn("Intento de validar reserva {} que no está en estado PENDIENTE: {}",
+						idReserva, reserva.getEstado());
+				throw new IllegalArgumentException("La reserva no está en estado pendiente");
+			}
 
-            reserva.setEstado(RoomBookingStatus.CONFIRMADA);
-            roomBookingRepository.save(reserva);
+			reserva.setEstado(RoomBookingStatus.CONFIRMADA);
+			roomBookingRepository.save(reserva);
 
-            log.info("Reserva {} validada exitosamente por recepcionista {}", idReserva, idRecepcionista);
-        } finally {
-            MDC.clear();
-        }
-    }
+			log.info("Reserva {} validada exitosamente por recepcionista {}", idReserva, idRecepcionista);
+		} finally {
+			MDC.clear();
+		}
+	}
 
     /**
      * Elimina una reserva específica, verificando que el usuario sea el propietario.
@@ -384,23 +401,33 @@ public class RoomBookingService {
 
 
 
-    public List<RoomBookingResponse> findAll() {
-        try {
-            MDC.put("operationType", "find_all_bookings");
+	/**
+	 * Obtiene todas las reservas de habitaciones del sistema.
+	 * <p>
+	 * Retorna una lista con todas las reservas registradas, sin aplicar ningún tipo
+	 * de filtro. Cada reserva se mapea a un objeto {@link RoomBookingResponse} que
+	 * incluye información del cliente, habitación, fechas y precio.
+	 * </p>
+	 *
+	 * @return lista completa de todas las reservas del sistema
+	 */
+	public List<RoomBookingResponse> findAll() {
+		try {
+			MDC.put("operationType", "find_all_bookings");
 
-            log.info("Obteniendo todas las reservas");
+			log.info("Obteniendo todas las reservas");
 
-            List<RoomBookingResponse> reservas = roomBookingRepository.findAll()
-                    .stream()
-                    .map(roomBookingMapper::toResponse)
-                    .toList();
+			List<RoomBookingResponse> reservas = roomBookingRepository.findAll()
+					.stream()
+					.map(roomBookingMapper::toResponse)
+					.toList();
 
-            log.info("Total de reservas en el sistema: {}", reservas.size());
+			log.info("Total de reservas en el sistema: {}", reservas.size());
 
-            return reservas;
-        } finally {
-            MDC.clear();
-        }
-    }
+			return reservas;
+		} finally {
+			MDC.clear();
+		}
+	}
 
 }

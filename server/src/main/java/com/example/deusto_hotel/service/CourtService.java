@@ -45,24 +45,34 @@ public class CourtService {
      */
     private final CourtBookingRepository courtBookingRepository;
 
-    @Transactional(readOnly = true)
-    public List<CourtResponse> findAll() {
-        try {
-            MDC.put("operationType", "find_all_courts");
+	/**
+	 * Obtiene todas las pistas deportivas del sistema.
+	 * <p>
+	 * Retorna una lista con todas las pistas registradas, sin aplicar
+	 * ningún tipo de filtro. Cada pista incluye su identificador, nombre,
+	 * tipo, precio por hora y estado actual.
+	 * </p>
+	 *
+	 * @return lista completa de todas las pistas del sistema
+	 */
+	@Transactional(readOnly = true)
+	public List<CourtResponse> findAll() {
+		try {
+			MDC.put("operationType", "find_all_courts");
 
-            log.info("Obteniendo todas las pistas del sistema");
+			log.info("Obteniendo todas las pistas del sistema");
 
-            List<CourtResponse> courts = courtRepository.findAll().stream()
-                    .map(c -> new CourtResponse(c.getId(), c.getNombre(), c.getTipo(), c.getPrecioPorHora(), c.getEstado()))
-                    .toList();
+			List<CourtResponse> courts = courtRepository.findAll().stream()
+					.map(c -> new CourtResponse(c.getId(), c.getNombre(), c.getTipo(), c.getPrecioPorHora(), c.getEstado()))
+					.toList();
 
-            log.info("Total de pistas obtenidas sin filtrar: {}", courts.size());
+			log.info("Total de pistas obtenidas sin filtrar: {}", courts.size());
 
-            return courts;
-        } finally {
-            MDC.clear();
-        }
-    }
+			return courts;
+		} finally {
+			MDC.clear();
+		}
+	}
     /*
      * @Transactional(readOnly = true)
      * public CourtResponse findById(Long id) {
@@ -451,66 +461,90 @@ public class CourtService {
         }
     }
 
-    // para bloquear pistas en mantenimiento
-    @Transactional
-    public CourtResponse blockCourt(Long id) {
-        try {
-            MDC.put("operationType", "block_court");
-            MDC.put("courtId", String.valueOf(id));
+	/**
+	 * Bloquea una pista deportiva para mantenimiento.
+	 * <p>
+	 * Cambia el estado de la pista a BLOQUEADA, lo que impide que se
+	 * puedan realizar nuevas reservas en la misma hasta que sea desbloqueada.
+	 * Esta operación es típicamente utilizada cuando se requiere
+	 * mantenimiento o reparación de la pista.
+	 * </p>
+	 *
+	 * @param id identificador de la pista a bloquear
+	 * @return información actualizada de la pista bloqueada
+	 * @throws IllegalArgumentException si la pista con el ID especificado no existe
+	 */
+	@Transactional
+	public CourtResponse blockCourt(Long id) {
+		try {
+			MDC.put("operationType", "block_court");
+			MDC.put("courtId", String.valueOf(id));
 
-            log.info("Iniciando bloqueo de pista con ID: {}", id);
+			log.info("Iniciando bloqueo de pista con ID: {}", id);
 
-            Court court = courtRepository.findById(id)
-                    .orElseThrow(() -> {
-                        log.warn("Pista con ID {} no encontrada para bloqueo", id);
-                        return new IllegalArgumentException("Pista no encontrada con ID: " + id);
-                    });
+			Court court = courtRepository.findById(id)
+					.orElseThrow(() -> {
+						log.warn("Pista con ID {} no encontrada para bloqueo", id);
+						return new IllegalArgumentException("Pista no encontrada con ID: " + id);
+					});
 
-            court.setEstado(CourtStatus.BLOQUEADA);
-            courtRepository.save(court);
+			court.setEstado(CourtStatus.BLOQUEADA);
+			courtRepository.save(court);
 
-            log.info("Pista {} bloqueada exitosamente", id);
+			log.info("Pista {} bloqueada exitosamente", id);
 
-            return new CourtResponse(
-                    court.getId(),
-                    court.getNombre(),
-                    court.getTipo(),
-                    court.getPrecioPorHora(),
-                    court.getEstado());
-        } finally {
-            MDC.clear();
-        }
-    }
+			return new CourtResponse(
+					court.getId(),
+					court.getNombre(),
+					court.getTipo(),
+					court.getPrecioPorHora(),
+					court.getEstado());
+		} finally {
+			MDC.clear();
+		}
+	}
 
-    // para desbloquear pistas al terminar el mantenimiento
-    @Transactional
-    public CourtResponse unblockCourt(Long id) {
-        try {
-            MDC.put("operationType", "unblock_court");
-            MDC.put("courtId", String.valueOf(id));
+	/**
+	 * Desbloquea una pista deportiva después del mantenimiento.
+	 * <p>
+	 * Cambia el estado de la pista de BLOQUEADA a DISPONIBLE, permitiendo
+	 * que se puedan realizar nuevas reservas en la misma. Esta operación
+	 * se realiza típicamente después de completar el mantenimiento o
+	 * reparación de la pista.
+	 * </p>
+	 *
+	 * @param id identificador de la pista a desbloquear
+	 * @return información actualizada de la pista desbloqueada
+	 * @throws IllegalArgumentException si la pista con el ID especificado no existe
+	 */
+	@Transactional
+	public CourtResponse unblockCourt(Long id) {
+		try {
+			MDC.put("operationType", "unblock_court");
+			MDC.put("courtId", String.valueOf(id));
 
-            log.info("Iniciando desbloqueo de pista con ID: {}", id);
+			log.info("Iniciando desbloqueo de pista con ID: {}", id);
 
-            Court court = courtRepository.findById(id)
-                    .orElseThrow(() -> {
-                        log.warn("Pista con ID {} no encontrada para desbloqueo", id);
-                        return new IllegalArgumentException("Pista no encontrada con ID: " + id);
-                    });
+			Court court = courtRepository.findById(id)
+					.orElseThrow(() -> {
+						log.warn("Pista con ID {} no encontrada para desbloqueo", id);
+						return new IllegalArgumentException("Pista no encontrada con ID: " + id);
+					});
 
-            court.setEstado(CourtStatus.DISPONIBLE);
-            courtRepository.save(court);
+			court.setEstado(CourtStatus.DISPONIBLE);
+			courtRepository.save(court);
 
-            log.info("Pista {} desbloqueada exitosamente", id);
+			log.info("Pista {} desbloqueada exitosamente", id);
 
-            return new CourtResponse(
-                    court.getId(),
-                    court.getNombre(),
-                    court.getTipo(),
-                    court.getPrecioPorHora(),
-                    court.getEstado());
-        } finally {
-            MDC.clear();
-        }
-    }
+			return new CourtResponse(
+					court.getId(),
+					court.getNombre(),
+					court.getTipo(),
+					court.getPrecioPorHora(),
+					court.getEstado());
+		} finally {
+			MDC.clear();
+		}
+	}
 
 }

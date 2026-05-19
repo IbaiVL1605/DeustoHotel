@@ -400,25 +400,73 @@ public class CourtBookingController {
 
     }
 
-    @PostMapping("/validar")
-    public ResponseEntity<String> validarReserva(
-            @RequestParam Long idReserva,
-            @RequestParam Long idRecepcionista) {
-        MDC.put("requestId", UUID.randomUUID().toString());
-        MDC.put("bookingId", String.valueOf(idReserva));
-        MDC.put("recepcionistaId", String.valueOf(idRecepcionista));
+	/**
+	 * Valida una reserva de pista existente.
+	 * <p>
+	 * Cambia el estado de la reserva de PENDIENTE a CONFIRMADA. Solo un recepcionista
+	 * autorizado puede validar una reserva. Se valida que la reserva exista y esté
+	 * en estado pendiente antes de confirmarla.
+	 * </p>
+	 * 
+	 * @param idReserva       identificador de la reserva a validar
+	 * @param idRecepcionista identificador del recepcionista que realiza la validación
+	 * @return mensaje de éxito indicando que la reserva fue validada correctamente
+	 */
+	@PostMapping("/validar")
+	@Operation(
+			summary = "Validar una reserva de pista",
+			description = "Valida una reserva de pista existente cambiando su estado de PENDIENTE a CONFIRMADA. " +
+					"Solo un recepcionista autorizado puede realizar esta operación."
+	)
+	@ApiResponses(value = {
+			@ApiResponse(
+					responseCode = "200",
+					description = "Reserva validada correctamente",
+					content = @Content(
+							mediaType = "application/json",
+							schema = @Schema(type = "string", example = "Reserva validada correctamente")
+					)
+			),
+			@ApiResponse(
+					responseCode = "400",
+					description = "Datos inválidos: usuario no autenticado, usuario no encontrado, usuario no autorizado, " +
+							"reserva no encontrada o reserva no está en estado pendiente"
+			),
+			@ApiResponse(
+					responseCode = "500",
+					description = "Error interno del servidor"
+			)
+	})
+	public ResponseEntity<String> validarReserva(
 
-        try {
-            log.info("Recibiendo petición para validar reserva");
-            courtBookingService.validarReserva(idReserva, idRecepcionista);
-            log.info("Petición de validación procesada");
-            return ResponseEntity.ok("Reserva validada correctamente");
-        } finally {
-            MDC.remove("requestId");
-            MDC.remove("bookingId");
-            MDC.remove("recepcionistaId");
-        }
-    }
+			@Parameter(
+					description = "ID de la reserva a validar",
+					required = true,
+					example = "1"
+			)
+			@RequestParam Long idReserva,
+
+			@Parameter(
+					description = "ID del recepcionista que valida la reserva",
+					required = true,
+					example = "5"
+			)
+			@RequestParam Long idRecepcionista) {
+		MDC.put("requestId", UUID.randomUUID().toString());
+		MDC.put("bookingId", String.valueOf(idReserva));
+		MDC.put("recepcionistaId", String.valueOf(idRecepcionista));
+
+		try {
+			log.info("Recibiendo petición para validar reserva");
+			courtBookingService.validarReserva(idReserva, idRecepcionista);
+			log.info("Petición de validación procesada");
+			return ResponseEntity.ok("Reserva validada correctamente");
+		} finally {
+			MDC.remove("requestId");
+			MDC.remove("bookingId");
+			MDC.remove("recepcionistaId");
+		}
+	}
 
     /**
      * Cancela una reserva de pista desde administración.
