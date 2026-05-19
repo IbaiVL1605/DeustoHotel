@@ -256,7 +256,7 @@ public class Controller {
      * }
      * }
      */
-    @PostMapping("/reservas/eliminar/{id}")
+    @GetMapping("/reservas/eliminar/{id}")
     public String deleteBooking(@PathVariable Long id, HttpSession session) {
 
         Long userId = (Long) session.getAttribute("userId");
@@ -369,7 +369,7 @@ public class Controller {
         }
     }
 
-    @PostMapping("/reservas/eliminar/pista/{id}")
+    @GetMapping("/reservas/eliminar/pista/{id}")
     public String deleteCourtBooking(@PathVariable Long id) {
         try {
             proxy.deleteCourtBooking(id);

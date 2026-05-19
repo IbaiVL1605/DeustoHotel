@@ -322,7 +322,7 @@
 
                 <div class="reserva-actions">
                     <a th:href="@{/reservas/habitacion/modificar/{id}(id=${booking.id})}" class="btn btn-modify">Modificar</a>
-                    <a th:href="@{/reservas/habitacion/cancelar/{id}(id=${booking.id})}" class="btn btn-delete" onclick="return confirm('¿Estás seguro de que quieres cancelar esta reserva?')">Cancelar</a>
+                    <a th:href="@{/reservas/eliminar/{id}(id=${booking.id})}" class="btn btn-delete" onclick="return confirm('¿Estás seguro de que quieres cancelar esta reserva?')">Cancelar</a>
                 </div>
             </div>
         </div>
@@ -398,7 +398,7 @@
 
                 <div class="reserva-actions">
                     <a th:href="@{/reservas/pista/modificar/{id}(id=${booking.id})}" class="btn btn-modify">Modificar</a>
-                    <a th:href="@{/reservas/pista/cancelar/{id}(id=${booking.id})}" class="btn btn-delete" onclick="return confirm('¿Estás seguro de que quieres cancelar esta reserva?')">Cancelar</a>
+                    <a th:href="@{/reservas/eliminar/pista/{id}(id=${booking.id})}" class="btn btn-delete" onclick="return confirm('¿Estás seguro de que quieres cancelar esta reserva?')">Cancelar</a>
                 </div>
             </div>
         </div>

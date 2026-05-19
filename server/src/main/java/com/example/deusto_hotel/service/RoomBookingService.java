@@ -2,19 +2,19 @@ package com.example.deusto_hotel.service;
 
 import com.example.deusto_hotel.dto.RoomBookingRequest;
 import com.example.deusto_hotel.dto.RoomBookingResponse;
-import com.example.deusto_hotel.exception.Excepciones;
 import com.example.deusto_hotel.mapper.RoomBookingMapper;
 import com.example.deusto_hotel.model.*;
 import com.example.deusto_hotel.repository.RoomBookingRepository;
 import com.example.deusto_hotel.repository.UserRepository;
 import com.example.deusto_hotel.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +32,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class RoomBookingService {
 
     private final RoomBookingRepository roomBookingRepository;
@@ -71,24 +72,39 @@ public class RoomBookingService {
      */
     @Transactional()
     public void create(List<RoomBookingRequest> request) {
+        try {
+            MDC.put("operationType", "create_bookings");
+            MDC.put("requestSize", String.valueOf(request.size()));
 
-        for  (RoomBookingRequest roomBookingRequest : request) {
-            validarFechas(roomBookingRequest);
+            log.info("Procesando creación de {} reservas de habitaciones", request.size());
 
-            if (roomBookingRequest.tipo() == null) {
-                throw new IllegalArgumentException("Tipo de habitación no válido");
+            for  (RoomBookingRequest roomBookingRequest : request) {
+                MDC.put("clienteId", String.valueOf(roomBookingRequest.id_cliente()));
+                MDC.put("roomType", roomBookingRequest.tipo() != null ? roomBookingRequest.tipo().toString() : "UNKNOWN");
+
+                validarFechas(roomBookingRequest);
+
+                if (roomBookingRequest.tipo() == null) {
+                    log.warn("Tipo de habitación nulo para cliente {}", roomBookingRequest.id_cliente());
+                    throw new IllegalArgumentException("Tipo de habitación no válido");
+                }
+
+                User cliente = userRepository.findById(roomBookingRequest.id_cliente())
+                        .orElseThrow(() -> {
+                            log.warn("Cliente {} no encontrado en el sistema", roomBookingRequest.id_cliente());
+                            return new IllegalArgumentException("Cliente no encontrado");
+                        });
+
+                switch (roomBookingRequest.tipo()) {
+                    case INDIVIDUAL, DOBLE -> reservarSimples(roomBookingRequest, cliente);
+                    case SUITE -> reservarSuits(roomBookingRequest, cliente);
+                }
             }
 
-            User cliente = userRepository.findById(roomBookingRequest.id_cliente())
-                    .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
-
-            switch (roomBookingRequest.tipo()) {
-                case INDIVIDUAL, DOBLE -> reservarSimples(roomBookingRequest, cliente);
-                case SUITE -> reservarSuits(roomBookingRequest, cliente);
-            }
+            log.info("Reservas procesadas exitosamente");
+        } finally {
+            MDC.clear();
         }
-
-
     }
 
     /**
@@ -105,9 +121,17 @@ public class RoomBookingService {
      *                                   o si ya hay reservas solapadas para las fechas indicadas.
      */
     private void reservarSuits(RoomBookingRequest roomBookingRequest, User cliente) {
-        System.out.printf("Reserva SUITE: %s\n", roomBookingRequest.id_habitacion());
+        MDC.put("roomId", String.valueOf(roomBookingRequest.id_habitacion()));
+
+        log.info("Procesando reserva SUITE para cliente {} con habitación {}",
+                 cliente.getId(), roomBookingRequest.id_habitacion());
+
         Optional<Room> habitacion = roomRepository.findByIdAndTipo(roomBookingRequest.id_habitacion(), RoomType.SUITE);
-        if(habitacion.isEmpty()) {throw new IllegalArgumentException("Habitacion no encontrada para tipo SUITE");}
+        if(habitacion.isEmpty()) {
+            log.warn("Habitación SUITE {} no encontrada para cliente {}",
+                     roomBookingRequest.id_habitacion(), cliente.getId());
+            throw new IllegalArgumentException("Habitacion no encontrada para tipo SUITE");
+        }
 
         // Verificar solapamientos con otras reservas
         List<RoomBooking> solapamientos = roomBookingRepository.findSolapamientos(
@@ -117,6 +141,10 @@ public class RoomBookingService {
         );
 
         if (!solapamientos.isEmpty()) {
+            log.warn("Solapamiento detectado para habitación SUITE {} en las fechas {}-{}",
+                     roomBookingRequest.id_habitacion(),
+                     roomBookingRequest.fechaEntrada(),
+                     roomBookingRequest.fechaSalida());
             throw new IllegalArgumentException("La habitación ya está reservada para las fechas seleccionadas");
         }
 
@@ -128,6 +156,10 @@ public class RoomBookingService {
         reserva.setPrecioTotal(habitacion.get().getPrecioPorNoche());
 
         roomBookingRepository.save(reserva);
+
+        log.info("Reserva SUITE creada exitosamente: cliente={}, habitación={}, checkIn={}, checkOut={}",
+                 cliente.getId(), habitacion.get().getId(),
+                 roomBookingRequest.fechaEntrada(), roomBookingRequest.fechaSalida());
     }
 
     /**
@@ -144,9 +176,13 @@ public class RoomBookingService {
      */
     private void validarFechas(RoomBookingRequest roomBookingRequest) {
         if(!roomBookingRequest.fechaSalida().isAfter(roomBookingRequest.fechaEntrada())) {
+            log.warn("Validación de fechas fallida: fecha de salida {} no es posterior a fecha de entrada {}",
+                     roomBookingRequest.fechaSalida(), roomBookingRequest.fechaEntrada());
             throw new IllegalArgumentException("La fecha de salida debe de ser posterior a la fecha de entrada.");
 
         } if(roomBookingRequest.fechaEntrada().isBefore(LocalDate.now())) {
+            log.warn("Validación de fechas fallida: fecha de entrada {} es anterior a la fecha actual",
+                     roomBookingRequest.fechaEntrada());
             throw new IllegalArgumentException("La fecha de entrada no puede ser anterior a la fecha actual.");
 
         }
@@ -167,16 +203,29 @@ public class RoomBookingService {
      *                                   en la cantidad requerida para las fechas indicadas.
      */
     private void reservarSimples(RoomBookingRequest roomBookingRequest, User cliente) {
+        MDC.put("roomType", roomBookingRequest.tipo().toString());
+        MDC.put("quantity", String.valueOf(roomBookingRequest.cantidad()));
+
+        log.info("Procesando reserva {} para cliente {} con cantidad {}",
+                 roomBookingRequest.tipo(), cliente.getId(), roomBookingRequest.cantidad());
 
         List<Room> disponiblesTotal = roomRepository.findRoomDisponibles(roomBookingRequest.fechaEntrada(), roomBookingRequest.fechaSalida());
-        if(disponiblesTotal.isEmpty()) {throw new IllegalArgumentException("No hay habitaciones disponibles para las fechas seleccionadas");}
+        if(disponiblesTotal.isEmpty()) {
+            log.warn("No hay habitaciones disponibles para las fechas {}-{}",
+                     roomBookingRequest.fechaEntrada(), roomBookingRequest.fechaSalida());
+            throw new IllegalArgumentException("No hay habitaciones disponibles para las fechas seleccionadas");
+        }
 
         List<Room> disponibles = disponiblesTotal.stream()
                 .filter(h -> h.getTipo().equals(roomBookingRequest.tipo()))
                 .toList();
 
 
-        if(disponibles.size() < roomBookingRequest.cantidad()) {throw new IllegalArgumentException(String.format("No hay habitaciones disponibles para las fechas seleccionadas con el tipo: %s", roomBookingRequest.tipo()));}
+        if(disponibles.size() < roomBookingRequest.cantidad()) {
+            log.warn("Cantidad insuficiente de habitaciones {}: solicitadas={}, disponibles={}",
+                     roomBookingRequest.tipo(), roomBookingRequest.cantidad(), disponibles.size());
+            throw new IllegalArgumentException(String.format("No hay habitaciones disponibles para las fechas seleccionadas con el tipo: %s", roomBookingRequest.tipo()));
+        }
 
         for (int i = 0; i < roomBookingRequest.cantidad(); i++) {
             RoomBooking reserva = new RoomBooking();
@@ -185,43 +234,61 @@ public class RoomBookingService {
             reserva.setCheckIn(roomBookingRequest.fechaEntrada());
             reserva.setCheckOut(roomBookingRequest.fechaSalida());
 
-
             Room habitacion = disponibles.get(i);
             reserva.setPrecioTotal(habitacion.getPrecioPorNoche());
             reserva.setHabitacion(habitacion);
 
-
             roomBookingRepository.save(reserva);
+
+            log.info("Reserva {} creada exitosamente: cliente={}, habitación={}, checkIn={}, checkOut={}",
+                     roomBookingRequest.tipo(), cliente.getId(), habitacion.getId(),
+                     roomBookingRequest.fechaEntrada(), roomBookingRequest.fechaSalida());
         }
-
-
-
     }
 
     public void validarReserva(Long idReserva, Long idRecepcionista) {
-        if (idRecepcionista == null) {
-            throw new IllegalArgumentException("Usuario no autenticado");
+        try {
+            MDC.put("operationType", "validate_booking");
+            MDC.put("bookingId", String.valueOf(idReserva));
+            MDC.put("receptionistId", String.valueOf(idRecepcionista));
+
+            log.info("Iniciando validación de reserva {} por recepcionista {}", idReserva, idRecepcionista);
+
+            if (idRecepcionista == null) {
+                log.warn("Intento de validación de reserva sin recepcionista autenticado");
+                throw new IllegalArgumentException("Usuario no autenticado");
+            }
+
+            User recepcionista = userRepository.findById(idRecepcionista)
+                    .orElseThrow(() -> {
+                        log.warn("Recepcionista {} no encontrado", idRecepcionista);
+                        return new IllegalArgumentException("Usuario no encontrado");
+                    });
+
+            if (recepcionista.getRol() != Role.RECEPTIONIST) {
+                log.warn("Intento de validación por usuario {} sin rol de recepcionista", idRecepcionista);
+                throw new IllegalArgumentException("Usuario no autorizado");
+            }
+
+            RoomBooking reserva = roomBookingRepository.findById(idReserva)
+                    .orElseThrow(() -> {
+                        log.warn("Reserva {} no encontrada para validación", idReserva);
+                        return new IllegalArgumentException("Reserva no encontrada");
+                    });
+
+            if (reserva.getEstado() != RoomBookingStatus.PENDIENTE) {
+                log.warn("Intento de validar reserva {} que no está en estado PENDIENTE: {}",
+                        idReserva, reserva.getEstado());
+                throw new IllegalArgumentException("La reserva no está en estado pendiente");
+            }
+
+            reserva.setEstado(RoomBookingStatus.CONFIRMADA);
+            roomBookingRepository.save(reserva);
+
+            log.info("Reserva {} validada exitosamente por recepcionista {}", idReserva, idRecepcionista);
+        } finally {
+            MDC.clear();
         }
-
-        User recepcionista = userRepository.findById(idRecepcionista)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Usuario no encontrado"));
-
-        if (recepcionista.getRol() != Role.RECEPTIONIST) {
-            throw new IllegalArgumentException("Usuario no autorizado");
-        }
-
-        RoomBooking reserva = roomBookingRepository.findById(idReserva)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Reserva no encontrada"));
-
-        if (reserva.getEstado() != RoomBookingStatus.PENDIENTE) {
-            throw new IllegalArgumentException("La reserva no está en estado pendiente");
-        }
-
-        reserva.setEstado(RoomBookingStatus.CONFIRMADA);
-
-        roomBookingRepository.save(reserva);
     }
 
     /**
@@ -245,23 +312,39 @@ public class RoomBookingService {
      *                                   con el ID del cliente propietario de la reserva.
      */
     public void delete(Long id, Long userId) {
+        try {
+            MDC.put("operationType", "delete_booking");
+            MDC.put("bookingId", String.valueOf(id));
+            MDC.put("userId", String.valueOf(userId));
 
-        RoomBooking booking = roomBookingRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Reserva no encontrada"));
+            log.info("Iniciando eliminación de reserva {} por usuario {}", id, userId);
 
-        if (userId == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
+            RoomBooking booking = roomBookingRepository.findById(id)
+                    .orElseThrow(() -> {
+                        log.warn("Intento de eliminar reserva {} que no existe", id);
+                        return new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "Reserva no encontrada");
+                    });
+
+            if (userId == null) {
+                log.warn("Intento de eliminar reserva sin usuario autenticado");
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
+            }
+
+            if (!booking.getCliente().getId().equals(userId)) {
+                log.warn("Usuario {} intentó eliminar reserva {} que pertenece a cliente {}",
+                         userId, id, booking.getCliente().getId());
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN, "No puedes cancelar esta reserva");
+            }
+
+            roomBookingRepository.deleteById(id);
+            log.info("Reserva {} eliminada exitosamente por usuario {}", id, userId);
+        } finally {
+            MDC.clear();
         }
-
-        if (!booking.getCliente().getId().equals(userId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "No puedes cancelar esta reserva");
-        }
-
-        roomBookingRepository.deleteById(id);
-     }
+    }
 
     /**
      * Obtiene todas las reservas asociadas a un cliente específico.
@@ -280,19 +363,44 @@ public class RoomBookingService {
      */
     @Transactional(readOnly = true)
     public List<RoomBookingResponse> findByClienteId(Long clienteId) {
-        return roomBookingRepository.findByClienteId(clienteId)
-                .stream()
-                .map(roomBookingMapper::toResponse)
-                .toList();
+        try {
+            MDC.put("operationType", "find_bookings_by_client");
+            MDC.put("clienteId", String.valueOf(clienteId));
+
+            log.info("Buscando reservas para cliente {}", clienteId);
+
+            List<RoomBookingResponse> reservas = roomBookingRepository.findByClienteId(clienteId)
+                    .stream()
+                    .map(roomBookingMapper::toResponse)
+                    .toList();
+
+            log.info("Se encontraron {} reservas para cliente {}", reservas.size(), clienteId);
+
+            return reservas;
+        } finally {
+            MDC.clear();
+        }
     }
 
 
 
     public List<RoomBookingResponse> findAll() {
-        return roomBookingRepository.findAll()
-                .stream()
-                .map(roomBookingMapper::toResponse)
-                .toList();
+        try {
+            MDC.put("operationType", "find_all_bookings");
+
+            log.info("Obteniendo todas las reservas");
+
+            List<RoomBookingResponse> reservas = roomBookingRepository.findAll()
+                    .stream()
+                    .map(roomBookingMapper::toResponse)
+                    .toList();
+
+            log.info("Total de reservas en el sistema: {}", reservas.size());
+
+            return reservas;
+        } finally {
+            MDC.clear();
+        }
     }
 
 }

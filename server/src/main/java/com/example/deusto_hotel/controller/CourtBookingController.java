@@ -13,8 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,7 @@ import java.util.List;
  * @author Deusto Hotel Team
  * @version 1.0
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/court-bookings")
 @RequiredArgsConstructor
@@ -41,7 +43,6 @@ import java.util.List;
 )
 public class CourtBookingController {
 
-    private static final Logger log = LoggerFactory.getLogger(CourtBookingController.class);
     /**
      * Servicio encargado de la lógica de negocio
      * de reservas de pistas.
@@ -50,14 +51,14 @@ public class CourtBookingController {
 
     /*
      * // GET ALL
-     *
+     * 
      * @GetMapping
      * public ResponseEntity<List<CourtBookingResponse>> getAll() {
      * return ResponseEntity.ok(courtBookingService.findAll());
      * }
-     *
+     * 
      * // GET BY ID
-     *
+     * 
      * @GetMapping("/{id}")
      * public ResponseEntity<CourtBookingResponse> getById(@PathVariable Long id) {
      * return ResponseEntity.ok(courtBookingService.findById(id));
@@ -107,11 +108,24 @@ public class CourtBookingController {
             @RequestBody @Valid CourtBookingRequest request,
             HttpSession session) {
 
-        CourtBookingResponse response = courtBookingService.create(request, session);
+        // Añadir requestId y contexto a MDC
+        MDC.put("requestId", UUID.randomUUID().toString());
+        MDC.put("clienteId", String.valueOf(request.clienteId()));
+        MDC.put("pistaId", String.valueOf(request.pistaId()));
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        try {
+            log.info("Recibiendo petición de creación de reserva");
+            CourtBookingResponse response = courtBookingService.create(request, session);
+            log.info("Petición de creación procesada");
+
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response);
+        } finally {
+            MDC.remove("requestId");
+            MDC.remove("clienteId");
+            MDC.remove("pistaId");
+        }
     }
 
     /**
@@ -164,9 +178,19 @@ public class CourtBookingController {
             )
             @RequestBody @Valid CourtBookingRequest request) {
 
-        CourtBookingResponse response = courtBookingService.update(id, request);
+        MDC.put("requestId", UUID.randomUUID().toString());
+        MDC.put("bookingId", String.valueOf(id));
 
-        return ResponseEntity.ok(response);
+        try {
+            log.info("Recibiendo petición de actualización de reserva");
+            CourtBookingResponse response = courtBookingService.update(id, request);
+            log.info("Petición de actualización procesada");
+
+            return ResponseEntity.ok(response);
+        } finally {
+            MDC.remove("requestId");
+            MDC.remove("bookingId");
+        }
     }
 
     /**
@@ -203,9 +227,19 @@ public class CourtBookingController {
             )
             @PathVariable Long id) {
 
-        courtBookingService.delete(id);
+        MDC.put("requestId", UUID.randomUUID().toString());
+        MDC.put("bookingId", String.valueOf(id));
 
-        return ResponseEntity.noContent().build();
+        try {
+            log.info("Recibiendo petición de eliminación de reserva");
+            courtBookingService.delete(id);
+            log.info("Petición de eliminación procesada");
+
+            return ResponseEntity.noContent().build();
+        } finally {
+            MDC.remove("requestId");
+            MDC.remove("bookingId");
+        }
     }
 
     /**
@@ -246,8 +280,19 @@ public class CourtBookingController {
             )
             @PathVariable Long clienteId) {
 
-        return ResponseEntity.ok(
-                courtBookingService.findByClienteId(clienteId));
+        MDC.put("requestId", UUID.randomUUID().toString());
+        MDC.put("clienteId", String.valueOf(clienteId));
+
+        try {
+            log.info("Recibiendo petición para obtener reservas de cliente");
+            List<CourtBookingResponse> reservas = courtBookingService.findByClienteId(clienteId);
+            log.info("Se procesó la petición de reservas por cliente. Total devuelto: {}", reservas.size());
+
+            return ResponseEntity.ok(reservas);
+        } finally {
+            MDC.remove("requestId");
+            MDC.remove("clienteId");
+        }
     }
 
     /*
@@ -289,8 +334,17 @@ public class CourtBookingController {
             )
     })
     public ResponseEntity<List<CourtBookingResponse>> getAll() {
+        MDC.put("requestId", UUID.randomUUID().toString());
 
-        return ResponseEntity.ok(courtBookingService.findAll());
+        try {
+            log.info("Recibiendo petición para obtener todas las reservas");
+            List<CourtBookingResponse> reservas = courtBookingService.findAll();
+            log.info("Se procesó la petición de listado total de reservas. Total devuelto: {}", reservas.size());
+
+            return ResponseEntity.ok(reservas);
+        } finally {
+            MDC.remove("requestId");
+        }
     }
 
     /**
@@ -299,7 +353,6 @@ public class CourtBookingController {
      * @param id identificador de la reserva
      * @return reserva encontrada
      */
-    @GetMapping("/{id}")
     @Operation(
             summary = "Obtener reserva por ID",
             description = "Retorna una reserva específica a partir de su identificador."
@@ -322,6 +375,7 @@ public class CourtBookingController {
                     description = "Error interno del servidor"
             )
     })
+    @GetMapping("/{id}")
     public ResponseEntity<CourtBookingResponse> getById(
 
             @Parameter(
@@ -330,17 +384,40 @@ public class CourtBookingController {
                     example = "1"
             )
             @PathVariable Long id) {
+        MDC.put("requestId", UUID.randomUUID().toString());
+        MDC.put("bookingId", String.valueOf(id));
 
-        return ResponseEntity.ok(courtBookingService.findById(id));
+        try {
+            log.info("Recibiendo petición para obtener reserva por ID");
+            CourtBookingResponse response = courtBookingService.findById(id);
+            log.info("Petición de obtención por ID procesada");
+
+            return ResponseEntity.ok(response);
+        } finally {
+            MDC.remove("requestId");
+            MDC.remove("bookingId");
+        }
+
     }
 
     @PostMapping("/validar")
     public ResponseEntity<String> validarReserva(
             @RequestParam Long idReserva,
             @RequestParam Long idRecepcionista) {
-        courtBookingService.validarReserva(idReserva, idRecepcionista);
-        log.info("Reserva con ID {} validada por recepcionista con ID {}", idReserva, idRecepcionista);
-        return ResponseEntity.ok("Reserva validada correctamente");
+        MDC.put("requestId", UUID.randomUUID().toString());
+        MDC.put("bookingId", String.valueOf(idReserva));
+        MDC.put("recepcionistaId", String.valueOf(idRecepcionista));
+
+        try {
+            log.info("Recibiendo petición para validar reserva");
+            courtBookingService.validarReserva(idReserva, idRecepcionista);
+            log.info("Petición de validación procesada");
+            return ResponseEntity.ok("Reserva validada correctamente");
+        } finally {
+            MDC.remove("requestId");
+            MDC.remove("bookingId");
+            MDC.remove("recepcionistaId");
+        }
     }
 
     /**
@@ -377,8 +454,18 @@ public class CourtBookingController {
             )
             @PathVariable Long id) {
 
-        courtBookingService.cancelBookingAdmin(id);
+        MDC.put("requestId", UUID.randomUUID().toString());
+        MDC.put("bookingId", String.valueOf(id));
 
-        return ResponseEntity.ok().build();
+        try {
+            log.info("Recibiendo petición de cancelación por admin");
+            courtBookingService.cancelBookingAdmin(id);
+            log.info("Petición de cancelación procesada");
+
+            return ResponseEntity.ok().build();
+        } finally {
+            MDC.remove("requestId");
+            MDC.remove("bookingId");
+        }
     }
 }

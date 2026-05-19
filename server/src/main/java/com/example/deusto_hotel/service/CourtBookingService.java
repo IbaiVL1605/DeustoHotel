@@ -13,9 +13,11 @@ import com.example.deusto_hotel.repository.CourtRepository;
 import com.example.deusto_hotel.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.slf4j.MDC;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class CourtBookingService {
 
         /**
@@ -74,44 +77,65 @@ public class CourtBookingService {
          * @return información de la reserva creada
          */
         public CourtBookingResponse create(CourtBookingRequest request, HttpSession session) {
+                // Añadimos información relevante al MDC para que aparezca en todos los logs
+                MDC.put("clienteId", String.valueOf(request.clienteId()));
+                MDC.put("pistaId", String.valueOf(request.pistaId()));
+                MDC.put("fecha", request.fecha().toString());
 
-                CourtBooking booking = courtBookingMapper.toEntity(request);
+                try {
+                        log.info("Solicitando creación de reserva de pista");
 
-                booking.setPista(courtRepository.getReferenceById(request.pistaId()));
+                        CourtBooking booking = courtBookingMapper.toEntity(request);
 
-                booking.setHoraInicio(request.horaInicio());
+                        booking.setPista(courtRepository.getReferenceById(request.pistaId()));
 
-                booking.setHoraFin(request.horaFin());
+                        booking.setHoraInicio(request.horaInicio());
 
-                booking.setFecha(request.fecha());
+                        booking.setHoraFin(request.horaFin());
 
-                Long horas = ChronoUnit.HOURS.between(
-                                request.horaInicio(),
-                                request.horaFin());
+                        booking.setFecha(request.fecha());
 
-                booking.setCliente(
-                                userRepository.getReferenceById(request.clienteId()));
+                        Long horas = ChronoUnit.HOURS.between(
+                                        request.horaInicio(),
+                                        request.horaFin());
 
-                booking.setPrecioTotal(
-                                courtRepository.getReferenceById(request.pistaId())
-                                                .getPrecioPorHora() * horas);
+                        booking.setCliente(
+                                        userRepository.getReferenceById(request.clienteId()));
 
-                courtBookingRepository.save(booking);
+                        booking.setPrecioTotal(
+                                        courtRepository.getReferenceById(request.pistaId())
+                                                        .getPrecioPorHora() * horas);
 
-                // Notificar a clientes conectados
-                Object payload = Map.of(
-                                "action",
-                                "CREATED",
-                                "courtId",
-                                booking.getPista().getId(),
-                                "fecha",
-                                booking.getFecha().toString());
+                        courtBookingRepository.save(booking);
 
-                messagingTemplate.convertAndSend(
-                                "/topic/court-updates",
-                                payload);
+                        // Notificar a clientes conectados
+                        Object payload = Map.of(
+                                        "action",
+                                        "CREATED",
+                                        "courtId",
+                                        booking.getPista().getId(),
+                                        "fecha",
+                                        booking.getFecha().toString());
 
-                return courtBookingMapper.toResponse(booking);
+                        messagingTemplate.convertAndSend(
+                                        "/topic/court-updates",
+                                        payload);
+
+                        // registrar id de reserva en MDC y log de éxito a nivel de servicio
+                        MDC.put("bookingId", String.valueOf(booking.getId()));
+                        log.info("Reserva de pista creada");
+
+                        return courtBookingMapper.toResponse(booking);
+                } catch (RuntimeException ex) {
+                        log.warn("Fallo al crear la reserva de pista", ex);
+                        throw ex;
+                } finally {
+                        // limpiar sólo las claves que ha añadido este método
+                        MDC.remove("bookingId");
+                        MDC.remove("pistaId");
+                        MDC.remove("clienteId");
+                        MDC.remove("fecha");
+                }
         }
 
         /**
@@ -129,50 +153,66 @@ public class CourtBookingService {
          *                          el horario es inválido o la pista no está disponible
          */
         public CourtBookingResponse update(Long id, CourtBookingRequest request) {
+                MDC.put("bookingId", String.valueOf(id));
+                MDC.put("pistaId", String.valueOf(request.pistaId()));
+                MDC.put("clienteId", String.valueOf(request.clienteId()));
 
-                CourtBooking booking = courtBookingRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+                try {
+                        log.info("Solicitando actualización de reserva");
 
-                // Validar horas
-                if (request.horaInicio().isAfter(request.horaFin()) ||
-                                request.horaInicio().equals(request.horaFin())) {
+                        CourtBooking booking = courtBookingRepository.findById(id)
+                                        .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
-                        throw new RuntimeException(
-                                        "La hora de inicio debe ser menor que la de fin");
+                        // Validar horas
+                        if (request.horaInicio().isAfter(request.horaFin()) ||
+                                        request.horaInicio().equals(request.horaFin())) {
+
+                                throw new RuntimeException(
+                                                "La hora de inicio debe ser menor que la de fin");
+                        }
+
+                        // Validar disponibilidad
+                        List<CourtBooking> solapamientos = courtBookingRepository.findSolapamientos(
+                                        request.pistaId(),
+                                        request.fecha(),
+                                        request.horaInicio(),
+                                        request.horaFin()).stream().filter(b -> !b.getId().equals(id)).toList();
+
+                        if (!solapamientos.isEmpty()) {
+
+                                throw new RuntimeException(
+                                                "La pista no está disponible");
+                        }
+
+                        // Actualizar datos
+                        courtBookingMapper.updateEntityFromRequest(request, booking);
+
+                        Court pista = courtRepository.findById(request.pistaId())
+                                        .orElseThrow(() -> new RuntimeException("Pista no encontrada"));
+
+                        booking.setPista(pista);
+
+                        // Recalcular precio
+                        long horas = request.horaInicio().until(
+                                        request.horaFin(),
+                                        java.time.temporal.ChronoUnit.HOURS);
+
+                        booking.setPrecioTotal(
+                                        horas * pista.getPrecioPorHora());
+
+                        CourtBooking updated = courtBookingRepository.save(booking);
+
+                        log.info("Reserva actualizada");
+
+                        return courtBookingMapper.toResponse(updated);
+                } catch (RuntimeException ex) {
+                        log.warn("Fallo al actualizar la reserva", ex);
+                        throw ex;
+                } finally {
+                        MDC.remove("bookingId");
+                        MDC.remove("pistaId");
+                        MDC.remove("clienteId");
                 }
-
-                // Validar disponibilidad
-                List<CourtBooking> solapamientos = courtBookingRepository.findSolapamientos(
-                                request.pistaId(),
-                                request.fecha(),
-                                request.horaInicio(),
-                                request.horaFin()).stream().filter(b -> !b.getId().equals(id)).toList();
-
-                if (!solapamientos.isEmpty()) {
-
-                        throw new RuntimeException(
-                                        "La pista no está disponible");
-                }
-
-                // Actualizar datos
-                courtBookingMapper.updateEntityFromRequest(request, booking);
-
-                Court pista = courtRepository.findById(request.pistaId())
-                                .orElseThrow(() -> new RuntimeException("Pista no encontrada"));
-
-                booking.setPista(pista);
-
-                // Recalcular precio
-                long horas = request.horaInicio().until(
-                                request.horaFin(),
-                                java.time.temporal.ChronoUnit.HOURS);
-
-                booking.setPrecioTotal(
-                                horas * pista.getPrecioPorHora());
-
-                CourtBooking updated = courtBookingRepository.save(booking);
-
-                return courtBookingMapper.toResponse(updated);
         }
 
         /**
@@ -186,46 +226,73 @@ public class CourtBookingService {
          * @throws RuntimeException si la reserva no existe
          */
         public void delete(Long id) {
+                MDC.put("bookingId", String.valueOf(id));
 
-                if (!courtBookingRepository.existsById(id)) {
+                try {
+                        log.info("Solicitando eliminación de reserva");
 
-                        throw new RuntimeException("Reserva no encontrada");
+                        if (!courtBookingRepository.existsById(id)) {
+
+                                throw new RuntimeException("Reserva no encontrada");
+                        }
+
+                        courtBookingRepository.deleteById(id);
+
+                        Object payload = Map.of(
+                                        "action",
+                                        "DELETED",
+                                        "bookingId",
+                                        id);
+
+                        messagingTemplate.convertAndSend(
+                                        "/topic/court-updates",
+                                        payload);
+
+                        log.info("Reserva eliminada");
+                } catch (RuntimeException ex) {
+                        log.warn("Fallo al eliminar la reserva", ex);
+                        throw ex;
+                } finally {
+                        MDC.remove("bookingId");
                 }
-
-                courtBookingRepository.deleteById(id);
-
-                Object payload = Map.of(
-                                "action",
-                                "DELETED",
-                                "bookingId",
-                                id);
-
-                messagingTemplate.convertAndSend(
-                                "/topic/court-updates",
-                                payload);
         }
 
         public void validarReserva(Long idReserva, Long idRecepcionista) {
-                if (idRecepcionista == null) {
-                        throw new IllegalArgumentException("Usuario no autenticado");
+                MDC.put("bookingId", String.valueOf(idReserva));
+                MDC.put("recepcionistaId", String.valueOf(idRecepcionista));
+
+                try {
+                        log.info("Solicitando validación de reserva");
+
+                        if (idRecepcionista == null) {
+                                throw new IllegalArgumentException("Usuario no autenticado");
+                        }
+
+                        User recepcionista = userRepository.findById(idRecepcionista)
+                                        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+                        if (recepcionista.getRol() != Role.RECEPTIONIST) {
+                                throw new IllegalArgumentException("Usuario no autorizado");
+                        }
+
+                        CourtBooking reserva = courtBookingRepository.findById(idReserva)
+                                        .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
+
+                        if (reserva.getEstado() != CourtBookingStatus.PENDIENTE) {
+                                throw new IllegalArgumentException("La reserva no está en estado pendiente");
+                        }
+
+                        reserva.setEstado(CourtBookingStatus.CONFIRMADA);
+                        courtBookingRepository.save(reserva);
+
+                        log.info("Reserva validada");
+                } catch (IllegalArgumentException ex) {
+                        log.warn("Fallo en la validación de la reserva", ex);
+                        throw ex;
+                } finally {
+                        MDC.remove("bookingId");
+                        MDC.remove("recepcionistaId");
                 }
-
-                User recepcionista = userRepository.findById(idRecepcionista)
-                                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-                if (recepcionista.getRol() != Role.RECEPTIONIST) {
-                        throw new IllegalArgumentException("Usuario no autorizado");
-                }
-
-                CourtBooking reserva = courtBookingRepository.findById(idReserva)
-                                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
-
-                if (reserva.getEstado() != CourtBookingStatus.PENDIENTE) {
-                        throw new IllegalArgumentException("La reserva no está en estado pendiente");
-                }
-
-                reserva.setEstado(CourtBookingStatus.CONFIRMADA);
-                courtBookingRepository.save(reserva);
         }
 
         /**
@@ -236,11 +303,17 @@ public class CourtBookingService {
          */
         @Transactional(readOnly = true)
         public List<CourtBookingResponse> findByClienteId(Long clienteId) {
+                MDC.put("clienteId", String.valueOf(clienteId));
 
-                return courtBookingRepository.findByClienteId(clienteId)
-                                .stream()
-                                .map(courtBookingMapper::toResponse)
-                                .toList();
+                try {
+                        log.info("Buscando reservas por cliente");
+                        return courtBookingRepository.findByClienteId(clienteId)
+                                        .stream()
+                                        .map(courtBookingMapper::toResponse)
+                                        .toList();
+                } finally {
+                        MDC.remove("clienteId");
+                }
         }
 
         /*
@@ -294,42 +367,73 @@ public class CourtBookingService {
          */
 
         public List<CourtBookingResponse> findAll() {
-                return courtBookingRepository.findAll()
-                                .stream()
-                                .map(courtBookingMapper::toResponse)
-                                .toList();
+                try {
+                        log.info("Obteniendo todas las reservas (servicio)");
+                        return courtBookingRepository.findAll()
+                                        .stream()
+                                        .map(courtBookingMapper::toResponse)
+                                        .toList();
+                } catch (RuntimeException ex) {
+                        log.warn("Fallo obteniendo todas las reservas", ex);
+                        throw ex;
+                }
         }
 
         public CourtBookingResponse findById(Long id) {
+                MDC.put("bookingId", String.valueOf(id));
 
-                CourtBooking booking = courtBookingRepository.findById(id)
-                                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
+                try {
+                        log.info("Buscando reserva por ID");
 
-                return new CourtBookingResponse(
-                                booking.getId(),
-                                booking.getCliente().getId(),
-                                booking.getCliente().getNombre(),
-                                booking.getPista().getId(),
-                                booking.getPista().getNombre(),
-                                booking.getFecha(),
-                                booking.getHoraInicio(),
-                                booking.getHoraFin(),
-                                booking.getEstado(),
-                                booking.getPrecioTotal(),
-                                booking.getCreadaEn());
+                        CourtBooking booking = courtBookingRepository.findById(id)
+                                        .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
+
+                        log.info("Reserva encontrada");
+
+                        return new CourtBookingResponse(
+                                        booking.getId(),
+                                        booking.getCliente().getId(),
+                                        booking.getCliente().getNombre(),
+                                        booking.getPista().getId(),
+                                        booking.getPista().getNombre(),
+                                        booking.getFecha(),
+                                        booking.getHoraInicio(),
+                                        booking.getHoraFin(),
+                                        booking.getEstado(),
+                                        booking.getPrecioTotal(),
+                                        booking.getCreadaEn());
+                } catch (IllegalArgumentException ex) {
+                        log.warn("Fallo buscando la reserva por ID", ex);
+                        throw ex;
+                } finally {
+                        MDC.remove("bookingId");
+                }
         }
 
         // con este metodo se cancela una reserva POR PARTE DEL ADMIN
         public void cancelBookingAdmin(Long id) {
-                CourtBooking booking = courtBookingRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+                MDC.put("bookingId", String.valueOf(id));
 
-                booking.setEstado(com.example.deusto_hotel.model.CourtBookingStatus.CANCELADA);
-                courtBookingRepository.save(booking);
-                // notifica al usuario que ha sido cancelada mediante websocket
-                Object payload = java.util.Map.of(
-                                "action", "CANCELLED",
-                                "bookingId", id);
-                messagingTemplate.convertAndSend("/topic/court-updates", payload);
+                try {
+                        log.info("Solicitando cancelación de reserva por admin");
+
+                        CourtBooking booking = courtBookingRepository.findById(id)
+                                        .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+                        booking.setEstado(com.example.deusto_hotel.model.CourtBookingStatus.CANCELADA);
+                        courtBookingRepository.save(booking);
+                        // notifica al usuario que ha sido cancelada mediante websocket
+                        Object payload = java.util.Map.of(
+                                        "action", "CANCELLED",
+                                        "bookingId", id);
+                        messagingTemplate.convertAndSend("/topic/court-updates", payload);
+
+                        log.info("Reserva cancelada por admin");
+                } catch (RuntimeException ex) {
+                        log.warn("Fallo cancelando la reserva por admin", ex);
+                        throw ex;
+                } finally {
+                        MDC.remove("bookingId");
+                }
         }
 }

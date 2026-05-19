@@ -8,10 +8,11 @@ import com.example.deusto_hotel.model.Role;
 import com.example.deusto_hotel.model.User;
 import com.example.deusto_hotel.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Servicio para la gestión de usuarios del hotel.
@@ -31,6 +32,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     /**
      * Crea un nuevo usuario en el sistema.
      *
@@ -49,19 +52,33 @@ public class UserService {
      * @throws Excepciones.EmailYaRegistradoException Si ya existe un usuario con el correo proporcionado.
      */
     public UserResponse create(UserRequest request) {
-        // Usar Mapper para convertir UserRequest a User, guardar en la base de datos y luego convertir a UserResponse
-        if(userRepository.existsByEmail(request.email())) {
-            throw new Excepciones.EmailYaRegistradoException("El correo ya está registrado");
+        MDC.put("operation", "createUser");
+        MDC.put("email", request.email());
+
+        try {
+            log.info("Intento de creación de nuevo usuario");
+
+            if(userRepository.existsByEmail(request.email())) {
+                log.warn("Intento de creación fallido - Email ya registrado");
+                throw new Excepciones.EmailYaRegistradoException("El correo ya está registrado");
+            }
+
+            User usuario = userMapper.toEntity(request);
+
+            usuario.setRol(Role.CLIENT);
+            usuario.setBloqueado(false);
+
+            usuario = userRepository.save(usuario);
+
+            MDC.put("userId", String.valueOf(usuario.getId()));
+            log.info("Usuario creado exitosamente. Rol: {}", usuario.getRol());
+
+            return userMapper.toResponse(usuario);
+        } finally {
+            MDC.remove("operation");
+            MDC.remove("email");
+            MDC.remove("userId");
         }
-
-        User usuario = userMapper.toEntity(request);
-
-        usuario.setRol(Role.CLIENT);   // o USER según tu enum
-        usuario.setBloqueado(false);
-
-        usuario = userRepository.save(usuario);
-
-        return userMapper.toResponse(usuario);
     }
 
     /**
@@ -94,24 +111,44 @@ public class UserService {
      */
     public UserResponse login(String correo, String contrasena) {
 
-        User usuario = userRepository.findByEmail(correo)
-                .orElseThrow(() -> new Excepciones.UsuarioNoEncontradoException("Usuario no encontrado"));
+        MDC.put("operation", "login");
+        MDC.put("email", correo);
 
-        if (!usuario.getPassword().equals(contrasena)) {
-            throw new Excepciones.CredencialesInvalidasException("Contrasena incorrecta");
+        try {
+            log.info("Intento de login para usuario");
+
+            User usuario = userRepository.findByEmail(correo)
+                    .orElseThrow(() -> {
+                        log.warn("Intento de login fallido - Usuario no encontrado");
+                        return new Excepciones.UsuarioNoEncontradoException("Usuario no encontrado");
+                    });
+
+            MDC.put("userId", String.valueOf(usuario.getId()));
+
+            if (!usuario.getPassword().equals(contrasena)) {
+                log.warn("Intento de login fallido - Contraseña incorrecta");
+                throw new Excepciones.CredencialesInvalidasException("Contrasena incorrecta");
+            }
+
+            if (usuario.isBloqueado()) {
+                log.warn("Intento de login fallido - Usuario bloqueado");
+                throw new Excepciones.UsuarioBloqueadoException("Usuario bloqueado");
+            }
+
+            log.info("Login exitoso");
+
+            return new UserResponse(
+                    usuario.getId(),
+                    usuario.getNombre(),
+                    usuario.getEmail(),
+                    usuario.getRol(),
+                    usuario.isBloqueado(),
+                    usuario.getCreadoEn()
+            );
+        } finally {
+            MDC.remove("operation");
+            MDC.remove("email");
+            MDC.remove("userId");
         }
-
-        if (usuario.isBloqueado()) {
-            throw new Excepciones.UsuarioBloqueadoException("Usuario bloqueado");
-        }
-
-        return new UserResponse(
-                usuario.getId(),
-                usuario.getNombre(),
-                usuario.getEmail(),
-                usuario.getRol(),
-                usuario.isBloqueado(),
-                usuario.getCreadoEn()
-        );
     }
 }

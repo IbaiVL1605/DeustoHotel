@@ -1,0 +1,23 @@
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
+        <graylogHost>localhost</graylogHost>
+        <graylogPort>12201</graylogPort>
+    </appender>
+
+    <logger name="com.example.deusto_hotel" level="INFO" additivity="false">
+        <appender-ref ref="GELF" />
+        <appender-ref ref="CONSOLE" />   <!-- también en consola para dev -->
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />   <!-- librerías solo en consola, solo INFO+ -->
+    </root>
+
+</configuration>
