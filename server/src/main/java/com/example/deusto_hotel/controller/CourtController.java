@@ -393,7 +393,7 @@ public class CourtController {
                 courts = courts.stream().filter(c -> c.tipo().name().equalsIgnoreCase(tipo)).toList();
             }
 
-            log.info("Respuesta HTTP 200 enviada - {} pista(s) total(es)", courts.size());
+            log.info("Respuesta HTTP 200 enviada - {} pista(s) total(es) filtradas", courts.size());
 
             return ResponseEntity.ok(courts);
         } finally {

@@ -56,7 +56,7 @@ public class CourtService {
                     .map(c -> new CourtResponse(c.getId(), c.getNombre(), c.getTipo(), c.getPrecioPorHora(), c.getEstado()))
                     .toList();
 
-            log.info("Total de pistas obtenidas: {}", courts.size());
+            log.info("Total de pistas obtenidas sin filtrar: {}", courts.size());
 
             return courts;
         } finally {
