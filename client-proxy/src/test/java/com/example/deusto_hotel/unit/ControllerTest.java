@@ -55,7 +55,7 @@ class ControllerTest {
         @Test
         void deleteCourtBooking_exito() throws Exception {
 
-                mockMvc.perform(post("/reservas/eliminar/pista/1"))
+                mockMvc.perform(get("/reservas/eliminar/pista/1"))
                                 .andExpect(status().is3xxRedirection())
                                 .andExpect(redirectedUrl("/reservas"));
 
@@ -68,7 +68,7 @@ class ControllerTest {
                 doThrow(new RuntimeException("Error"))
                                 .when(proxy).deleteCourtBooking(1L);
 
-                mockMvc.perform(post("/reservas/eliminar/pista/1"))
+                mockMvc.perform(get("/reservas/eliminar/pista/1"))
                                 .andExpect(status().is3xxRedirection())
                                 .andExpect(redirectedUrl("/reservas"));
 
