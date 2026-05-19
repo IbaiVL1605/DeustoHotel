@@ -251,7 +251,7 @@ class ControllerTest {
                 MockHttpSession session = new MockHttpSession();
                 session.setAttribute("userId", 10L);
 
-                mockMvc.perform(post("/reservas/eliminar/1")
+                mockMvc.perform(get("/reservas/eliminar/1")
                                 .session(session))
                                 .andExpect(status().is3xxRedirection())
                                 .andExpect(redirectedUrl("/reservas"));
@@ -264,7 +264,7 @@ class ControllerTest {
         @Test
         void deleteBooking_noUser() throws Exception {
 
-                mockMvc.perform(post("/reservas/eliminar/1"))
+                mockMvc.perform(get("/reservas/eliminar/1"))
                                 .andExpect(status().is3xxRedirection())
                                 .andExpect(redirectedUrl("/login"));
 
@@ -282,7 +282,7 @@ class ControllerTest {
                 doThrow(new RuntimeException("Error"))
                                 .when(proxy).deleteRoomBooking(1L, 10L);
 
-                mockMvc.perform(post("/reservas/eliminar/1")
+                mockMvc.perform(get("/reservas/eliminar/1")
                                 .session(session))
                                 .andExpect(status().is3xxRedirection())
                                 .andExpect(redirectedUrl("/reservas"));

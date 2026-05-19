@@ -256,7 +256,7 @@ public class Controller {
      * }
      * }
      */
-    @PostMapping("/reservas/eliminar/{id}")
+    @GetMapping("/reservas/eliminar/{id}")
     public String deleteBooking(@PathVariable Long id, HttpSession session) {
 
         Long userId = (Long) session.getAttribute("userId");
