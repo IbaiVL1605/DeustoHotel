@@ -165,7 +165,7 @@ class RoomControllerTest {
                         org.springframework.test.web.servlet.request.MockMvcRequestBuilders
                                 .put("/api/v1/rooms/1/bloquear")
                 )
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
     @Test
     void deleteRoom_success() throws Exception {
