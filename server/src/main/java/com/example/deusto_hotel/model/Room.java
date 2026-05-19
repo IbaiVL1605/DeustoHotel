@@ -64,6 +64,9 @@ public class Room {
     @OneToMany(mappedBy = "habitacion", cascade = CascadeType.ALL)
     private List<RoomBooking> roomBookings = new ArrayList<>();
 
+    @OneToMany(mappedBy = "habitacion", cascade = CascadeType.ALL)
+    private List<Review> reviews = new ArrayList<>();
+
     /**
      * Constructor que inicializa una habitación con un identificador y tipo específico.
      * <p>
